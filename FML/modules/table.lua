@@ -1,7 +1,7 @@
-local M = {}
+local _M = {}
 
 
-function M.deep_copy(tab) -- mostly borrowed from original util
+function _M.deep_copy(tab) -- mostly borrowed from original util
 	local lookup_table = {}
 	
 	local function _copy(tab)
@@ -21,13 +21,13 @@ function M.deep_copy(tab) -- mostly borrowed from original util
 	return _copy(tab)
 end
 
-function M.equals(tab1, tab2) -- mostly borrowed from original util
+function _M.equals(tab1, tab2) -- mostly borrowed from original util
 	if tab1 == tab2 then return true; end
 	
 	local function _equals_oneway(tab1, tab2)
 		for i, v in pairs(tab1) do
 			if type(v) == "table" and not v.__self and type(tab2[i]) == "table" and not tab2[i].__self then
-				if not M.equals(v, tab2[i]) then return false; end
+				if not _M.equals(v, tab2[i]) then return false; end
 			else
 				if not v == tab1[i] then return false; end
 			end
@@ -37,12 +37,12 @@ function M.equals(tab1, tab2) -- mostly borrowed from original util
 	return _equals_oneway(tab1, tab2) and _equals_oneway(tab2, tab1)
 end
 
-function M.contains(tab, element)
+function _M.contains(tab, element)
 	for _, v in pairs(tab) do if v == element then return true; end; end
 	return false
 end
 
-function M.insert_all(dest, src, overwrite, deep) -- overwrite is optional (default false), deep is optional (default false)
+function _M.insert_all(dest, src, overwrite, deep) -- overwrite is optional (default false), deep is optional (default false)
 	if type(dest) ~= "table" or type(src) ~= "table" then return; end
 	for i, v in pairs(src) do
 		if overwrite or dest[i] == nil then
@@ -53,19 +53,25 @@ function M.insert_all(dest, src, overwrite, deep) -- overwrite is optional (defa
 	end
 end
 
-function M.getn(tab) -- count the number of elements in any table
+function _M.getn(tab) -- count the number of elements in any table
 	local n = 0
 	for _ in pairs(tab) do n = n + 1; end
 	return n
 end
 
-function M.get_next_index(tab)
+function _M.get_next_index(tab)
 	local i = 1
 	while true do
-		if not tab[i] then return i; end
+		if tab[i] == nil then return i; end
 		i = i + 1
 	end
 end
 
+function _M.is_empty(tab)
+	if tab == nil then return true; end
+	if _M.getn(tab) == 0 then return true; end
+	return false
+end
 
-return M
+
+return _M
