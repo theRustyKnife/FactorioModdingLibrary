@@ -1,5 +1,5 @@
-local FML_VERSION_CODE = 1
-local FML_VERSION_NAME = "0.1.0-alpha.1.0"
+local FML_VERSION_CODE = 3
+local FML_VERSION_NAME = "0.1.0-alpha.3.0"
 
 
 local _M = {}
@@ -71,7 +71,7 @@ if script and script.on_init then
 		-- call all the respective handlers
 		run(global_handlers.init)
 		run(global_handlers.fml_init, _M.global)
-		run(global_handlers.load)
+		if config.ON_LOAD_AFTER_INIT then run(global_handlers.load); end
 	end)
 	
 	script.on_load(function()

@@ -4,10 +4,7 @@ if not script then return nil; end -- requires script to load
 local config = require "therustyknife.FML.config"
 local FML = require "therustyknife.FML"
 
-if not FML.table then return nil; end -- requires the table module to load
 
-
-local ALLOW_HANDLER_OVERRIDE = true
 local GLOBAL_NAME = "events"
 
 
@@ -42,9 +39,12 @@ end
 FML.global.on_fml_init(function(g)
 	global = g.get(GLOBAL_NAME)
 	global.handlers = global.handlers or {}
+	
+	-- make sure that we init everything regardless of the users settings
+	if not config.ON_LOAD_AFTER_INIT then on_load(); end
 end)
 
-FML.global.on_load(function()
+local function on_load()
 	global = FML.global.get(GLOBAL_NAME)
 	
 	-- run the script for loading on the first tick so we don't modify the global table in on_load
@@ -74,7 +74,8 @@ FML.global.on_load(function()
 		-- run the handlers for on_tick so they don't miss this one
 		for _, h in pairs(global.handlers[defines.events.on_tick] or {}) do h.f(event); end
 	end)
-end)
+end
+FML.global.on_load(on_load)
 
 
 function _M.add_handler(event_id, f, name, keep_on_load)
@@ -98,11 +99,11 @@ function _M.add_handler(event_id, f, name, keep_on_load)
 		global.handlers[event_id] = {}
 	end
 	
-	name = name or FML.table.get_next_index(global.handlers)
+	name = name or FML.table.get_next_index(global.handlers[event_id])
 	
 	-- check argument validity
 	assert(type(f) == "function", "Expected function for event handler, got " .. type(f) .. ".")
-	assert(ALLOW_HANDLER_OVERRIDE or global.handlers[event_id][name] == nil, "A handler with name " .. tostring(name) .. " is already registered for event_id " .. tostring(event_id) .. " and override is disallowed.")
+	assert(config.ALLOW_HANDLER_OVERRIDE or global.handlers[event_id][name] == nil, "A handler with name " .. tostring(name) .. " is already registered for event_id " .. tostring(event_id) .. " and override is disallowed.")
 	
 	global.handlers[event_id][name] = {f = f, keep_on_load = keep_on_load}
 	
