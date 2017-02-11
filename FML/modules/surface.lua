@@ -2,8 +2,8 @@ local _M = {}
 
 
 function _M.distance(pos1, pos2)
-	x1, y1 = _M.unpack_position(pos1)
-	x2, y2 = _M.unpack_position(pos2)
+	local x1, y1 = _M.unpack_position(pos1)
+	local x2, y2 = _M.unpack_position(pos2)
 	return ((x1 - x2)^2 + (y1 - y2)^2)^0.5
 end
 

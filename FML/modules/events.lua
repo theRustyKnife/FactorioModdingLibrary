@@ -35,22 +35,13 @@ local function unregister_event(event_id)
 end
 
 
--- init the global table
-FML.global.on_fml_init(function(g)
-	global = g.get(GLOBAL_NAME)
-	global.handlers = global.handlers or {}
-	
-	-- make sure that we init everything regardless of the users settings
-	if not config.ON_LOAD_AFTER_INIT then on_load(); end
-end)
-
 local function on_load()
 	global = FML.global.get(GLOBAL_NAME)
-	
+
 	-- run the script for loading on the first tick so we don't modify the global table in on_load
 	script.on_event(defines.events.on_tick, function(event)
 		script.on_event(defines.events.on_tick, nil) -- remove the handler to only run in the first tick
-		
+
 		-- prune the handlers - remove the ones that were supposed to be run on load and eventually unregister unnecessary on_event hooks
 		for event_id, handlers in pairs(global.handlers) do
 			if FML.table.is_empty(handlers) then
@@ -60,21 +51,31 @@ local function on_load()
 				for name, handler in pairs(handlers) do
 					if not handler.keep_on_load then handlers[name] = nil; end
 				end
-				
+
 				if FML.table.is_empty(handlers) then
 					unregister_event(event_id)
 					global.handlers[event_id] = nil
 				end
 			end
 		end
-		
+
 		-- add the handlers that were supposed to be added before
 		delayed_add_handlers()
-		
+
 		-- run the handlers for on_tick so they don't miss this one
 		for _, h in pairs(global.handlers[defines.events.on_tick] or {}) do h.f(event); end
 	end)
 end
+
+-- init the global table
+FML.global.on_fml_init(function(g)
+	global = g.get(GLOBAL_NAME)
+	global.handlers = global.handlers or {}
+	
+	-- make sure that we init everything regardless of the users settings
+	if not config.ON_LOAD_AFTER_INIT then on_load(); end
+end)
+
 FML.global.on_load(on_load)
 
 

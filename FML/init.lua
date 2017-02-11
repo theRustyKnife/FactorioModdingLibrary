@@ -11,7 +11,6 @@ function _M.safe_require(path)
 	-- store the original value
 	local t = package.loaded[path]
 	package.loaded[path] = nil
-	
 	-- try to load
 	local res
 	local status, err = pcall(function() res = require(path); end)
@@ -44,7 +43,7 @@ if script and script.on_init then
 		on_load = function(f) table.insert(global_handlers.load, f) end, -- same as script.on_load, except it also runs when on_init does
 		on_config_change = function(f) table.insert(global_handlers.config_change, f) end, -- same as script.on_configuration_changed
 		on_fml_config_change = function(f) table.insert(global_handlers.fml_config_change, f) end, -- runs when FML version changes, except when FML was first installed - passes a table containing the old and new versions
-		on_mod_config_change = function(f) table.insert(global_handlers.mod_config_change) end, -- runs whenever there's an entry for the current MOD_NAME in on_config_change - passes the same data as on_config_change
+		on_mod_config_change = function(f) table.insert(global_handlers.mod_config_change, f) end, -- runs whenever there's an entry for the current MOD_NAME in on_config_change - passes the same data as on_config_change
 		on_fml_init = function(f) table.insert(global_handlers.fml_init, f) end, -- called when FML is first installed (after on_init) - FML's global table is passed as argument
 	}
 	-- runs all the handlers from a table passing an argument to them
@@ -76,28 +75,26 @@ if script and script.on_init then
 	
 	script.on_load(function()
 		init_global()
-		
 		run(global_handlers.load)
 	end)
 	
 	script.on_configuration_changed(function(data)
 		run(global_handlers.config_change, data)
 		
+		if not global.fml_version then -- FML was just added to the mod
+			global.fml_version = {code = FML_VERSION_CODE, name = FML_VERSION_NAME}
+			run(global_handlers.fml_init, _M.global)
+		elseif global.fml_version.code ~= FML_VERSION_CODE then -- FML version has changed
+			local arg = {
+				old = global.fml_version,
+				new = {code = FML_VERSION_CODE, name = FML_VERSION_NAME},
+			}
+			global.fml_version = arg.new
+			run(global_handlers.fml_config_change, arg)
+		end
+		
 		if data.mod_changes[config.MOD_NAME] then
 			init_global()
-			
-			if not global.fml_version then -- FML was just added to the mod
-				global.fml_version = {code = FML_VERSION_CODE, name = FML_VERSION_NAME}
-				run(global_handlers.fml_init, _M.global)
-			elseif global.fml_version.code ~= FML_VERSION_CODE then -- FML version has changed
-				local arg = {
-					old = global.fml_version,
-					new = {code = FML_VERSION_CODE, name = FML_VERSION_NAME},
-				}
-				global.fml_version = arg.new
-				run(global_handlers.fml_config_change, arg)
-			end
-			
 			run(global_handlers.mod_config_change, data)
 		end
 	end)

@@ -19,7 +19,6 @@ config.MODULES_TO_LOAD = {
 	events = ".modules.events",
 	data = ".modules.data",
 	format = ".modules.format",
-	--gui = ".modules.gui.init",
 }
 
 -- The name of the global table FML will use. You shouldn't need to change this unless you have a global table with my name for some reason...
@@ -30,6 +29,7 @@ config.GLOBAL_NAME = "therustyknife"
 -- EVENTS --
 -- if set to true FML will allow you to set an event handler with a name that has already been used overriding the original one
 config.ALLOW_HANDLER_OVERRIDE = true
+
 
 -- DATA --
 -- Default icon to use where none was specified and it's mandatory

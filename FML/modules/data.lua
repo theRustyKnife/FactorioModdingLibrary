@@ -9,7 +9,7 @@ local function make_item_for(prototype, properties)
 	properties = properties or {}
 	local item = FML.table.deep_copy(properties.base or config.ITEM_BASE) -- get the base item
 	
-	-- try to extract data from the prototype
+-- try to extract data from the prototype
 	item.name = prototype.name
 	item.place_result = prototype.name
 	item.icon = prototype.icon or item.icon

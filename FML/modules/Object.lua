@@ -8,14 +8,10 @@ if not global then return nil; end -- require global to load
 local global
 
 
-FML.global.on_fml_init(function(g)
-	if not config.ON_LOAD_AFTER_INIT then on_load(); end
-end)
-
 local function on_load()
 	global = FML.global.get("Object")
 	setmetatable(global, {__mode = "v"}) -- make global a weak table to allow garbage colector to collect unreferenced Objects
-	
+
 	for _, o in pairs(global) do
 		local prev = o.object
 		for _, mt in ipairs(o.meta) do
@@ -24,6 +20,11 @@ local function on_load()
 		end
 	end
 end
+
+FML.global.on_fml_init(function(g)
+	if not config.ON_LOAD_AFTER_INIT then on_load(); end
+end)
+
 FML.global.on_load(on_load)
 
 
