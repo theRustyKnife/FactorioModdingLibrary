@@ -65,6 +65,7 @@ local _M = {}
 
 
 function _M.inherit(base_type, base_name)
+	if not base_name then base_name = base_type; end -- use type as name if no name is specified
 	if type(base_type) ~= "string" or type(base_name) ~= "string" or not data.raw[base_type] or not data.raw[base_type][base_name] then -- only inherit from valid entries
 		error("can't inherit from type: " .. tostring(base_type) .. ", name: " .. tostring(base_name))
 	end
