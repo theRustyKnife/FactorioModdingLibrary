@@ -46,7 +46,7 @@ function _M.insert_all(dest, src, overwrite, deep) -- overwrite is optional (def
 	if type(dest) ~= "table" or type(src) ~= "table" then return; end
 	for i, v in pairs(src) do
 		if overwrite or dest[i] == nil then
-			if deep and type(v) == "table" then dest[i] = deep_copy(v)
+			if deep and type(v) == "table" then dest[i] = _M.deep_copy(v)
 			else dest[i] = v
 			end
 		end
