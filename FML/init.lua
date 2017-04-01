@@ -74,7 +74,6 @@ if script and script.on_init then
 	end)
 	
 	script.on_load(function()
-		--init_global()
 		run(global_handlers.load)
 	end)
 	
