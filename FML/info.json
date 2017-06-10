@@ -1,0 +1,12 @@
+{
+	"name": "FML",
+	"version": "0.1.0",
+	"factorio_version": "0.15",
+	"title": "FML",
+	"author": "TheRustyKnife",
+	"contact": "therustyknife13@gmail.com",
+	"description": "A library made to ease Factorio modders' work. Doesn't do anything on it's own.",
+	"homepage": "https://mods.factorio.com/mods/theRustyKnife/FML",
+	"date": "2017-06-04",
+	"dependencies": ["base"]
+}
