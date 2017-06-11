@@ -27,13 +27,23 @@ module_loader.load_from_files(
 assert(_M.remote, "FML couldn't find the remote module.")
 
 
---TODO: test loading external modules
---TODO: expose the interface
+--TODO: external module loading
+
+
+--TODO: unhardcode the interface name
+_M.remote.add_interface("therustyknife.FML", _M, true, true, true)
+
+--TODO: allow modules to change the parameters of the interface
+for name, _ in pairs(config.MODULES_TO_LOAD) do
+	if _M[name] then
+		_M.remote.add_interface("therustyknife.FML."..name, _M[name], true, true, false)
+	end
+end
 
 
 ---[[ DEBUG
 script.on_init(function()
-	_M.log.d(serpent.line(_M:get_structure()))
+	_M.log.d(serpent.line(_M.get_structure(true)))
 end)
 --]]
 

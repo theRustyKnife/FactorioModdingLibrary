@@ -92,8 +92,11 @@ function _M.index_of(tab, element)
 	return nil
 end
 
-function _M.contains = _M.index_of --(tab, element)
---[[ Alias for index_of. Returns the index of element (true) or nil (false). ]]
+_M.contains = _M.index_of --(tab, element)
+--[[
+Alias for index_of. Returns the index of element (true) or nil (false).
+Note that elements indexed by false will not be found.
+]]
 
 function _M.remove_v(tab, value)
 --[[ Remove value from tab. Uses index_of to find the index to remove. ]]
