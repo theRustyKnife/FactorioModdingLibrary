@@ -20,22 +20,43 @@ end
 
 
 local _M = {}
---[[
-Allows easy access to functions through the remote API.
-The functions returned from here are all closures, so they'renot safe for serialization. To serialize an interface
-function, use the Callback concept. To serialize an interface, simply store it's name as a string.
-To get a function from a Callback, use the unpack_callback function as parameter to your desired function.
-]]
+local _DOC = FML.make_doc(_M, {
+	type = "module",
+	name = "remote",
+	desc = [[ Allows easy access to functions through the remote API. ]],
+	notes = {[[
+	The functions returned from here are mostly closures, so they'renot safe for serialization. To serialize an interface 
+	function, use the Callback concept. To serialize an interface, simply store it's name as a string.
+	]]}
+})
 
 
+_DOC.get_interface = {
+	type = "function",
+	desc = [[
+	Return all functions from an interface. If the interface doesn't exist, nil is returned. If safe is true, an 
+	empty table is returned instead.
+	]],
+	notes = {"Only functions that are currently present in the interface are taken into account, even if safe is true."},
+	params = {
+		interface = {
+			type = "string",
+			desc = "The interface name",
+		},
+		safe = {
+			type = "bool",
+			desc = "If true, safe functions are returned",
+		},
+	},
+	returns = {
+		{
+			type = "Dictionary[string: function]",
+			desc = "The interface represented by a table of functions",
+		},
+	},
+}
 function _M.get_interface(interface, safe)
---[[
-Returns all functions from an interface. If the interface doesn't exist, nil is returned. If safe is true, an empty
-table is returned instead.
-If safe is true, safe functions are returned, same as in get_function_safe. However, only functions that are currently
-present in the interface are taken into account.
-]]
-	if not remote.interfaces[interface] then return nil; end
+	if not remote.interfaces[interface] then return safe and {} or nil; end
 	local res = {}
 	for func, _ in pairs(remote.interfaces[interface]) do
 		if safe then
@@ -47,66 +68,175 @@ present in the interface are taken into account.
 end
 
 
+_DOC.get_function_safe = {
+	type = "function",
+	desc = [[
+	Return a function representing the given Callback. This function is safe to call even if the interface function is 
+	not currently available. Additionally, the function is returned even if the interface doesn't exist (yet), so 
+	calling it should always be safe.
+	]],
+	params = {
+		clbck = {
+			type = "Callback",
+			desc = "The function to get",
+		},
+	},
+	returns = {
+		{
+			type = "function",
+			desc = "The safe function",
+		},
+	},
+}
 function _M.get_function_safe(clbck)
---[[
-Get a function from an interface. If the interface is removed, the call will be ignored, returning nil.
-Additionally, a function is returned even if the interface doesn't exist (yet), so calling it should always be safe.
-]]
 	return get_function_safe_internal(clbck)
 end
 
+_DOC.get_function = {
+	type = "function",
+	desc = [[ Get a function from an interface. If the interface doesn't exist, nil will be returned. ]],
+	notes = {"If the interface is removed, calling this function will crash."},
+	params = {
+		clbck = {
+			type = "Callback",
+			desc = "The function to get",
+		},
+	},
+	returns = {
+		{
+			type = "function",
+			desc = "The function",
+		},
+	},
+}
 function _M.get_function(clbck)
---[[
-Get a function from an interface. If the interface is removed, calling this function will crash.
-If the interface doesn't exist, nil will be returned.
-]]
 	if not remote.interfaces[clbck.interface] or not remote.interfaces[clbck.interface][clbck.func] then return nil; end
 	
 	return get_function_internal(clbck)
 end
 
 
-function _M.get_callback(interface, func)
---[[ Return a Callback representing the given function. It might be easier to construct the Callback yourself tho... ]]
-	return {interface = interface, func = func}
-end
-
-function _M.unpack_callback(clbck)
---[[ Unpack the given Callback to the format accepted by the other functions. Might be easier to DIY again... ]]
-	return clbck.interface, clbck.func
-end
-
 local function _callback_call_method(clbck, ...) return remote.call(clbck.interface, clbck.func, ...); end
 local RICH_MT = {__call = _callback_call_method}
+
+_DOC.enrich_callback = {
+	type = "function",
+	desc = [[ Give the Callback a call method. This method is probably not serialization-safe. ]],
+	notes = {[[
+		The callback is also given a metatable that allows you to call it directly. This metatable is lost during 
+		serialization entirely.
+	]]},
+	params = {
+		clbck = {
+			type = "Callback",
+			desc = "The Callback to enrich",
+		},
+	},
+	returns = {
+		{
+			type = "RichCallback",
+			desc = "The enriched Callback. It is the isntance that was passed in"
+		},
+	},
+}
 function _M.enrich_callback(clbck)
---[[
-Give the callback a call method. This method is probably not serialization-safe.
-The callback is also given a metatable that allows you to call it directly. This metatable is lost during serialization.
-]]
 	clbck.call = _callback_call_method
 	setmetatable(clbck, RICH_MT)
 	return clbck
 end
 
+_DOC.get_rich_callback = {
+	type = "function",
+	desc = [[ Construct a Callback that si already rich. ]],
+	params = {
+		interface = {
+			type = "string",
+			desc = "The interface the Callback will represent",
+		},
+		func = {
+			type = "string",
+			desc = "The function the Callback will represent",
+		},
+	},
+	returns = {
+		{
+			type = "RichCallback",
+			desc = "The constructed Callback",
+		},
+	},
+}
 function _M.get_rich_callback(interface, func)
---[[ Get a callback that already has the call method and the __call metamethod. ]]
 	return _M.enrich_callback{interface = interface, func = func}
 end
 
+_DOC.call = {
+	type = "function",
+	desc = [[ Call the given Callback. Any parameters except the Callback will be passed to the function. ]],
+	params = {
+		clbck = {
+			type = "Callback",
+			desc = "What to call",
+		},
+		["..."] = {
+			desc = "Any parameters to be passed to the called function",
+		},
+	},
+	returns = {
+		{
+			["..."] = {
+				desc = "Any values returned by the called function",
+			},
+		},
+	},
+}
 function _M.call(clbck, ...)
---[[ Call the given callback. ]]
 	return _callback_call_method(clbck, ...)
 end
 
 
+_DOC.add_interface = {
+	type = "function",
+	desc = [[ Expose an interface through the remote API. ]],
+	notes = {[[
+	Care needs to be taken with getters, as constants with nil value will not have a getter generated. Moreover, if the 
+	getter should clash with any name already in the module, it won't be generated either.
+	]]},
+	params = {
+		name = {
+			type = "string",
+			desc = "The name of the new interface",
+		},
+		module = {
+			type = "Module",
+			desc = "The module to be exposed as an interface",
+		},
+		generate_getters = {
+			type = {"bool", "string"},
+			desc = [[
+			If true, constants will have getter functions generated. If it is a string, it will be used as the prefix 
+			for the getter functions' names
+			]],
+			default = "get_",
+		},
+		overwrite = {
+			type = "bool",
+			desc = "If true, existing interface will be overwritten, otherwise nothing will happen",
+			default = "false",
+		},
+		ignore_tables = {
+			type = "bool",
+			desc = "If true, only non-table constants are taken into account",
+			default = "false",
+		},
+	},
+	returns = {
+		{
+			type = "bool",
+			desc = "true if the interface was successfully exposed, false otherwise",
+		},
+	},
+}
 function _M.add_interface(name, module, generate_getters, overwrite, ignore_tables)
---[[
-Expose an interface through the remote API. Optionally generate getters for constants using generate_getters as prefix
-if possible. If overwrite is true, existing interface with this name will be removed.
-Returns true if the interface was successfully exposed, false otherwise.
-Care needs to be taken with getters, as constants with nil value will not have a getter generated. Moreover, if the
-getter should clash with any name already in the module, it won't be generated either.
-]]
 	if remote.interfaces[name] then
 		if overwrite then remote.remove_interface(name)
 		else return false
@@ -132,8 +262,12 @@ getter should clash with any name already in the module, it won't be generated e
 	return true
 end
 
+_DOC.exopse_interface = {
+	type = "function",
+	deprecated = 5,
+	desc = "Use remote.add_interface instead.",
+}
 _M.expose_interface = _M.add_interface
---[[ Deprecated name for add_interface. ]]
 
 
 --TODO: Callback handling - simple way to generate a callback from a function, where FML is going to handle exposing the

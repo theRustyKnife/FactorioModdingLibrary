@@ -4,7 +4,7 @@ local module_loader = FML_stdlib.safe_require("script.module-loader", true)
 local config = FML_stdlib.safe_require("config", true)
 
 
-local _M = module_loader.load_std(FML_stdlib, nil, "runtime") -- Load the standard functions
+local _M = module_loader.load_std(FML_stdlib, nil, "runtime", config, config.VERSION) -- Load the standard functions
 package.loaded["therustyknife.FML"] = _M -- Make this instance accessible via require
 package.loaded["therustyknife.FML.config"] = config -- Config access for modules
 
@@ -15,7 +15,7 @@ local log_func = true
 if config.MODULES_TO_LOAD["log"] then
 	_M.log = module_loader.load_from_file(config.MODULES_TO_LOAD["log"], FML_stdlib.safe_require, log_func)
 	-- Use default log function if loading failed
-	log_func = _M.log and _M.log.e or true
+	log_func = _M.log and _M.log.w or true
 end
 
 module_loader.load_from_files(
@@ -41,7 +41,15 @@ for name, _ in pairs(config.MODULES_TO_LOAD) do
 end
 
 
----[[ DEBUG
+--[[ DEBUG
+local function awesome_function()
+	_M.log.d("test from function")
+end
+
+awesome_function()
+
+_M.log.d("test from control")
+
 script.on_init(function()
 	_M.log.d(serpent.line(_M.get_structure(true)))
 end)

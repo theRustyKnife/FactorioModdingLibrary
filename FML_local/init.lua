@@ -4,18 +4,61 @@ local module_loader = FML_stdlib.safe_require("script.module-loader", true)
 local config = FML_stdlib.safe_require(".config", true)
 
 
-local _M = module_loader.load_std(FML_stdlib, nil, "runtime")
+setmetatable(config, {
+	__index = remote.call("therustyknife.FML", "get_config")
+})
+
+
+local _M = module_loader.load_std(FML_stdlib, nil, "runtime", config, config.VERSION)
 package.loaded["therustyknife.FML"] = _M
 package.loaded["therustyknife.FML.config"] = config
 
 
-assert(config.MODULES_TO_LOAD["remote"], "FML couldn't find the remote module.")
- 
+-- Make sure remote is installed and loaded first, so we can use it for all the other things
+assert(config.MODULES_TO_LOAD["remote"], "FML couldn't find the remote module in mod "..config.MOD.NAME..".")
+--TODO: allow logging using the log module
+_M.remote = module_loader.load_from_file(config.MODULES_TO_LOAD["remote"], FML_stdlib.safe_require)
 
---TODO: check if FML versions match
+local log_func = _M.remote.get_rich_callback("therustyknife.FML.log", "w") -- Use FML's logging
 
---TODO: load all the other modules installed locally
---TODO: load all the modules not installed locally, but available remotely
+if config.MODULES_TO_LOAD["log"] then
+	_M.log = module_loader.load_from_file(config.MODULES_TO_LOAD["log"], FML_stdlib.safe_require, log_func)
+	if _M.log then log_func = _M.log.w; end
+end
+
+local remote_version_code = remote.call("therustyknife.FML", "get_version_code")
+local local_version_code = _M.get_version_code()
+if remote_version_code ~= local_version_code then
+	local msg = "FML versions don't match: local = ".._M.get_version_name()..
+			", remote = "..remote.call("therustyknife.FML", "get_version_name")
+	if not pcall(log_func(msg)) then log(msg) end -- Try using the log function from FML, use log if it doesn't work.
+end
+
+
+module_loader.load_from_files(
+		config.MODULES_TO_LOAD,
+		_M,
+		FML_stdlib.safe_require,
+		log_func
+	)
+
+local interface_structure = remote.call("therustyknife.FML", "get_structure", true)
+for name, value in pairs(interface_structure) do
+	if not _M[name] then
+		if value == "function" then
+			_M[name] = _M.remote.get_function{interface = "therustyknife.FML", func = name}
+		elseif type(value) == "table" then
+			_M[name] = _M.remote.get_interface("therustyknife.FML."..name)
+		end
+	end
+end
+
+
+--[[ DEBUG
+script.on_init(function()
+	game.print(tostring(_M.table.getn{"one", "two"}))
+end)
+--]]
 
 
 return _M

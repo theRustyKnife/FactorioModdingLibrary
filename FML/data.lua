@@ -4,7 +4,7 @@ local module_loader = FML_stdlib.safe_require("script.module-loader", true)
 local config = FML_stdlib.safe_require("config", true)
 
 
-local _M = module_loader.load_std(FML_stdlib, nil, "data") -- Load the standard functions
+local _M = module_loader.load_std(FML_stdlib, nil, "data", config, config.VERSION) -- Load the standard functions
 FML_stdlib.put_to_global("therustyknife", "FML", _M) -- Give gloabal access to the library
 package.loaded["therustyknife.FML"] = _M -- Make FML accessible via require - mostly for modules
 package.loaded["therustyknife.FML.config"] = config -- Allow modules to require the config easily
@@ -27,4 +27,4 @@ module_loader.load_from_files(
 	)
 
 
-return _M -- Not actually needed, but included for consistency
+return _M

@@ -7,13 +7,19 @@ local _M = {}
 --[[ Contains functions for loading modules. ]]
 
 
-function _M.load_std(std, res_table, stage)
+function _M.load_std(std, res_table, stage, config, version)
 --[[ Maps functions from std to their respective positions in the main module. ]]
 	res_table = res_table or {}
+	res_table.CONFIG = config
 	
 	res_table.STAGE = stage
+	res_table.VERSION = version
 	
 	res_table.safe_require = std.safe_require
+	res_table.get_config = function() return res_table.CONFIG; end
+	res_table.make_doc = std.make_doc
+	res_table.get_version_code = pack_method(std.get_version_code, version)
+	res_table.get_version_name = pack_method(std.get_version_name, version)
 	
 	if stage == "data" then
 		res_table.put_to_global = std.put_to_global

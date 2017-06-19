@@ -1,5 +1,14 @@
+--TODO: docs
+
 local _M = {}
 --[[ Some functions that are not fit to be in a module, but are needed for FML to be useful. ]]
+
+
+function _M.make_doc(module, doc)
+	doc.funcs = {}
+	module._DOC = doc
+	return doc.funcs
+end
 
 
 function _M.safe_require(path, raise_errors)
@@ -29,7 +38,7 @@ end
 function _M.put_to_global(namespace, package_name, package)
 --[[ Put a package into the global namespace. Useful during the data stage. ]]
 	_G[namespace] = _G[namespace] or {}
-	_G[namespace] = package
+	_G[namespace][package_name] = package
 end
 
 
@@ -52,7 +61,7 @@ end
 function _M.get_structure(self, const_to_func, depth)
 --[[
 Get the current structure of this FML instance (the one passed in self). Used for accessing the interface remotely.
-If const_to_func is true, constants are going to be converted to getter fucntions, using const_to_func as prefix if it
+If const_to_func is true, constants are going to be converted to getter functions, using const_to_func as prefix if it
 is a string, "get_" otherwise.
 Tables will be treated as modules up to the specified depth.
 ]]
@@ -73,7 +82,6 @@ Tables will be treated as modules up to the specified depth.
 		for name, value in pairs(tab) do
 			local t = type(value)
 			if t == "table" then
-				log("level: "..tostring(level)..", depth: "..tostring(depth))
 				if level <= depth then
 					level = level+1
 					res[name] = _get_structure(value)
@@ -92,6 +100,10 @@ Tables will be treated as modules up to the specified depth.
 	
 	return _get_structure(self)
 end
+
+
+function _M.get_version_code(version) return version.CODE; end
+function _M.get_version_name(version) return version.NAME; end
 
 
 return _M
