@@ -24,9 +24,9 @@ function _M.load_std(std, res_table, stage, config, version)
 	if stage == "data" then
 		res_table.put_to_global = std.put_to_global
 		res_table.register_module = pack_method(std.register_module, res_table)
-		
 	elseif stage == "runtime" then
 		res_table.get_structure = pack_method(std.get_structure, res_table)
+		res_table.get_global = function(name) return std.get_global("therustyknife", "FML", name); end
 	end
 	
 	return res_table
