@@ -4,9 +4,14 @@ local module_loader = FML_stdlib.safe_require("script.module-loader", true)
 local config = FML_stdlib.safe_require(".config", true)
 
 
-setmetatable(config, {
-	__index = remote.call("therustyknife.FML", "get_config")
-})
+local remote_config = remote.call("therustyknife.FML", "get_config")
+local function _merge_configs(local_config, remote_config)
+	for key, value in pairs(local_config) do
+		if type(value) == "table" and remote_config[key] then _merge_configs(value, remote_config[key]); end
+	end
+	setmetatable(local_config, {__index = remote_config})
+end
+_merge_configs(config, remote_config)
 
 
 local _M = module_loader.load_std(FML_stdlib, nil, "runtime", config, config.VERSION)
