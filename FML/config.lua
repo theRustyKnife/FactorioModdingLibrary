@@ -17,6 +17,8 @@ return {
 		table = ".modules.table",
 		format = ".modules.format",
 		data = ".modules.data",
+		GUI = ".modules.GUI",
+		semver = ".modules.semver",
 	},
 	
 	
@@ -44,6 +46,14 @@ return {
 		RECIPE_BASE = {
 			type = "recipe",
 			ingredients = {{"iron-plate", 20}},
+		},
+	},
+	
+	
+	GUI = {
+		NAMES = {
+			OPEN_KEY = "FML_open-entity-gui",
+			CLOSE_KEY = "FML_close-entity-gui",
 		},
 	},
 }
