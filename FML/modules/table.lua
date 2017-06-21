@@ -273,9 +273,43 @@ _DOC.remove_v = {
 			desc = "The value to remove",
 		},
 	},
+	returns = {
+		type = "Any",
+		desc = "The index of the element that got removed",
+	},
 }
 function _M.remove_v(tab, value)
-	table.remove(tab, _M.index_of(tab, value))
+	local index = _M.index_of(tab, value)
+	table.remove(tab, index)
+	return index
+end
+
+
+_DOC.insert_at_next_index = {
+	type = "function",
+	desc = [[ Insert the given element at the first free numeric index. ]],
+	notes = {"Uses table.get_next_index to find the index.", RICH_NOTE},
+	params = {
+		tab = {
+			type = "table",
+			desc = "The table to insert into",
+		},
+		element = {
+			type = "Any",
+			desc = "The element to insert",
+		},
+	},
+	returns = {
+		{
+			type = "int",
+			desc = "The index the element was inserted at",
+		},
+	},
+}
+function _M.insert_at_next_index(tab, element)
+	local index = _M.get_next_index(tab)
+	tab[index] = element
+	return index
 end
 
 
