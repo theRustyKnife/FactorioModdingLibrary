@@ -108,7 +108,7 @@ function _M.make(prototype, deep)
 	-- If an array of prototypes is passed, loop and add them
 	if not prototype.type and not prototype.base and not prototype.properties then
 		local res = FML.table.new()
-		for _, p in ipairs(prototype) do res:insert(_m.make(p)); end
+		for _, p in ipairs(prototype) do res:insert(_M.make(p)); end
 		return res
 	end
 	
