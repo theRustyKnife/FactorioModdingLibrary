@@ -42,6 +42,16 @@ function _M.put_to_global(namespace, package_name, package)
 end
 
 
+function _M.get_global(namespace, package_name, name)
+--[[ Get a serialized table in the given namespace with the given name. A new table will be created if not present. ]]
+	global[namespace] = global[namespace] or {}
+	global[namespace][package_name] = global[namespace][package_name] or {}
+	global[namespace][package_name][name] = global[namespace][package_name][name] or {}
+	
+	return global[namespace][package_name][name]
+end
+
+
 function _M.register_module(self, name, module)
 --[[
 Register a module into FML. Should be called as a method from the FML instance you want to register the module into.
