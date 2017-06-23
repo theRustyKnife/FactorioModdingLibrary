@@ -1,6 +1,8 @@
 local FML = require "therustyknife.FML"
 local config = require "therustyknife.FML.config"
 
+local table = FML.table
+
 
 if FML.STAGE == "data" then
 	FML.data.make{
@@ -21,10 +23,16 @@ if FML.STAGE == "data" then
 	return nil
 
 elseif FML.STAGE == "runtime" then
-	--TODO: move to on_init/load
-	local global = FML.get_fml_global("GUI")
-	global.to_close = FML.table.enrich(global.to_close or {})
-	global.watched_entities = FML.table.enrich(global.watched_entities or {})
+	local global
+	
+	FML.events.on_load(function()
+		global = FML.get_fml_global("GUI")
+		global.to_close = table(global.to_close)
+		global.watched_entities = table(global.watched_entities)
+		global.watched_entities.names = table(global.watched_entities.names)
+		global.watched_entities.instances = table(global.watched_entities.instances)
+	end)
+	
 	
 	local _M = {}
 	local _DOC = FML.make_doc(_M, {
@@ -33,10 +41,14 @@ elseif FML.STAGE == "runtime" then
 		desc = [[ Allows creating more complex GUI structures easily. ]],
 	})
 
-
+	
+	--TODO: rethink this, possibly define some gui prototypes in the data stage and associate them with entities there?
 	function _M.watch_entity(entity)
-		--TODO: implement
-		--global.watched_entities
+		if type(entity) == "string" then
+			global.watched_entities.names:insert(entity)
+		elseif type(entity) == "table" and entity.__self then
+			global.watched_entities.instances:insert(entity)
+		else error("Wrong argument to watch_entity (expected string or entity, got "..type(entity)); end
 	end
 
 
