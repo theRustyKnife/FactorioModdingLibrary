@@ -18,6 +18,8 @@ return {
 		remote = ".modules.remote", -- The remote module is essential for FML to function and thus, it has to be present
 		table = ".modules.table",
 		format = ".modules.format",
+		events = ".modules.events",
+		data_container = ".modules.data_container",
 		GUI = ".modules.GUI",
 		semver = ".modules.semver",
 	},

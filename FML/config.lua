@@ -17,6 +17,8 @@ return {
 		table = ".modules.table",
 		format = ".modules.format",
 		data = ".modules.data",
+		data_container = ".modules.data_container",
+		events = ".modules.events",
 		GUI = ".modules.GUI",
 		semver = ".modules.semver",
 	},
@@ -55,5 +57,10 @@ return {
 			OPEN_KEY = "FML_open-entity-gui",
 			CLOSE_KEY = "FML_close-entity-gui",
 		},
+	},
+	
+	
+	DATA_CONTAINER = {
+		PROTOTYPE_NAME = "FML_data-container-item",
 	},
 }
