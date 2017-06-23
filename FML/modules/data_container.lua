@@ -19,7 +19,7 @@ if FML.STAGE == "data" then
 		icon = config.DATA.PATH.NO_ICON,
 		stack_size = 1,
 		flags = {},
-		order = "{}", -- Init to empty table so we don't have to handle errors of no data was saved here
+		order = "{}", -- Init to empty table so we don't have to handle errors if no data was saved here
 	}
 	
 	
