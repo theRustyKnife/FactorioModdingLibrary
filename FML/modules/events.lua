@@ -1,9 +1,11 @@
 local FML = require "therustyknife.FML"
 local config = require "therustyknife.FML.config"
-local new_tab = FML.table.new
+
+local table = FML.table
 
 
---TODO: make this a module, possibly special-cased like remote
+--TODO: make this a module, possibly special-cased like remote --UPDATE: special casing not necessary, it's just gonna 
+-- be a dependency of the modules that use it.
 
 --[[
 TODO: this
@@ -21,14 +23,17 @@ Some notes on this:
 ]]
 
 
+if FML.STAGE ~= "runtime" then return nil; end
+
 local global
 
 local handlers = {
-	init = new_tab(), -- same as script.on_init
-	load = new_tab(), -- same as script.on_load, but runs after on_init as well
-	config_change = new_tab(), -- same as script.on_configuration_changed
-	game_config_change = new_tab(), -- runs when the game version changes (after config_change)
-	mod_config_change = new_tab(), -- runs when the specified mod's version changes (after game_config_change)
+	init = table(), -- same as script.on_init
+	load = table(), -- same as script.on_load, but runs after on_init as well
+	config_change = table(), -- same as script.on_configuration_changed
+	game_config_change = table(), -- runs when the game version changes (after config_change)
+	mod_config_change = table(), -- runs when the specified mod's version changes (after game_config_change)
+	startup_settings_change = table(), -- runs whenever mod startup settings change, after the other config_change events
 }
 
 local function run(handlers, ...)
@@ -38,7 +43,7 @@ end
 local function init() -- This should be safe to run in on_load as the tables should already exist
 	global = FML.get_fml_global("events")
 	global.handlers = global.handlers or {} -- The permanent handlers
-	global.registered_handlers = FML.table.enrich(global.registered_handlers or {}) -- The events to be registered on load
+	global.registered_handlers = table(global.registered_handlers) -- The events to be registered on load
 end
 
 
@@ -55,8 +60,9 @@ _DOC.on_init = {
 	type = "function",
 	desc = [[ Register a handler for the init event. ]],
 	params = {
-		func = {
+		{
 			type = "function",
+			name = "func",
 			desc = "The handler function",
 		},
 	},
@@ -68,17 +74,21 @@ _DOC.on_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_load.desc = [
 function _M.on_config_change(func) handlers.config_change:insert(func); end
 _DOC.on_game_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_load.desc = [[ Register a handler for the game_config_change event. ]]
 function _M.on_game_config_change(func) handlers.game_config_change:insert(func); end
+_DOC.on_startup_settings_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_startup_settings_change.desc = [[ Register a handler for the startup_settings_change event. ]]
+function _M.on_startup_settings_change(func) handlers.startup_settings_change:insert(func); end
 
 _DOC.on_mod_config_change = {
 	type = "function",
 	desc = [[ Register a handler for config_change event of the given mod. ]],
 	params = {
-		func = {
+		{
 			type = "function",
+			name = "func",
 			desc = "The handler function",
 		},
-		mod = {
+		{
 			type = "string",
+			name = "mod",
 			desc = "The name of the mod to listen for",
 			default = "The mod this instance of FML is in",
 		},
@@ -87,7 +97,7 @@ _DOC.on_mod_config_change = {
 function _M.on_mod_config_change(func, mod)
 	mod = mod or (config.MOD and config.MOD.NAME) or "FML"
 	
-	handlers[mod] = handlers[mod] or new_tab()
+	handlers[mod] = handlers[mod] or table()
 	handlers[mod]:insert(func)
 end
 
@@ -109,9 +119,9 @@ script.on_configuration_changed(function(data)
 	-- Convert versions to semver objects
 	data.new_version = data.new_version and FML.semver(data.new_version)
 	data.old_version = data.old_version and FML.semver(data.old_version)
-	for _, change in pairs(data.mod_changes or {}) do
-		change.new_version = change.new_version and FML.semver(data.new_version)
-		change.old_version = change.old_version and FML.semver(data.old_version)
+	for mod_name, change in pairs(data.mod_changes or {}) do
+		change.new_version = change.new_version and FML.semver(change.new_version)
+		change.old_version = change.old_version and FML.semver(change.old_version)
 	end
 	
 	run(handlers.config_change, data)
@@ -130,6 +140,8 @@ script.on_configuration_changed(function(data)
 			end
 		end
 	end
+	
+	if data.mod_startup_settings_changed then run(handlers.startup_settings_change); end
 end)
 
 
@@ -139,23 +151,42 @@ _DOC.on_event = {
 	type = "function",
 	desc = [[ Add a handler for the given event. ]],
 	params = {
-		event_id = {
-			type = {"EventID", "Array[EventID]"},
+		{
+			type = {"EventID", "Array[EventID]", "string"},
+			name = "event_id",
 			desc = "The event(s) to register the handler for",
 		},
-		handler = {
+		{
 			type = "function",
+			name = "handler",
 			desc = "The handler function",
 		},
-		permanent = {
+		{
 			type = "bool",
+			name = "permanent",
 			desc = "If true, the handler will be re-setup on load",
 			default = "false",
 		},
 	},
 }
 function _M.on_event(event_id, handler, permanent)
-	error("Not implementeds.")
+	if type(event_id) == "table" then
+		if permanent then --TODO: make this work
+			FML.log.w("Permanent handlers not supported when registering for multiple events - using regular handlers.")
+		end
+		
+		for _, id in pairs(event_id) do _M.on_event(event_id, handler); end
+	end
+	
+	if permanent then
+		--TODO: implement
+		error("Permanent handlers have not been implemented yet.")
+	
+	else
+		--TODO: implement
+		error("Regular handlers have not been implemented yet either.")
+	
+	end
 end
 
 

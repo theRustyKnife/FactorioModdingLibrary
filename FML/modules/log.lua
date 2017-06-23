@@ -54,8 +54,9 @@ _DOC.D = {
 	type = "function",
 	desc = [[ Print a debug level message to the log. ]],
 	params = {
-		message = {
+		{
 			type = "Any",
+			name = "message",
 			desc = "The message to be printed. Non-string messages are converted with tostring.",
 		},
 	},
@@ -70,8 +71,9 @@ _DOC.W = {
 	type = "function",
 	desc = [[ Print a warning level message to the log. ]],
 	params = {
-		message = {
+		{
 			type = "Any",
+			name = "message",
 			desc = "The message to be printed. Non-string messages are converted with tostring.",
 		},
 	},
@@ -86,8 +88,9 @@ _DOC.E = {
 	type = "function",
 	desc = [[ Print an error level message to the log. ]],
 	params = {
-		message = {
+		{
 			type = "Any",
+			name = "message",
 			desc = "The message to be printed. Non-string messages are converted with tostring.",
 		},
 	},

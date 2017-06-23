@@ -39,12 +39,14 @@ _DOC.get_interface = {
 	]],
 	notes = {"Only functions that are currently present in the interface are taken into account, even if safe is true."},
 	params = {
-		interface = {
+		{
 			type = "string",
+			name = "interface",
 			desc = "The interface name",
 		},
-		safe = {
+		{
 			type = "bool",
+			name = "safe",
 			desc = "If true, safe functions are returned",
 		},
 	},
@@ -76,8 +78,9 @@ _DOC.get_function_safe = {
 	calling it should always be safe.
 	]],
 	params = {
-		clbck = {
+		{
 			type = "Callback",
+			name = "clbck",
 			desc = "The function to get",
 		},
 	},
@@ -97,8 +100,9 @@ _DOC.get_function = {
 	desc = [[ Get a function from an interface. If the interface doesn't exist, nil will be returned. ]],
 	notes = {"If the interface is removed, calling this function will crash."},
 	params = {
-		clbck = {
+		{
 			type = "Callback",
+			name = "clbck",
 			desc = "The function to get",
 		},
 	},
@@ -127,8 +131,9 @@ _DOC.enrich_callback = {
 		serialization entirely.
 	]]},
 	params = {
-		clbck = {
+		{
 			type = "Callback",
+			name = "clbck",
 			desc = "The Callback to enrich",
 		},
 	},
@@ -149,12 +154,14 @@ _DOC.get_rich_callback = {
 	type = "function",
 	desc = [[ Construct a Callback that si already rich. ]],
 	params = {
-		interface = {
+		{
 			type = "string",
+			name = "interface",
 			desc = "The interface the Callback will represent",
 		},
-		func = {
+		{
 			type = "string",
+			name = "func",
 			desc = "The function the Callback will represent",
 		},
 	},
@@ -173,11 +180,14 @@ _DOC.call = {
 	type = "function",
 	desc = [[ Call the given Callback. Any parameters except the Callback will be passed to the function. ]],
 	params = {
-		clbck = {
+		{
 			type = "Callback",
+			name = "clbck",
 			desc = "What to call",
 		},
-		["..."] = {
+		{
+			type = "Any",
+			name = "...",
 			desc = "Any parameters to be passed to the called function",
 		},
 	},
@@ -202,29 +212,34 @@ _DOC.add_interface = {
 	getter should clash with any name already in the module, it won't be generated either.
 	]]},
 	params = {
-		name = {
+		{
 			type = "string",
+			name = "name",
 			desc = "The name of the new interface",
 		},
-		module = {
+		{
 			type = "Module",
+			name = "module",
 			desc = "The module to be exposed as an interface",
 		},
-		generate_getters = {
+		{
 			type = {"bool", "string"},
+			name = "generate_getters",
 			desc = [[
 			If true, constants will have getter functions generated. If it is a string, it will be used as the prefix 
 			for the getter functions' names
 			]],
 			default = "get_",
 		},
-		overwrite = {
+		{
 			type = "bool",
+			name = "overwrite",
 			desc = "If true, existing interface will be overwritten, otherwise nothing will happen",
 			default = "false",
 		},
-		ignore_tables = {
+		{
 			type = "bool",
+			name = "ignore_tables",
 			desc = "If true, only non-table constants are taken into account",
 			default = "false",
 		},

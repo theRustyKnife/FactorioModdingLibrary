@@ -17,15 +17,17 @@ _DOC.inherit = {
 	type = "function",
 	desc = [[ Copy an existing prototype to be used as base for another one. ]],
 	params = {
-		base_type = {
+		{
 			type = {"string", "table"},
+			name = "base_type",
 			desc = [[
 			The type of the prototype to be coppied. If this is a table, it will be used as the base, regardless of 
 			what base_name is
 			]],
 		},
-		base_name = {
+		{
 			type = "string",
+			name = "base_name",
 			desc = "The name of the prototype to be coppied",
 			default = "The value of base_type",
 		},
@@ -55,12 +57,14 @@ _DOC.make = {
 	type = "function",
 	desc = [[ Parse and add the given prototype to data. ]],
 	params = {
-		prototype = {
+		{
 			type = {"Prototype", "VanillaPrototype", "Array[{Prototype, VanillaPrototype}]"},
+			name = "prototype",
 			desc = "The prototype to be added",
 		},
-		deep = {
+		{
 			type = "bool",
+			name = "deep",
 			desc = "If true, the prototype base will be deep coppied before modification",
 			default = "true",
 		},
@@ -205,12 +209,14 @@ _DOC.make_item_for = {
 	type = "function",
 	desc = [[ Make an item prototype for the given entity prototype and add it to data. ]],
 	params = {
-		entity_prototype = {
+		{
 			type = "VanillaPrototype",
+			name = "entity_prototype",
 			descc = "The entity prototype to generate item for",
 		},
-		properties = {
+		{
 			type = "SimpleItemPrototype",
+			name = "properties",
 			desc = [[
 			A table that may contain any combination of: base and properties, as in Prototype, and set_minable_result - 
 			bool, default true
@@ -259,12 +265,14 @@ _DOC.make_recipe_for = {
 	type = "function",
 	desc = [[ Make a recipe prototype for the given item prototype and add it to data. ]],
 	params = {
-		item_prototype = {
+		{
 			type = "VanillaPrototype",
+			name = "item_prototype",
 			desc = "The item prototype to generate recipe for",
 		},
-		properties = {
+		{
 			type = "SimpleRecipePrototype",
+			name = "properties",
 			desc = [[
 			A table that may contain any combination of: base and properties, as in Prototype, and unlock_with - string,
 			 default nil

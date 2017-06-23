@@ -15,8 +15,9 @@ _DOC.deep_copy = {
 	desc = [[ Make a deep_copy of tab. The result will have the same metatable as tab (not a copy). ]],
 	notes = {RICH_NOTE},
 	params = {
-		tab = {
+		{
 			type = "table",
+			name = "tab",
 			desc = "The table to copy",
 		},
 	},
@@ -52,12 +53,14 @@ _DOC.is_subset = {
 	desc = [[ Check if a table is a subset of another table. Table type values are checked for equality. ]],
 	notes = {RICH_NOTE},
 	params = {
-		subset = {
+		{
 			type = "table",
+			name = "subset",
 			desc = "The table that is supposed to be the subset",
 		},
-		superset = {
+		{
 			type = "table",
+			name = "superset",
 			desc = "The table that is supposed to be the superset",
 		},
 	},
@@ -90,11 +93,13 @@ _DOC.equals = {
 		RICH_NOTE,
 	},
 	params = {
-		tab1 = {
+		{
 			type = "table",
+			name = "tab1",
 		},
-		tab2 = {
+		{
 			type = "table",
+			name = "tab2",
 		},
 	},
 	returns = {
@@ -114,21 +119,25 @@ _DOC.insert_all = {
 	type = "function",
 	desc = [[ Inserts all elements from src to dest. ]],
 	params = {
-		dest = {
+		{
 			type = "table",
+			name = "dest",
 			desc = "The table to insert into",
 		},
-		src = {
+		{
 			type = "table",
+			name = "src",
 			desc = "The table whose elements are to be inserted",
 		},
-		overwrite = {
+		{
 			type = "bool",
+			name = "overwrite",
 			desc = "If true, keys already present in dest will be replaced with the ones from src",
 			default = "false",
 		},
-		deep = {
+		{
 			type = "bool",
+			name = "deep",
 			desc = "If true, elements are going to be deep coppied before inserting",
 			default = "false",
 		},
@@ -158,8 +167,9 @@ _DOC.getn = {
 	desc = [[ Count elements in tab by iteration. ]],
 	notes = {RICH_NOTE},
 	params = {
-		tab = {
+		{
 			type = "table",
+			name = "tab",
 			desc = "The table to count",
 		},
 	},
@@ -181,12 +191,14 @@ _DOC.get_next_index = {
 	desc = [[ Get the next free integer index in tab. ]],
 	notes = {RICH_NOTE},
 	params = {
-		tab = {
+		{
 			type = "table",
+			name = "tab",
 			desc = "The table to get the next index for",
 		},
-		start = {
+		{
 			type = "int",
+			name = "start",
 			desc = "The index to start checking at",
 			default = "1",
 		},
@@ -212,8 +224,9 @@ _DOC.is_empty = {
 	desc = [[ Check if a table is empty. Convenience for 'next(tab) == nil'. ]],
 	notes = {RICH_NOTE},
 	params = {
-		tab = {
+		{
 			type = "table",
+			name = "tab",
 			desc = "The table to check",
 		},
 	},
@@ -231,12 +244,14 @@ _DOC.index_of = {
 	desc = [[ Find the first index of element in tab. ]],
 	notes = {RICH_NOTE},
 	params = {
-		tab = {
+		{
 			type = "table",
+			name = "tab",
 			desc = "The table to check in",
 		},
-		element = {
+		{
 			type = "Any",
+			name = "element",
 			desc = "The element to look for",
 		},
 	},
@@ -264,12 +279,14 @@ _DOC.remove_v = {
 	desc = [[ Remove value from tab. Uses index_of to find the index to remove. ]],
 	notes = {RICH_NOTE},
 	params = {
-		tab = {
+		{
 			type = "table",
+			name = "tab",
 			desc = "The table to remove from",
 		},
-		value = {
+		{
 			type = "Any",
+			name = "value",
 			desc = "The value to remove",
 		},
 	},
@@ -290,12 +307,14 @@ _DOC.insert_at_next_index = {
 	desc = [[ Insert the given element at the first free numeric index. ]],
 	notes = {"Uses table.get_next_index to find the index.", RICH_NOTE},
 	params = {
-		tab = {
+		{
 			type = "table",
+			name = "tab",
 			desc = "The table to insert into",
 		},
-		element = {
+		{
 			type = "Any",
+			name = "element",
 			desc = "The element to insert",
 		},
 	},
@@ -313,6 +332,139 @@ function _M.insert_at_next_index(tab, element)
 end
 
 
+-- Add Lua's table library functions to allow overriding the table global with this module
+local BUILT_IN_NOTE = "This is a reference for Lua's built-in table.insert function - see Lua's ducumentation for more details."
+
+_DOC.insert = {
+	type = "function",
+	desc = [[
+	Insert a the given value into the table. If a position is given, the value is inserted before the element currently 
+	at that position, otherwise it is appended to the end of the table.
+	When an element is inserted, both size and element indices are updated. The end of the table is deduced from the `n`
+	 field, thus can be specified by the user.
+	]],
+	notes = {RICH_NOTE, BUILT_IN_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "table",
+			desc = "The table to insert to",
+		},
+		{
+			type = "Any",
+			name = "pos",
+			desc = "The index in the table to insert at",
+			default = "`table.n+1`",
+		},
+		{
+			type = "Any",
+			name = "value",
+			desc = "The value to be inserted",
+		},
+	},
+}
+_M.insert = table.insert
+
+_DOC.remove = {
+	type = "function",
+	desc = [[
+	Remove an element from a table. If position is specified, the element at that position is removed, otherwise remove 
+	the last element in the table.
+	When an element is removed the size and indices of remaining elements are updated. The end of the table is deduced 
+	from the `n` field, thus can be specified by the user.
+	]],
+	notes = {RICH_NOTE, BUILT_IN_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "table",
+			desc = "The table to remove from",
+		},
+		{
+			type = "Any",
+			name = "pos",
+			desc = "The position to remove from",
+			default = "`table.n`",
+		},
+	},
+	returns = {
+		{
+			type = "Any",
+			desc = "The value of the element removed",
+		},
+	},
+}
+_M.remove = table.remove
+
+_DOC.concat = {
+	type = "function",
+	desc = [[
+	Concatenate the elements of a table together to form a string. Each element must be able to be coerced into a 
+	string. A separator can be specified which is placed between concatenated elements. Additionally a range can be 
+	specified within the table, starting at the i-th element and finishing at the j-th element.
+	Concatenation will fail on a table that contains tables because they cannot be coerced into strings.
+	]],
+	notes = {RICH_NOTE, BUILT_IN_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "table",
+			desc = "The table to concat",
+		},
+		{
+			type = "string",
+			name = "sep",
+			desc = "The separator to use",
+			default = '""',
+		},
+		{
+			type = "int",
+			name = "i",
+			desc = "The starting position",
+			default = "1",
+		},
+		{
+			type = "int",
+			name = "j",
+			desc = "The end position",
+			default = "`table.n`",
+		},
+	},
+	returns = {
+		{
+			type = "string",
+			desc = "The concatenated table",
+		},
+	},
+}
+_M.concat = table.concat
+
+_DOC.sort = {
+	type = "function",
+	desc = [[
+	Sort the elements of a table in-place (i.e. alter the table). If the table has a specified size only the range 
+	specified is sorted.
+	A comparison function can be provided to customise the element sorting. The comparison function must return a bool 
+	value specifying whether the first argument should be before the second argument in the sequence. The default 
+	behavior is for the < comparison to be made.
+	]],
+	notes = {RICH_NOTE, BUILT_IN_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "table",
+			desc = "The table to sort",
+		},
+		{
+			type = "function(Any a,  Any b)",
+			name = "comp",
+			desc = "The comparator function",
+			default = "the `<` operator",
+		},
+	},
+}
+_M.sort = table.sort
+
 -- Declare what methods rich tables are going to have
 -- All of them can be called with the colon syntax
 local RICH_MT = {
@@ -326,11 +478,11 @@ local RICH_MT = {
 	contains = _M.contains,
 	remove_v = _M.remove_v,
 	
-	-- Add Lua's table methods for convenience as well
-	insert = table.insert,
-	remove = table.remove,
-	concat = table.concat,
-	sort = table.sort,
+	-- The built-in functions happen to be usable as methods too
+	insert = _M.insert,
+	remove = _M.remove,
+	concat = _M.concat,
+	sort = _M.sort,
 	
 	--TODO: override these functions to work with other metatables (if __index is a table, set this as it's metatable)
 	getmetatable = getmetatable,
@@ -352,8 +504,9 @@ _DOC.enrich = {
 		]],
 	},
 	params = {
-		tab = {
+		{
 			type = "table",
+			name = "tab",
 			desc = "The table to enrich",
 		},
 	},
@@ -380,9 +533,12 @@ _DOC.new = {
 	},
 }
 function _M.new()
---[[ Make a new rich table. ]]
 	return _M.enrich({})
 end
+
+
+-- Allow using the module as a class constructor
+setmetatable(_M, {__call = function(_, tab) return _M.enrich(tab or {}); end})
 
 
 return _M

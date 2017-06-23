@@ -15,8 +15,9 @@ if FML.surface then
 		type = "function",
 		desc = [[ Format a Position to a human-readable format. ]],
 		params = {
-			pos = {
+			{
 				type = "Position",
+				name = "pos",
 				desc = "The position to format",
 			},
 		},
@@ -38,8 +39,9 @@ _DOC.time = {
 	type = "function",
 	desc = [[ Format a time in ticks into minutes and seconds. ]],
 	params = {
-		ticks = {
+		{
 			type = "int",
+			name = "ticks",
 			desc = "The time in ticks",
 		},
 	},
