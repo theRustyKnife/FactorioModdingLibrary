@@ -20,6 +20,18 @@ Some notes on this:
 	Any function calls need to be done either via the extra parameters (if the function is not a closure), or via the _G
 	 parameter, in which case the function needs to be reliably present in the global scope, or somepalce accessible 
 	from there.
+
+Another thought:
+Allow handlers to be specified as interface Callbacks. This way, the mod that registered the handler would only have to 
+make sure the interface is re-exposed after deserialization. This could be handled by FML in a large part:
+	- There will be a function, which would take a function, interface name and function name
+		- This function will expose the interface with the given function inside, and return a Callback to it.
+		- It will be called in a similar fassion the script.on_event function is - directly in the script.body and 
+		  every time the script is loaded.
+	- When registering a handler, the Callback could be passed in and will be saved as the handler function.
+
+This would also make using this module without installing it into the local instance easier, as Callbacks would be 
+basically natively supported.
 ]]
 
 
