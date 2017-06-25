@@ -9,10 +9,12 @@ package.path = ";"..current_dir.."\\?.lua;"..current_dir.."\\FML\\?.lua;"..packa
 local function empty() end
 
 
+print "Loading FML in data stage..."
 _G.data = {raw = {item = {}}, extend = empty}
 local FML_data = require ".FML.data"
 _G.data = nil
 
+print "Loading FML in runtime stage..."
 script = {on_init = empty, on_load = empty, on_configuration_changed = empty, on_event = empty}
 remote = {add_interface = empty, remove_interface = empty, call = empty, interfaces = {}}
 local FML_control = require ".FML.control"
@@ -20,6 +22,7 @@ script = nil
 remote = nil
 
 
+print "Mereging docs..."
 local complete_doc = {}
 local function _make_doc(doc)
 	if not complete_doc[doc.name] then
@@ -41,6 +44,7 @@ _make_doc_for(FML_data)
 _make_doc_for(FML_control)
 
 
+print "Trimming whitespace..."
 local function trim(s)
 	local from = s:match"^%s*()"
 	return from > #s and "" or s:match(".*%S", from)
@@ -72,6 +76,7 @@ end
 _strip_newlines(complete_doc)
 
 
+print "Generating docs..."
 local function n(n)
 	n = n or 1
 	local res = ""
@@ -173,6 +178,7 @@ end
 
 
 for name, module in pairs(complete_doc) do
+	print("\t- "..name.."...")
 	local res = ""
 	local function write(s) res = res..s; end
 	
@@ -245,5 +251,4 @@ for name, module in pairs(complete_doc) do
 	out_file:write(res)
 	out_file:flush()
 end
-
-io.stdout:write("Done.\n")
+print("Done.")
