@@ -92,7 +92,7 @@ local function hr(nn) return "***"..n(nn); end
 local function link(text, dest, dest_prefix)
 	dest = dest or text
 	dest_prefix = dest_prefix or "#"
-	return "["..text.."]("..dest_prefix..dest..")"
+	return "["..text.."]("..dest_prefix..dest:lower()..")"
 end
 local function h(l, s)
 	local res = ""
