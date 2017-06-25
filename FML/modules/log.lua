@@ -34,6 +34,10 @@ local _DOC = FML.make_doc(_M, {
 _DOC.get_location = {
 	type = "function",
 	desc = [[ Get a string designating the current execution location of the script. ]],
+	notes = {[[
+	This does not work very well when the method is called through the remote interface. If a remote call is made, the
+	function will simply return `"remote"`.
+	]]},
 	returns = {
 		{
 			type = "string",

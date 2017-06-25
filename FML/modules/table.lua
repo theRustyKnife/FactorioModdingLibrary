@@ -6,6 +6,11 @@ local _DOC = FML.make_doc(_M, {
 	type = "module",
 	name = "table",
 	desc = [[ Utilities for table manipulation. ]],
+	notes = {[[
+	The recommended way to use this module is to override the built-in `table` module like so: `local table = FML.table`.
+	Any exisiting code should be compatible with this as the module contains references to all the built-in functions.
+	Moreover, this allows you to create `RichTable`s easily like this: `local my_table = table()`.
+	]]},
 })
 local RICH_NOTE = "Can be used as a method of RichTable."
 
@@ -348,7 +353,7 @@ _DOC.insert = {
 	short_desc = [[ Insert the given value into the table. ]],
 	desc = [[
 	Insert the given value into the table. If a position is given, the value is inserted before the element currently 
-	at that position, otherwise it is appended to the end of the table.
+	at that position, otherwise it is appended to the end of the table.  
 	When an element is inserted, both size and element indices are updated. The end of the table is deduced from the `n`
 	 field, thus can be specified by the user.
 	]],
@@ -378,9 +383,9 @@ _DOC.remove = {
 	type = "function",
 	short_desc = [[ Remove an element from a table ]],
 	desc = [[
-	Remove an element from a table. If position is specified, the element at that position is removed, otherwise remove 
-	the last element in the table.
-	When an element is removed the size and indices of remaining elements are updated. The end of the table is deduced 
+	Remove an element from a table. If position is specified, the element at that position is removed, otherwise remove
+	the last element in the table.  
+	When an element is removed the size and indices of remaining elements are updated. The end of the table is deduced
 	from the `n` field, thus can be specified by the user.
 	]],
 	notes = {RICH_NOTE, built_in_note("table.remove")},
@@ -410,9 +415,9 @@ _DOC.concat = {
 	type = "function",
 	short_desc = [[ Concatenate the elements of a table together to form a string. ]],
 	desc = [[
-	Concatenate the elements of a table together to form a string. Each element must be able to be coerced into a 
-	string. A separator can be specified which is placed between concatenated elements. Additionally a range can be 
-	specified within the table, starting at the i-th element and finishing at the j-th element.
+	Concatenate the elements of a table together to form a string. Each element must be able to be coerced into a
+	string. A separator can be specified which is placed between concatenated elements. Additionally a range can be
+	specified within the table, starting at the i-th element and finishing at the j-th element.  
 	Concatenation will fail on a table that contains tables because they cannot be coerced into strings.
 	]],
 	notes = {RICH_NOTE, built_in_note("table.concat")},
@@ -454,10 +459,10 @@ _DOC.sort = {
 	type = "function",
 	short_desc = [[ Sort the elements of a table in-place (i.e. alter the table). ]],
 	desc = [[
-	Sort the elements of a table in-place (i.e. alter the table). If the table has a specified size only the range 
-	specified is sorted.
-	A comparison function can be provided to customise the element sorting. The comparison function must return a bool 
-	value specifying whether the first argument should be before the second argument in the sequence. The default 
+	Sort the elements of a table in-place (i.e. alter the table). If the table has a specified size only the range
+	specified is sorted.  
+	A comparison function can be provided to customise the element sorting. The comparison function must return a bool
+	value specifying whether the first argument should be before the second argument in the sequence. The default
 	behavior is for the < comparison to be made.
 	]],
 	notes = {RICH_NOTE, built_in_note("table.sort")},
@@ -471,7 +476,7 @@ _DOC.sort = {
 			type = "function(Any a,  Any b)",
 			name = "comp",
 			desc = "The comparator function",
-			default = "the `<` operator",
+			default = "the < operator",
 		},
 	},
 }
@@ -506,13 +511,13 @@ _DOC.enrich = {
 	type = "function",
 	short_desc = [[ Set the metatable of tab to contain functions from this module. ]],
 	desc = [[
-	Set the metatable of tab to contain functions from this module. Obviously, this will remove any metatable the table 
+	Set the metatable of tab to contain functions from this module. Obviously, this will remove any metatable the table
 	had before, so be careful.
 	]],
 	notes = {
 		"The function operates directly on the table passed in, so the returned table is the same one.",
 		[[
-			This function needs to be called in on_load for each table because metatables are not serialized by Factorio. 
+			This function needs to be called in on_load for each table because metatables are not serialized by Factorio.
 			This might be changed in the future.
 		]],
 	},
@@ -538,7 +543,8 @@ end
 _DOC.new = {
 	type = "function",
 	short_desc = [[ Return a new RichTable. ]],
-	desc = [[ Return a new RichTable. Same as _M.enrich({}) ]],
+	desc = [[ Return a new RichTable. Same as table.enrich({}). ]],
+	notes = {"The [__call](#__call) metamethod can be used to create a RichTable like so: `table()`."},
 	returns = {
 		{
 			type = "RichTable",
@@ -553,12 +559,21 @@ end
 
 _M._DOC.metamethods = {
 	__call = {
-		desc = [[ Create a new RichTable. ]],
+		short_desc = [[ Create a new RichTable. ]],
+		desc = [[
+		Create a new RichTable. A table can be passed as a parameter if you want to create a populated table.  
+		The constructor with values might look like this: `local my_table = table{"foo", "bar"}`.
+		]],
+		notes = {[[
+		If you want to use RichTables that are serialized, you can call this constructor in the `load` event like so:
+		`global.my_global_rich_table = table(global.my_global_rich_table)`. This not only ensures that the table is going
+		to be enriched on load, but also creates the table if it doesn't exist, which would have to be done anyway.
+		]]},
 		params = {
 			{
 				type = "table",
 				name = "tab",
-				desc = "The table to enrich",
+				desc = "The table to use as base",
 				default = "{}",
 			},
 		},
