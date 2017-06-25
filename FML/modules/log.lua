@@ -23,6 +23,7 @@ _M = {}
 local _DOC = FML.make_doc(_M, {
 	type = "module",
 	name = "log",
+	short_desc = "Utility for logging.",
 	desc = [[
 	Utility for logging. Can print log messages to the console as well, according to the configuration from config.
 	]],
