@@ -246,4 +246,4 @@ for name, module in pairs(complete_doc) do
 	out_file:flush()
 end
 
-io.stdout:write("Done.")
+io.stdout:write("Done.\n")
