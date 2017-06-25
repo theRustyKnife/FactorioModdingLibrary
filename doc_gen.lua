@@ -1,4 +1,5 @@
-local OUT_DIR = "docs"
+io.stdout:write("Enter output path (empty for default): ")
+local OUT_DIR = io.stdin:read() or "doc-out"
 
 
 current_dir = io.popen"cd":read'*l'
@@ -244,3 +245,6 @@ for name, module in pairs(complete_doc) do
 	out_file:write(res)
 	out_file:flush()
 end
+
+io.stdout:write("Done.")
+io.stdin:read()
