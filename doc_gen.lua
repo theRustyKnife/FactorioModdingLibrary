@@ -1,6 +1,3 @@
-local serpent = require "serpent"
-
-
 local OUT_DIR = "docs"
 
 
