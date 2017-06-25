@@ -20,6 +20,6 @@ return {
 		{name = "format", path = ".modules.format"},
 		{name = "events", path = ".modules.events"},
 		{name = "GUI", path = ".modules.GUI"},
-		{name = "semver", path = ".modules.semver"},
+		{name = "Semver", path = ".modules.Semver"},
 	},
 }

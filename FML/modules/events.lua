@@ -128,12 +128,12 @@ script.on_load(function()
 end)
 
 script.on_configuration_changed(function(data)
-	-- Convert versions to semver objects
-	data.new_version = data.new_version and FML.semver(data.new_version)
-	data.old_version = data.old_version and FML.semver(data.old_version)
+	-- Convert versions to Semver objects
+	data.new_version = data.new_version and FML.Semver(data.new_version)
+	data.old_version = data.old_version and FML.Semver(data.old_version)
 	for mod_name, change in pairs(data.mod_changes or {}) do
-		change.new_version = change.new_version and FML.semver(change.new_version)
-		change.old_version = change.old_version and FML.semver(change.old_version)
+		change.new_version = change.new_version and FML.Semver(change.new_version)
+		change.old_version = change.old_version and FML.Semver(change.old_version)
 	end
 	
 	run(handlers.config_change, data)

@@ -20,7 +20,7 @@ return {
 		{name = "data_container", path = ".modules.data_container"},
 		{name = "events", path = ".modules.events"},
 		{name = "GUI", path = ".modules.GUI"},
-		{name = "semver", path = ".modules.semver"},
+		{name = "Semver", path = ".modules.Semver"},
 	},
 	
 	
