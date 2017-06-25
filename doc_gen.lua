@@ -1,5 +1,8 @@
 io.stdout:write("Enter output path (empty for default): ")
-local OUT_DIR = io.stdin:read() or "doc-out"
+local OUT_DIR = io.stdin:read()
+if not OUT_DIR or OUT_DIR == "" then OUT_DIR = "doc-out"; end
+local t = os.rename(OUT_DIR, OUT_DIR)
+if not t then print("Can't write to directory "..OUT_DIR.."..."); return; end
 
 
 current_dir = io.popen"cd":read'*l'
@@ -76,7 +79,7 @@ end
 _strip_newlines(complete_doc)
 
 
-print "Generating docs..."
+print "Generating markdown..."
 local function n(n)
 	n = n or 1
 	local res = ""
