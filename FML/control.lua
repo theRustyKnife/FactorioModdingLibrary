@@ -36,7 +36,7 @@ assert(_M.remote, "FML couldn't find the remote module.")
 _M.remote.add_interface("therustyknife.FML", _M, true, true, true)
 
 --TODO: allow modules to change the parameters of the interface
-for name, _ in pairs(config.MODULES_TO_LOAD) do
+for name, _ in pairs(module_lookup) do
 	if _M[name] then
 		_M.remote.add_interface("therustyknife.FML."..name, _M[name], true, true, false)
 	end
