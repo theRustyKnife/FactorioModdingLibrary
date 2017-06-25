@@ -28,6 +28,7 @@ if FML.STAGE == "data" then
 	
 	_DOC.set_value = {
 		type = "function",
+		short_desc = [[ Set a value into the data container. ]],
 		desc = [[ Set a value into the data container. This will then be available in the runtime stage. ]],
 		notes = {"Only values that can be serialized into a string can be used."},
 		params = {
@@ -76,7 +77,7 @@ _DOC.get_value = {
 	type = "function",
 	desc = [[ Get the value from the data. ]],
 	notes = {[[
-	In the runtime stage, data can't be accessed before the global `game` is loaded, an attempt to do so will result in 
+	In the runtime stage, data can't be accessed before the global `game` is loaded, an attempt to do so will result in
 	an error.
 	]]},
 	params = {

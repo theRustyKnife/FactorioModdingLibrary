@@ -25,7 +25,7 @@ local _DOC = FML.make_doc(_M, {
 	name = "remote",
 	desc = [[ Allows easy access to functions through the remote API. ]],
 	notes = {[[
-	The functions returned from here are mostly closures, so they'renot safe for serialization. To serialize an interface 
+	The functions returned from here are mostly closures, so they're not safe for serialization. To serialize an interface
 	function, use the Callback concept. To serialize an interface, simply store it's name as a string.
 	]]}
 })
@@ -33,8 +33,9 @@ local _DOC = FML.make_doc(_M, {
 
 _DOC.get_interface = {
 	type = "function",
+	short_desc = [[ Return all functions from an interface. ]],
 	desc = [[
-	Return all functions from an interface. If the interface doesn't exist, nil is returned. If safe is true, an 
+	Return all functions from an interface. If the interface doesn't exist, nil is returned. If safe is true, an
 	empty table is returned instead.
 	]],
 	notes = {"Only functions that are currently present in the interface are taken into account, even if safe is true."},
@@ -72,9 +73,10 @@ end
 
 _DOC.get_function_safe = {
 	type = "function",
+	short_desc = [[ Return a function representing the given Callback. ]],
 	desc = [[
-	Return a function representing the given Callback. This function is safe to call even if the interface function is 
-	not currently available. Additionally, the function is returned even if the interface doesn't exist (yet), so 
+	Return a function representing the given Callback. This function is safe to call even if the interface function is
+	not currently available. Additionally, the function is returned even if the interface doesn't exist (yet), so
 	calling it should always be safe.
 	]],
 	params = {
@@ -86,7 +88,7 @@ _DOC.get_function_safe = {
 	},
 	returns = {
 		{
-			type = "function",
+			type = "function(...)",
 			desc = "The safe function",
 		},
 	},
@@ -97,6 +99,7 @@ end
 
 _DOC.get_function = {
 	type = "function",
+	short_desc = [[ Get a function from an interface. ]],
 	desc = [[ Get a function from an interface. If the interface doesn't exist, nil will be returned. ]],
 	notes = {"If the interface is removed, calling this function will crash."},
 	params = {
@@ -108,7 +111,7 @@ _DOC.get_function = {
 	},
 	returns = {
 		{
-			type = "function",
+			type = "function(...)",
 			desc = "The function",
 		},
 	},
@@ -125,9 +128,10 @@ local RICH_MT = {__call = _callback_call_method}
 
 _DOC.enrich_callback = {
 	type = "function",
+	short_desc = [[ Give the Callback a call method. ]],
 	desc = [[ Give the Callback a call method. This method is probably not serialization-safe. ]],
 	notes = {[[
-		The callback is also given a metatable that allows you to call it directly. This metatable is lost during 
+		The callback is also given a metatable that allows you to call it directly. This metatable is lost during
 		serialization entirely.
 	]]},
 	params = {
@@ -152,7 +156,7 @@ end
 
 _DOC.get_rich_callback = {
 	type = "function",
-	desc = [[ Construct a Callback that si already rich. ]],
+	desc = [[ Construct a Callback that is already rich. ]],
 	params = {
 		{
 			type = "string",
@@ -178,6 +182,7 @@ end
 
 _DOC.call = {
 	type = "function",
+	short_desc = [[ Call the given Callback. ]],
 	desc = [[ Call the given Callback. Any parameters except the Callback will be passed to the function. ]],
 	params = {
 		{
@@ -193,9 +198,8 @@ _DOC.call = {
 	},
 	returns = {
 		{
-			["..."] = {
-				desc = "Any values returned by the called function",
-			},
+			type = "...",
+			desc = "Any values returned by the called function",
 		},
 	},
 }
@@ -208,7 +212,7 @@ _DOC.add_interface = {
 	type = "function",
 	desc = [[ Expose an interface through the remote API. ]],
 	notes = {[[
-	Care needs to be taken with getters, as constants with nil value will not have a getter generated. Moreover, if the 
+	Care needs to be taken with getters, as constants with nil value will not have a getter generated. Moreover, if the
 	getter should clash with any name already in the module, it won't be generated either.
 	]]},
 	params = {
@@ -226,7 +230,7 @@ _DOC.add_interface = {
 			type = {"bool", "string"},
 			name = "generate_getters",
 			desc = [[
-			If true, constants will have getter functions generated. If it is a string, it will be used as the prefix 
+			If true, constants will have getter functions generated. If it is a string, it will be used as the prefix
 			for the getter functions' names
 			]],
 			default = "get_",

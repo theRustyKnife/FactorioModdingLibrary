@@ -50,7 +50,7 @@ function _M.get_location(level)
 end
 
 
-_DOC.D = {
+_DOC.d = {
 	type = "function",
 	desc = [[ Print a debug level message to the log. ]],
 	params = {
@@ -67,7 +67,7 @@ if config.LOG.D then
 	end
 else _M.d = empty; end
 
-_DOC.W = {
+_DOC.w = {
 	type = "function",
 	desc = [[ Print a warning level message to the log. ]],
 	params = {
@@ -84,7 +84,7 @@ if config.LOG.W then
 	end
 else _M.w = empty; end
 
-_DOC.E = {
+_DOC.e = {
 	type = "function",
 	desc = [[ Print an error level message to the log. ]],
 	params = {

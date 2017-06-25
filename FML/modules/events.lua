@@ -73,7 +73,7 @@ _DOC.on_init = {
 	desc = [[ Register a handler for the init event. ]],
 	params = {
 		{
-			type = "function",
+			type = "function()",
 			name = "func",
 			desc = "The handler function",
 		},
@@ -82,9 +82,9 @@ _DOC.on_init = {
 function _M.on_init(func) handlers.init:insert(func); end
 _DOC.on_load = FML.table.deep_copy(_DOC.on_init); _DOC.on_load.desc = [[ Register a handler for the load event. ]]
 function _M.on_load(func) handlers.load:insert(func); end
-_DOC.on_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_load.desc = [[ Register a handler for the config_change event. ]]
+_DOC.on_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_config_change.desc = [[ Register a handler for the config_change event. ]]; _DOC.on_config_change.params[1].type = "function(ConfigChangeData)"
 function _M.on_config_change(func) handlers.config_change:insert(func); end
-_DOC.on_game_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_load.desc = [[ Register a handler for the game_config_change event. ]]
+_DOC.on_game_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_game_config_change.desc = [[ Register a handler for the game_config_change event. ]]; _DOC.on_game_config_change.params[1].type = "function(VersionChangeData)"
 function _M.on_game_config_change(func) handlers.game_config_change:insert(func); end
 _DOC.on_startup_settings_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_startup_settings_change.desc = [[ Register a handler for the startup_settings_change event. ]]
 function _M.on_startup_settings_change(func) handlers.startup_settings_change:insert(func); end
@@ -94,7 +94,7 @@ _DOC.on_mod_config_change = {
 	desc = [[ Register a handler for config_change event of the given mod. ]],
 	params = {
 		{
-			type = "function",
+			type = "function(VersionChangeData)",
 			name = "func",
 			desc = "The handler function",
 		},
@@ -164,12 +164,12 @@ _DOC.on_event = {
 	desc = [[ Add a handler for the given event. ]],
 	params = {
 		{
-			type = {"EventID", "Array[EventID]", "string"},
+			type = {"EventID", "Array[EventID, string]", "string"},
 			name = "event_id",
 			desc = "The event(s) to register the handler for",
 		},
 		{
-			type = "function",
+			type = "function(EventData)",
 			name = "handler",
 			desc = "The handler function",
 		},

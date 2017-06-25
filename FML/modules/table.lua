@@ -12,6 +12,7 @@ local RICH_NOTE = "Can be used as a method of RichTable."
 
 _DOC.deep_copy = {
 	type = "function",
+	short_desc = [[ Make a deep_copy of tab. ]],
 	desc = [[ Make a deep_copy of tab. The result will have the same metatable as tab (not a copy). ]],
 	notes = {RICH_NOTE},
 	params = {
@@ -50,6 +51,7 @@ end
 
 _DOC.is_subset = {
 	type = "function",
+	short_desc = [[ Check if a table is a subset of another table. ]],
 	desc = [[ Check if a table is a subset of another table. Table type values are checked for equality. ]],
 	notes = {RICH_NOTE},
 	params = {
@@ -117,7 +119,7 @@ end
 
 _DOC.insert_all = {
 	type = "function",
-	desc = [[ Inserts all elements from src to dest. ]],
+	desc = [[ Insert all elements from src to dest. ]],
 	params = {
 		{
 			type = "table",
@@ -221,6 +223,7 @@ end
 
 _DOC.is_empty = {
 	type = "function",
+	short_desc = [[ Check if a table is empty. ]],
 	desc = [[ Check if a table is empty. Convenience for 'next(tab) == nil'. ]],
 	notes = {RICH_NOTE},
 	params = {
@@ -276,6 +279,7 @@ _M.contains = _M.index_of --(tab, element)
 
 _DOC.remove_v = {
 	type = "function",
+	short_desc = [[ Remove value from tab. ]],
 	desc = [[ Remove value from tab. Uses index_of to find the index to remove. ]],
 	notes = {RICH_NOTE},
 	params = {
@@ -291,8 +295,10 @@ _DOC.remove_v = {
 		},
 	},
 	returns = {
-		type = "Any",
-		desc = "The index of the element that got removed",
+		{
+			type = "Any",
+			desc = "The index of the element that got removed",
+		},
 	},
 }
 function _M.remove_v(tab, value)
@@ -333,17 +339,20 @@ end
 
 
 -- Add Lua's table library functions to allow overriding the table global with this module
-local BUILT_IN_NOTE = "This is a reference for Lua's built-in table.insert function - see Lua's ducumentation for more details."
+local function built_in_note(name)
+	return "This is a reference to Lua's built-in "..name.." function - see Lua's ducumentation for more details."
+end
 
 _DOC.insert = {
 	type = "function",
+	short_desc = [[ Insert the given value into the table. ]],
 	desc = [[
-	Insert a the given value into the table. If a position is given, the value is inserted before the element currently 
+	Insert the given value into the table. If a position is given, the value is inserted before the element currently 
 	at that position, otherwise it is appended to the end of the table.
 	When an element is inserted, both size and element indices are updated. The end of the table is deduced from the `n`
 	 field, thus can be specified by the user.
 	]],
-	notes = {RICH_NOTE, BUILT_IN_NOTE},
+	notes = {RICH_NOTE, built_in_note("table.insert")},
 	params = {
 		{
 			type = "table",
@@ -367,13 +376,14 @@ _M.insert = table.insert
 
 _DOC.remove = {
 	type = "function",
+	short_desc = [[ Remove an element from a table ]],
 	desc = [[
 	Remove an element from a table. If position is specified, the element at that position is removed, otherwise remove 
 	the last element in the table.
 	When an element is removed the size and indices of remaining elements are updated. The end of the table is deduced 
 	from the `n` field, thus can be specified by the user.
 	]],
-	notes = {RICH_NOTE, BUILT_IN_NOTE},
+	notes = {RICH_NOTE, built_in_note("table.remove")},
 	params = {
 		{
 			type = "table",
@@ -398,13 +408,14 @@ _M.remove = table.remove
 
 _DOC.concat = {
 	type = "function",
+	short_desc = [[ Concatenate the elements of a table together to form a string. ]],
 	desc = [[
 	Concatenate the elements of a table together to form a string. Each element must be able to be coerced into a 
 	string. A separator can be specified which is placed between concatenated elements. Additionally a range can be 
 	specified within the table, starting at the i-th element and finishing at the j-th element.
 	Concatenation will fail on a table that contains tables because they cannot be coerced into strings.
 	]],
-	notes = {RICH_NOTE, BUILT_IN_NOTE},
+	notes = {RICH_NOTE, built_in_note("table.concat")},
 	params = {
 		{
 			type = "table",
@@ -441,6 +452,7 @@ _M.concat = table.concat
 
 _DOC.sort = {
 	type = "function",
+	short_desc = [[ Sort the elements of a table in-place (i.e. alter the table). ]],
 	desc = [[
 	Sort the elements of a table in-place (i.e. alter the table). If the table has a specified size only the range 
 	specified is sorted.
@@ -448,7 +460,7 @@ _DOC.sort = {
 	value specifying whether the first argument should be before the second argument in the sequence. The default 
 	behavior is for the < comparison to be made.
 	]],
-	notes = {RICH_NOTE, BUILT_IN_NOTE},
+	notes = {RICH_NOTE, built_in_note("table.sort")},
 	params = {
 		{
 			type = "table",
@@ -492,6 +504,7 @@ RICH_MT.__index = RICH_MT
 
 _DOC.enrich = {
 	type = "function",
+	short_desc = [[ Set the metatable of tab to contain functions from this module. ]],
 	desc = [[
 	Set the metatable of tab to contain functions from this module. Obviously, this will remove any metatable the table 
 	had before, so be careful.
@@ -524,6 +537,7 @@ end
 
 _DOC.new = {
 	type = "function",
+	short_desc = [[ Return a new RichTable. ]],
 	desc = [[ Return a new RichTable. Same as _M.enrich({}) ]],
 	returns = {
 		{
@@ -537,6 +551,25 @@ function _M.new()
 end
 
 
+_M._DOC.metamethods = {
+	__call = {
+		desc = [[ Create a new RichTable. ]],
+		params = {
+			{
+				type = "table",
+				name = "tab",
+				desc = "The table to enrich",
+				default = "{}",
+			},
+		},
+		returns = {
+			{
+				type = "RichTable",
+				desc = "The new table",
+			},
+		},
+	},
+}
 -- Allow using the module as a class constructor
 setmetatable(_M, {__call = function(_, tab) return _M.enrich(tab or {}); end})
 

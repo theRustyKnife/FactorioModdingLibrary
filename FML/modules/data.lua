@@ -21,7 +21,7 @@ _DOC.inherit = {
 			type = {"string", "table"},
 			name = "base_type",
 			desc = [[
-			The type of the prototype to be coppied. If this is a table, it will be used as the base, regardless of 
+			The type of the prototype to be coppied. If this is a table, it will be used as the base, regardless of
 			what base_name is
 			]],
 		},
@@ -218,7 +218,7 @@ _DOC.make_item_for = {
 			type = "SimpleItemPrototype",
 			name = "properties",
 			desc = [[
-			A table that may contain any combination of: base and properties, as in Prototype, and set_minable_result - 
+			A table that may contain any combination of: base and properties, as in Prototype, and set_minable_result -
 			bool, default true
 			]],
 			default = "{}",
@@ -275,7 +275,7 @@ _DOC.make_recipe_for = {
 			name = "properties",
 			desc = [[
 			A table that may contain any combination of: base and properties, as in Prototype, and unlock_with - string,
-			 default nil
+			default nil
 			]],
 			default = "{}",
 		},
