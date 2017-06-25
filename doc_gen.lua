@@ -4,6 +4,9 @@ if not OUT_DIR or OUT_DIR == "" then OUT_DIR = "doc-out"; end
 local t = os.rename(OUT_DIR, OUT_DIR)
 if not t then print("Can't write to directory "..OUT_DIR.."..."); return; end
 
+local other_docs
+if not pcall(function() other_docs = require "docs.init" end) then other_docs = {}; end
+
 
 current_dir = io.popen"cd":read'*l'
 package.path = ";"..current_dir.."\\?.lua;"..current_dir.."\\FML\\?.lua;"..package.path
@@ -45,6 +48,7 @@ local function _make_doc_for(FML)
 end
 _make_doc_for(FML_data)
 _make_doc_for(FML_control)
+_make_doc_for(other_docs.DOCS)
 
 
 print "Trimming whitespace..."
