@@ -247,4 +247,3 @@ for name, module in pairs(complete_doc) do
 end
 
 io.stdout:write("Done.")
-io.stdin:read()
