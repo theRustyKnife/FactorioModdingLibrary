@@ -18,16 +18,18 @@ local _M = module_loader.load_std(FML_stdlib, nil, "runtime", config, config.VER
 package.loaded["therustyknife.FML"] = _M
 package.loaded["therustyknife.FML.config"] = config
 
+local module_lookup = FML_stdlib.get_module_lookup(config.MODULES_TO_LOAD)
+
 
 -- Make sure remote is installed and loaded first, so we can use it for all the other things
-assert(config.MODULES_TO_LOAD["remote"], "FML couldn't find the remote module in mod "..config.MOD.NAME..".")
+assert(module_lookup["remote"], "FML couldn't find the remote module in mod "..config.MOD.NAME..".")
 --TODO: allow logging using the log module
-_M.remote = module_loader.load_from_file(config.MODULES_TO_LOAD["remote"], FML_stdlib.safe_require)
+_M.remote = module_loader.load_from_file(module_lookup["remote"], FML_stdlib.safe_require)
 
 local log_func = _M.remote.get_rich_callback("therustyknife.FML.log", "w") -- Use FML's logging
 
-if config.MODULES_TO_LOAD["log"] then
-	_M.log = module_loader.load_from_file(config.MODULES_TO_LOAD["log"], FML_stdlib.safe_require, log_func)
+if module_lookup["log"] then
+	_M.log = module_loader.load_from_file(module_lookup["log"], FML_stdlib.safe_require, log_func)
 	if _M.log then log_func = _M.log.w; end
 end
 

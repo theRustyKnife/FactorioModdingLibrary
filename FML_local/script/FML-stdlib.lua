@@ -35,6 +35,13 @@ Call require for the given path, even if the path was already required and leave
 	return res
 end
 
+function _M.get_module_lookup(modules)
+--[[ Convert the module definition in the config format into a path lookup table by name. ]]
+	local res = {}
+	for _, module in ipairs(modules) do res[module.name] = module.path; end
+	return res
+end
+
 function _M.put_to_global(namespace, package_name, package)
 --[[ Put a package into the global namespace. Useful during the data stage. ]]
 	_G[namespace] = _G[namespace] or {}

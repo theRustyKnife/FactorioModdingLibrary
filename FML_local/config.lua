@@ -14,13 +14,12 @@ return {
 	
 	-- Modules with their paths that FML will attempt to load
 	MODULES_TO_LOAD = {
-		log = ".modules.log",
-		remote = ".modules.remote", -- The remote module is essential for FML to function and thus, it has to be present
-		table = ".modules.table",
-		format = ".modules.format",
-		events = ".modules.events",
-		data_container = ".modules.data_container",
-		GUI = ".modules.GUI",
-		semver = ".modules.semver",
+		{name = "log", path = ".modules.log"},
+		{name = "remote", path = ".modules.remote"},
+		{name = "table", path = ".modules.table"},
+		{name = "format", path = ".modules.format"},
+		{name = "events", path = ".modules.events"},
+		{name = "GUI", path = ".modules.GUI"},
+		{name = "semver", path = ".modules.semver"},
 	},
 }

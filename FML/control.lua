@@ -8,12 +8,14 @@ local _M = module_loader.load_std(FML_stdlib, nil, "runtime", config, config.VER
 package.loaded["therustyknife.FML"] = _M -- Make this instance accessible via require
 package.loaded["therustyknife.FML.config"] = config -- Config access for modules
 
+local module_lookup = FML_stdlib.get_module_lookup(config.MODULES_TO_LOAD)
+
 
 --TODO: make sure this works
 local log_func = true
 -- Try to load the log module first
-if config.MODULES_TO_LOAD["log"] then
-	_M.log = module_loader.load_from_file(config.MODULES_TO_LOAD["log"], FML_stdlib.safe_require, log_func)
+if module_lookup["log"] then
+	_M.log = module_loader.load_from_file(module_lookup["log"], FML_stdlib.safe_require, log_func)
 	-- Use default log function if loading failed
 	log_func = _M.log and _M.log.w or true
 end

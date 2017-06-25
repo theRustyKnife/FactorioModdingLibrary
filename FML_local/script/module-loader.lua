@@ -63,9 +63,9 @@ load_func and log_func is passed to load_from_file.
 ]]
 	res_table = res_table or {}
 	
-	for name, path in pairs(modules) do
-		if res_table[name] == nil then
-			res_table[name] = _M.load_from_file(path, load_func, log_func) or res_table[name]
+	for _, module in ipairs(modules) do
+		if res_table[module.name] == nil then
+			res_table[module.name] = _M.load_from_file(module.path, load_func, log_func) or res_table[module.name]
 		end
 	end
 	

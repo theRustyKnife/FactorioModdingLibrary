@@ -9,12 +9,14 @@ FML_stdlib.put_to_global("therustyknife", "FML", _M) -- Give gloabal access to t
 package.loaded["therustyknife.FML"] = _M -- Make FML accessible via require - mostly for modules
 package.loaded["therustyknife.FML.config"] = config -- Allow modules to require the config easily
 
+local module_lookup = FML_stdlib.get_module_lookup(config.MODULES_TO_LOAD)
+
 
 --TODO: make sure this works
 local log_func = true
 -- Try to load the log module first, so we can use the logging functions
-if config.MODULES_TO_LOAD["log"] then
-	_M.log = module_loader.load_from_file(config.MODULES_TO_LOAD["log"], FML_stdlib.safe_require, log_func)
+if module_lookup["log"] then
+	_M.log = module_loader.load_from_file(module_lookup["log"], FML_stdlib.safe_require, log_func)
 	-- Make sure we're not entirely dependent on the logging module - use default log if not available
 	log_func = _M.log and _M.log.e or true
 end
