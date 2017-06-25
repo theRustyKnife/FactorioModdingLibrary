@@ -242,4 +242,5 @@ for name, module in pairs(complete_doc) do
 	
 	local out_file = io.open(OUT_DIR.."\\"..name..".md", "w")
 	out_file:write(res)
+	out_file:flush()
 end
