@@ -4,12 +4,12 @@ if not OUT_DIR or OUT_DIR == "" then OUT_DIR = "doc-out"; end
 local t = os.rename(OUT_DIR, OUT_DIR)
 if not t then print("Can't write to directory "..OUT_DIR.."..."); return; end
 
-local other_docs
-other_docs = require "docs.init" or {}
-
 
 current_dir = io.popen"cd":read'*l'
-package.path = ";"..current_dir.."\\?.lua;"..current_dir.."\\FML\\?.lua;"..package.path
+package.path = ";"..current_dir.."\\?.lua;"..current_dir.."\\FML\\?.lua;"..current_dir.."\\docs\\?.lua;"..package.path
+
+local other_docs
+other_docs = require "docs.init" or {}
 
 
 local function empty() end
@@ -57,6 +57,8 @@ local function trim(s)
 	return from > #s and "" or s:match(".*%S", from)
 end
 
+--TODO: link pages mentioned in text
+
 local function _strip_newlines(v)
 	if type(v) == "table" then for key, val in pairs(v) do v[key] = _strip_newlines(val); end
 	elseif type(v) == "string" then
@@ -64,16 +66,22 @@ local function _strip_newlines(v)
 		local res = ""
 		local white_chars = {["\n"] = true, [" "] = true, ["\t"] = true}
 		local strip = true
+		local first = true
 		local last_chars = {"", ""}
 		v:gsub(".", function(c)
 			if c == "\n" then
 				if not strip then
-					if table.concat(last_chars) == "  " then res = res.."\n"
-					else res = res.." "; end
+					if table.concat(last_chars) == "  " then res = res.."\n"; end
 				end
 				strip = true
 			elseif strip and white_chars[c] then strip = true
-			else res = res..c; strip = false; end
+			elseif strip and c == "`" then
+				if last_chars[1] == "`" then res = res.."\n\t"; strip = false; first = false end
+			elseif strip then
+				if last_chars[1] == "`" then res = res.." `"..c
+				else res = res..(first and "" or " ")..c; end
+				strip = false; first = false
+			else res = res..c; strip = false; first = false; end
 			table.remove(last_chars); table.insert(last_chars, 1, c)
 		end)
 		return res
