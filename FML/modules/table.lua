@@ -368,7 +368,7 @@ _DOC.insert = {
 			type = "Any",
 			name = "pos",
 			desc = "The index in the table to insert at",
-			default = "`table.n+1`",
+			default = "table.n+1",
 		},
 		{
 			type = "Any",
@@ -399,7 +399,7 @@ _DOC.remove = {
 			type = "Any",
 			name = "pos",
 			desc = "The position to remove from",
-			default = "`table.n`",
+			default = "table.n",
 		},
 	},
 	returns = {
@@ -443,7 +443,7 @@ _DOC.concat = {
 			type = "int",
 			name = "j",
 			desc = "The end position",
-			default = "`table.n`",
+			default = "table.n",
 		},
 	},
 	returns = {
