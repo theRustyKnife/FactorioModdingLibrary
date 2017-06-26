@@ -41,14 +41,17 @@ local function _make_doc(doc)
 		end
 	end
 end
-local function _make_doc_for(FML)
+local function _make_doc_for(FML, rec)
 	for _, module in pairs(FML) do
-		if type(module) == "table" and module._DOC then _make_doc(module._DOC); end
+		if type(module) == "table" then
+			if module._DOC then _make_doc(module._DOC)
+			elseif rec then _make_doc_for(module, rec); end
+		end
 	end
 end
 _make_doc_for(FML_data)
 _make_doc_for(FML_control)
-_make_doc_for(other_docs.DOCS)
+_make_doc_for(other_docs.DOCS, true)
 
 
 print "Trimming whitespace..."
