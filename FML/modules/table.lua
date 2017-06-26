@@ -482,9 +482,25 @@ _DOC.sort = {
 }
 _M.sort = table.sort
 
+function _M.setmetatable(tab, mt)
+	if tab.__rich then
+		local omt = getmetatable(tab)
+		setmetatable(omt.__index, mt)
+		setmetatable(omt, mt)
+		return tab
+	else return setmetatable(tab, mt); end
+end
+
+function _M.getmetatable(tab)
+	if tab__rich then return getmetatable(getmetatable(tab))
+	else return getmetatable(tab); end
+end
+
 -- Declare what methods rich tables are going to have
 -- All of them can be called with the colon syntax
 local RICH_MT = {
+	__rich = true, -- Indicate that this is a RichTable, so we know how to set metatables
+	
 	deep_copy = _M.deep_copy,
 	is_subset = _M.is_subset,
 	equals = _M.equals,
@@ -502,10 +518,9 @@ local RICH_MT = {
 	sort = _M.sort,
 	
 	--TODO: override these functions to work with other metatables (if __index is a table, set this as it's metatable)
-	getmetatable = getmetatable,
-	setmetatable = setmetatable,
+	getmetatable = _M.getmetatable,
+	setmetatable = _M.setmetatable,
 }
-RICH_MT.__index = RICH_MT
 
 _DOC.enrich = {
 	type = "function",
@@ -537,7 +552,8 @@ _DOC.enrich = {
 }
 --TODO: automatic metatable setup on load for tables that had enrich called on them
 function _M.enrich(tab)
-	return setmetatable(tab, RICH_MT)
+	local mt = getmetatable(tab)
+	return setmetatable(tab, setmetatable({__index = setmetatable(_M.deep_copy(RICH_MT), mt)}, mt))
 end
 
 _DOC.new = {
