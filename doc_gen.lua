@@ -5,7 +5,7 @@ local t = os.rename(OUT_DIR, OUT_DIR)
 if not t then print("Can't write to directory "..OUT_DIR.."..."); return; end
 
 local other_docs
-if not pcall(function() other_docs = require "docs.init" end) then other_docs = {}; end
+other_docs = require "docs.init" or {}
 
 
 current_dir = io.popen"cd":read'*l'
@@ -98,6 +98,10 @@ local function link(text, dest, dest_prefix)
 	dest_prefix = dest_prefix or "#"
 	return "["..text.."]("..dest_prefix..dest:lower()..")"
 end
+local function wiki_link(text, page)
+	page = page or text
+	return "[["..text.."|"..page.."]]"
+end
 local function h(l, s)
 	local res = ""
 	for i=1, l do res = res.."#"; end
@@ -184,13 +188,21 @@ local function func_detail(name, func)
 end
 
 
+local to_list = {}
+
 for name, module in pairs(complete_doc) do
 	print("\t- "..name.."...")
+	
+	-- Save some info for listing in the junction page
+	to_list[module.type] = to_list[module.type] or {}
+	to_list[module.type][module.name] = module
+	
 	local res = ""
 	local function write(s) res = res..s; end
 	
 	-- The title part
-	write(i(module.type).." "..b(module.name)..n(2)..module.desc..n(2))
+	if module.type then write(i(module.type).." "); end
+	write(b(module.name)..n(2)..module.desc..n(2))
 	
 	-- Notes
 	if module.notes then
@@ -258,4 +270,36 @@ for name, module in pairs(complete_doc) do
 	out_file:write(res)
 	out_file:flush()
 end
+
+
+if other_docs.JUNCTION then
+	print "Generating junction page..."
+	local res = ""
+	local function write(s) res = res..s; end
+	
+	-- Header
+	write(other_docs.JUNCTION.HEADER_TEXT..n(2))
+
+	-- The individual categories
+	for _, category in ipairs(other_docs.JUNCTION.CATEGORIES or {}) do
+		if to_list[category.name] then
+			-- The category title
+			write(h(2, category.title)..n(2))
+			
+			-- Table header
+			write(tab_row("Name", "Description")..tab_line(2))
+			-- The modules
+			for name, module in pairs(to_list[category.name]) do
+				write(tab_row(wiki_link(module.name), module.short_desc or module.desc))
+			end
+			write(n())
+		end
+	end
+	
+	local out_file = io.open(OUT_DIR.."\\"..other_docs.JUNCTION.NAME..".md", "w")
+	out_file:write(res)
+	out_file:flush()
+end
+
+
 print("Done.")
