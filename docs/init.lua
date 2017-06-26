@@ -25,8 +25,13 @@ return {
 		RichTable = {_DOC = {
 			type = "concept",
 			name = "RichTable",
-			desc = [[ A table that has various methods for it's manipulation. ]],
-			--TODO: finish this
+			short_desc = "A table that has various methods for it's manipulation.",
+			desc = [=[
+			A table that has various methods for it's manipulation. It is basically a table with it's metatable set to
+			the [[table|table]] module. This allows you to use all the functions from there as methods of `RichTable`s
+			using the colon syntax.
+			]=],
+			notes = {"You can find the functions usable from `RichTable`s on the [[table|table]] module page."},
 		}},
 		Semver = {_DOC = {
 			type = "class",
