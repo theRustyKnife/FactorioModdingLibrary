@@ -16,6 +16,7 @@ if FML.STAGE == "data" then
 	local prototype = data.raw["item"][config.DATA_CONTAINER.PROTOTYPE_NAME] or FML.data.make{
 		type = "item",
 		name = config.DATA_CONTAINER.PROTOTYPE_NAME,
+		hidden = true,
 		icon = config.DATA.PATH.NO_ICON,
 		stack_size = 1,
 		flags = {},
