@@ -342,6 +342,223 @@ function _M.insert_at_next_index(tab, element)
 	return index
 end
 
+_DOC.numeric_indices = {
+	type = "function",
+	desc = [[ Find all numeric indices in the table. ]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to search in",
+		},
+		{
+			type = "bool",
+			name = "in_place",
+			desc = "If true, the resulting table is going to be set to the `_ids` field of the table.",
+			default = "false",
+		},
+	},
+	returns = {
+		{
+			type = "Array[int]",
+			desc = "The numeric indices in ascending order",
+		},
+	},
+}
+function _M.numeric_indices(tab, in_place)
+	local res = _M()
+	local last
+	for i, v in pairs(tab) do
+		if type(i) == "number" and i%1 == 0 then res:insert(i); end
+	end
+	res:sort()
+	if in_place then tab[_ids] = res; end
+	return res
+end
+
+_DOC.n_insert = {
+	type = "function",
+	short_desc = "Insert element and update `_ids`",
+	desc = [[ Insert the given element at the given index and update the `_ids` field to reflect the change. ]],
+	notes = {
+		"Can only be used on tables that already have the `_ids` field present (numerically indexed tables).",
+		RICH_NOTE,
+	},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to insert into",
+		},
+		{
+			type = "int",
+			name = "index",
+			desc = "The index to insert at",
+		},
+		{
+			type = "Any",
+			name = "value",
+			desc = "The value to insert, if nil, `_ids` is still update as if the value wasn't nil",
+		},
+	},
+}
+function _M.n_insert(tab, index, value)
+	if not tab[index] then
+		_M.insert(tab._ids, index)
+		_M.sort(tab._ids)
+	end
+	tab[index] = value
+end
+
+_DOC.n_remove = {
+	type = "function",
+	desc = [[ Set the value at an index to nil and update `_ids`. ]],
+	notes = {
+		"Can only be used on tables that already have the `_ids` field present (numerically indexed tables).",
+		RICH_NOTE,
+	},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to remove from",
+		},
+		{
+			type = "int",
+			name = "index",
+			desc = "The index to remove from",
+		},
+	},
+	returns = {
+		{
+			type = "Any",
+			desc = "The value that was removed",
+		},
+	},
+}
+function _M.n_remove(tab, index)
+	local res = tab[index]
+	tab[index] = nil
+	if res then _M.remove_v(tab._ids, index); end
+	return res
+end
+
+_DOC.n_remove_v = {
+	type = "function",
+	desc = [[ Remove the given element from the table and udpate `_ids`. ]],
+	notes = {
+		"Can only be used on tables that already have the `_ids` field present (numerically indexed tables).",
+		RICH_NOTE,
+	},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to remove from",
+		},
+		{
+			type = "Any",
+			name = "element",
+			desc = "The vvalue to remove",
+		},
+	},
+	returns = {
+		{
+			type = "int",
+			desc = "The index that was removed, nil if the value wasn't present",
+		},
+	},
+}
+function _M.n_remove_v(tab, element)
+	local index = _M.remove_v(tab, element)
+	if index then _M.remove_v(tab._ids, index); end
+	return index
+end
+
+_DOC.last = {
+	type = "function",
+	desc = [[Return the last value in this Array. ]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "Array",
+			name = "arr",
+			desc = "The Array to check",
+		},
+	},
+	returns = {
+		{
+			type = "Any",
+			desc = "The last value or nil if none",
+		},
+	},
+}
+function _M.last(arr) return arr[#arr]; end
+
+_DOC.highest_index = {
+	type = "function",
+	desc = [[ Get the highest numeric index in the table. ]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to check",
+		},
+	},
+	returns = {
+		{
+			type = "int",
+			desc = "The index, nil if no numeric indices are in the table",
+		},
+	},
+}
+function _M.highest_index(tab)
+	return _M.numeric_indices(tab):last()
+end
+
+_DOC.ipairs_all = {
+	type = "function",
+	short_desc = "Get an iterator over all numeric indices.",
+	desc = [[
+	Return an iterator function that iterates over all numeric indices in the table. The indices are iterated over in
+	ascending order.  
+	If indices is nil or true, the value of the `_ids` field will be used. If it's false table.numeric_indices is used
+	to obtain the indices, otherwise, the value of indices is used.
+	]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to iterate over",
+		},
+		{
+			type = {"Array[int]", "bool"},
+			name = "indices",
+			desc = "The indices to use",
+			default = "nil",
+		},
+	},
+	returns = {
+		type = "int, Any function()",
+		desc = "The iterator function",
+	},
+}
+function _M.ipairs_all(tab, indices)
+	if indices == nil or indices == true then indices = tab._ids or _M.numeric_indices(tab)
+	else indices = indices or _M.numeric_indices(tab); end
+	indices = indices or _M.numeric_indices(tab)
+	local i = 1
+	return function()
+		local res_i = indices[i]
+		local res_v = tab[res_i]
+		i = i+1
+		return res_i, res_v
+	end
+end
+
 
 -- Add Lua's table library functions to allow overriding the table global with this module
 local function built_in_note(name)
