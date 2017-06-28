@@ -749,8 +749,8 @@ _DOC.enrich = {
 	type = "function",
 	short_desc = [[ Set the metatable of tab to contain functions from this module. ]],
 	desc = [[
-	Set the metatable of tab to contain functions from this module. Obviously, this will remove any metatable the table
-	had before, so be careful.
+	Set the metatable of tab to contain functions from this module. The original metatable will be set as the metatable
+	of the new metatable, so the original functionality should still be available.
 	]],
 	notes = {
 		"The function operates directly on the table passed in, so the returned table is the same one.",
@@ -815,7 +815,7 @@ end
 _DOC.new = {
 	type = "function",
 	short_desc = [[ Return a new RichTable. ]],
-	desc = [[ Return a new RichTable. Same as table.enrich({}). ]],
+	desc = [[ Return a new RichTable. Same as `table.enrich({})`. ]],
 	notes = {"The [__call](#__call) metamethod can be used to create a RichTable like so: `table()`."},
 	returns = {
 		{
