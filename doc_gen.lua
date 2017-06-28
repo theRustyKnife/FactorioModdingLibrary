@@ -157,17 +157,17 @@ local function parse_params(params, default)
 	return res
 end
 
-local function func_header(name, params)
-	return b(link(name)).."("..parse_params(params)..")"
+local function func_header(func)
+	return b(link(func.name)).."("..parse_params(func.params)..")"
 end
 
-local function func_detail(name, func)
+local function func_detail(func)
 	local res = ""
 	local function write(s) res = res..s; end
 	
-	write(h(3, name)..n())
+	write(h(3, func.name)..n())
 	
-	write(parse_params(func.returns, i("nil")).." "..func_header(name, func.params)..br())
+	write(parse_params(func.returns, i("nil")).." "..func_header(func)..br())
 	write(func.desc..n(2))
 	
 	if func.notes then
@@ -199,10 +199,27 @@ local function func_detail(name, func)
 end
 
 
+local function _func_order(func_a, func_b) return func_a.name < func_b.name; end
+local function _sort_funcs(funcs)
+	local res = {}
+	for name, func in pairs(funcs) do
+		func.name = name
+		table.insert(res, func)
+	end
+	table.sort(res, _func_order)
+	return res
+end
+local function sort_funcs(module)
+	if module.metamethods then module.metamethods = _sort_funcs(module.metamethods); end
+	if module.funcs then module.funcs = _sort_funcs(module.funcs); end
+end
+
 local to_list = {}
 
 for name, module in pairs(complete_doc) do
 	print("\t- "..name.."...")
+	
+	sort_funcs(module)
 	
 	-- Save some info for listing in the junction page
 	to_list[module.type] = to_list[module.type] or {}
@@ -233,8 +250,8 @@ for name, module in pairs(complete_doc) do
 		write(tab_line(3))
 		
 		-- Table rows
-		for name, func in pairs(module.metamethods) do
-			write(tab_row(parse_params(func.returns, i("nil")), func_header(name, func.params), func.short_desc or func.desc))
+		for _, func in ipairs(module.metamethods) do
+			write(tab_row(parse_params(func.returns, i("nil")), func_header(func), func.short_desc or func.desc))
 		end
 		
 		write(n()..hr(2))
@@ -249,8 +266,8 @@ for name, module in pairs(complete_doc) do
 		write(tab_line(3))
 		
 		-- Table rows
-		for name, func in pairs(module.funcs) do
-			write(tab_row(parse_params(func.returns, i("nil")), func_header(name, func.params), func.short_desc or func.desc))
+		for _, func in ipairs(module.funcs) do
+			write(tab_row(parse_params(func.returns, i("nil")), func_header(func), func.short_desc or func.desc))
 		end
 		
 		write(n()..hr(2))
@@ -261,8 +278,8 @@ for name, module in pairs(complete_doc) do
 		write(h(2, "Metamethod Detail")..n())
 		
 		-- The individual functions
-		for name, func in pairs(module.metamethods) do
-			write(func_detail(name, func)..n()..hr(2))
+		for _, func in ipairs(module.metamethods) do
+			write(func_detail(func)..n()..hr(2))
 		end
 	end
 	
@@ -272,7 +289,7 @@ for name, module in pairs(complete_doc) do
 		
 		-- The individual functions
 		for name, func in pairs(module.funcs) do
-			write(func_detail(name, func)..n()..hr(2))
+			write(func_detail(func)..n()..hr(2))
 		end
 	end
 	
