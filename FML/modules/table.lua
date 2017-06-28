@@ -496,32 +496,6 @@ function _M.getmetatable(tab)
 	else return getmetatable(tab); end
 end
 
--- Declare what methods rich tables are going to have
--- All of them can be called with the colon syntax
-local RICH_MT = {
-	__rich = true, -- Indicate that this is a RichTable, so we know how to set metatables
-	
-	deep_copy = _M.deep_copy,
-	is_subset = _M.is_subset,
-	equals = _M.equals,
-	getn = _M.getn,
-	get_next_index = _M.get_next_index,
-	is_empty = _M.is_empty,
-	index_of = _M.index_of,
-	contains = _M.contains,
-	remove_v = _M.remove_v,
-	
-	-- The built-in functions happen to be usable as methods too
-	insert = _M.insert,
-	remove = _M.remove,
-	concat = _M.concat,
-	sort = _M.sort,
-	
-	--TODO: override these functions to work with other metatables (if __index is a table, set this as it's metatable)
-	getmetatable = _M.getmetatable,
-	setmetatable = _M.setmetatable,
-}
-
 _DOC.enrich = {
 	type = "function",
 	short_desc = [[ Set the metatable of tab to contain functions from this module. ]],
@@ -552,8 +526,41 @@ _DOC.enrich = {
 }
 --TODO: automatic metatable setup on load for tables that had enrich called on them
 function _M.enrich(tab)
+	-- Declare what methods rich tables are going to have
+	-- All of them can be called with the colon syntax
+	local RICH_MT = {
+		__rich = true, -- Indicate that this is a RichTable, so we know how to set metatables
+		
+		deep_copy = _M.deep_copy,
+		is_subset = _M.is_subset,
+		equals = _M.equals,
+		getn = _M.getn,
+		get_next_index = _M.get_next_index,
+		is_empty = _M.is_empty,
+		index_of = _M.index_of,
+		contains = _M.contains,
+		remove_v = _M.remove_v,
+		numeric_indices = _M.numeric_indices,
+		last = _M.last,
+		highest_index = _M.highest_index,
+		ipairs_all = _M.ipairs_all,
+		n_insert = _M.n_insert,
+		n_remove = _M.n_remove,
+		
+		-- The built-in functions happen to be usable as methods too
+		insert = _M.insert,
+		remove = _M.remove,
+		concat = _M.concat,
+		sort = _M.sort,
+		
+		--TODO: override these functions to work with other metatables (if __index is a table, set this as it's metatable)
+		getmetatable = _M.getmetatable,
+		setmetatable = _M.setmetatable,
+	}
+	
 	local mt = getmetatable(tab)
-	return setmetatable(tab, setmetatable({__index = setmetatable(_M.deep_copy(RICH_MT), mt)}, mt))
+	if mt then return setmetatable(tab, setmetatable({__index = setmetatable(RICH_MT, mt)}, mt))
+	else return setmetatable(tab, {__index = RICH_MT}); end
 end
 
 _DOC.new = {
