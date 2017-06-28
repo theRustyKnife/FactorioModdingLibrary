@@ -158,8 +158,10 @@ end)
 
 
 --Game events
---TODO: implement
-_DOC.on_event = {
+--TODO: finish
+handlers = table() -- all the runtime event handlers, including permanent ones
+
+_DOC.on = {
 	type = "function",
 	desc = [[ Add a handler for the given event. ]],
 	params = {
@@ -176,18 +178,19 @@ _DOC.on_event = {
 		{
 			type = "bool",
 			name = "permanent",
-			desc = "If true, the handler will be re-setup on load",
+			desc = "If true, the handler will be re-setup on load (Not implemented yet)",
 			default = "false",
 		},
 	},
 }
-function _M.on_event(event_id, handler, permanent)
+function _M.on(event_id, handler, permanent)
 	if type(event_id) == "table" then
 		if permanent then --TODO: make this work
 			FML.log.w("Permanent handlers not supported when registering for multiple events - using regular handlers.")
 		end
 		
-		for _, id in pairs(event_id) do _M.on_event(event_id, handler); end
+		for _, id in pairs(event_id) do _M.on(event_id, handler); end
+		return
 	end
 	
 	if permanent then
@@ -195,11 +198,52 @@ function _M.on_event(event_id, handler, permanent)
 		error("Permanent handlers have not been implemented yet.")
 	
 	else
-		--TODO: implement
-		error("Regular handlers have not been implemented yet either.")
-	
+		if not handlers[event_id] then
+			handlers[event_id] = table()
+			local handlers = handlers[event_id]
+			handlers:numeric_indices(true)
+			script.on_event(event_id, function(...)
+				for _, handler in handlers:ipairs_all() do handler(...); end
+			end)
+		end
+		return handlers[event_id]:n_insert_at_next_index(handler)
 	end
 end
+
+_DOC.remove_handler = {
+	type = "function",
+	desc = [[ Remove the given handler from the given events. ]],
+	notes = {[[
+	Be careful when removing by id from multiple events as the id is only unique across one event. This may be changed
+	in the future.
+	]]},
+	params = {
+		{
+			type = {"EventID", "Array[EventID, string]", "string"},
+			name = "event_id",
+			desc = "The event(s) to remove the handler from, if nil, all events will be considered",
+		},
+		{
+			type = {"int", "function"},
+			name = "what",
+			desc = "Which handler to remove, can either be a handler id or a handler function",
+		},
+	},
+}
+function _M.remove_handler(event_id, what)
+	if type(event_id) == "table" then
+		local last_func
+		for _, event_id in ipairs(event_id) do last_func = _M.remove_handler(event_id, what) or last_func; end
+		return last_func
+	end
+	
+	if not handlers[event_id] then return nil; end
+	
+	if type(what) == "function" then handlers[event_id]:n_remove_v(what)
+	else handlers[event_id]:n_remove(what); end
+end
+
+--TODO: raise_event
 
 
 return _M
