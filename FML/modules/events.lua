@@ -46,6 +46,8 @@ local handlers = {
 	game_config_change = table(), -- runs when the game version changes (after config_change)
 	mod_config_change = table(), -- runs when the specified mod's version changes (after game_config_change)
 	startup_settings_change = table(), -- runs whenever mod startup settings change, after the other config_change events
+	
+	runtime = table(), -- all the runtime event handlers, including permanent ones
 }
 
 local function run(handlers, ...)
@@ -159,7 +161,7 @@ end)
 
 --Game events
 --TODO: finish
-handlers = table() -- all the runtime event handlers, including permanent ones
+local runtime_handlers = table()
 
 _DOC.on = {
 	type = "function",
@@ -198,15 +200,15 @@ function _M.on(event_id, handler, permanent)
 		error("Permanent handlers have not been implemented yet.")
 	
 	else
-		if not handlers[event_id] then
-			handlers[event_id] = table()
-			local handlers = handlers[event_id]
+		if not runtime_handlers[event_id] then
+			runtime_handlers[event_id] = table()
+			local handlers = runtime_handlers[event_id]
 			handlers:numeric_indices(true)
 			script.on_event(event_id, function(...)
 				for _, handler in handlers:ipairs_all() do handler(...); end
 			end)
 		end
-		return handlers[event_id]:n_insert_at_next_index(handler)
+		return runtime_handlers[event_id]:n_insert_at_next_index(handler)
 	end
 end
 
@@ -237,10 +239,10 @@ function _M.remove_handler(event_id, what)
 		return last_func
 	end
 	
-	if not handlers[event_id] then return nil; end
+	if not runtime_handlers[event_id] then return nil; end
 	
-	if type(what) == "function" then handlers[event_id]:n_remove_v(what)
-	else handlers[event_id]:n_remove(what); end
+	if type(what) == "function" then runtime_handlers[event_id]:n_remove_v(what)
+	else runtime_handlers[event_id]:n_remove(what); end
 end
 
 --TODO: raise_event
