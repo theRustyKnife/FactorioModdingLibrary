@@ -411,6 +411,38 @@ function _M.n_insert(tab, index, value)
 	tab[index] = value
 end
 
+_DOC.n_insert_at_next_index = {
+	type = "function",
+	desc = [[ Insert the given value at the next integer index and update `_ids`. ]],
+	notes = {
+		"Can only be used on tables that already have the `_ids` field present (numerically indexed tables).",
+		RICH_NOTE,
+	},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to insert into",
+		},
+		{
+			type = "Any",
+			name = "value",
+			desc = "The value to insert",
+		},
+	},
+	returns = {
+		{
+			type = "int",
+			desc = "The index the value was inserted to",
+		},
+	},
+}
+function _M.n_insert_at_next_index(tab, value)
+	local index = _M.get_next_index(tab)
+	_M.n_insert(tab, index, value)
+	return index
+end
+
 _DOC.n_remove = {
 	type = "function",
 	desc = [[ Set the value at an index to nil and update `_ids`. ]],
