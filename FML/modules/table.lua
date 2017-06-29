@@ -187,7 +187,7 @@ _DOC.getn = {
 		},
 	},
 }
-function _M.getn = table_size
+_M.getn = table_size
 
 _DOC.get_next_index = {
 	type = "function",
