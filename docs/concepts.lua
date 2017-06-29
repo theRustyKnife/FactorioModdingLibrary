@@ -84,7 +84,7 @@ return {
 		name = "Prototype",
 		short_desc = "FML's extended prototype definition.",
 		desc = [[
-		An extended prototype definition format used by FML. The format is as follows:
+		An extended prototype definition format used by FML. The format is as follows:  
 		``{
 		``	base = VanillaPrototype, -- The prototype to use as base, can be nil if properties defines a full prototype
 		``	properties = RichPrototype, -- The properties of this prototype, if nil, the same exact prototype as base will be generated
