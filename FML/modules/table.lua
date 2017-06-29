@@ -798,6 +798,11 @@ function _M.enrich(tab)
 		concat = _M.concat,
 		sort = _M.sort,
 		
+		-- The built-in iterators
+		pairs = pairs,
+		ipairs = ipairs,
+		next = next,
+		
 		--TODO: override these functions to work with other metatables (if __index is a table, set this as it's metatable)
 		getmetatable = _M.getmetatable,
 		setmetatable = _M.setmetatable,
