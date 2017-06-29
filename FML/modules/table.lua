@@ -171,7 +171,7 @@ end
 
 _DOC.getn = {
 	type = "function",
-	desc = [[ Count elements in tab by iteration. ]],
+	desc = [[ Alias for the table_size function. ]],
 	notes = {RICH_NOTE},
 	params = {
 		{
@@ -187,11 +187,7 @@ _DOC.getn = {
 		},
 	},
 }
-function _M.getn(tab)
-	local n = 0
-	for _ in pairs(tab) do n = n + 1; end
-	return n
-end
+function _M.getn = table_size
 
 _DOC.get_next_index = {
 	type = "function",
