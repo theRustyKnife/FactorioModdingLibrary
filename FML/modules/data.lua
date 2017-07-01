@@ -31,21 +31,28 @@ _DOC.inherit = {
 			desc = "The name of the prototype to be coppied",
 			default = "The value of base_type",
 		},
+		{
+			type = "bool",
+			name = "force",
+			desc = "If true, raise an error if inheritance failed, otherwise return a function for later attempt",
+			default = "false",
+		},
 	},
 	returns = {
 		{
-			type = "table",
-			desc = "The prototype base",
+			type = {"table", "table function(bool force)"},
+			desc = "The prototype base or function to obtain it",
 		},
 	},
 }
-function _M.inherit(base_type, base_name)
+function _M.inherit(base_type, base_name, force)
 	local res
 	if type(base_type) == "table" then res = base_type
 	else
 		base_name = base_name or base_type
 		if not data.raw[base_type] or not data.raw[base_type][base_name] then
-			error("can't inherit from type: " .. tostring(base_type) .. ", name: " .. tostring(base_name))
+			assert(not force, "can't inherit from type: " .. tostring(base_type) .. ", name: " .. tostring(base_name))
+			return function(force) return _M.inherit(base_type, base_name, force); end
 		end
 		res = data.raw[base_type][base_name]
 	end
@@ -122,7 +129,10 @@ function _M.make(prototype, deep)
 		return prototype
 	end
 	
-	if prototype.base and (deep == nil or deep) then prototype.base = FML.table.deep_copy(prototype.base); end
+	if prototype.base then
+		if type(prototype.base) == "function" then prototype.base = prototype.base(true); end
+		if deep == nil or deep then prototype.base = FML.table.deep_copy(prototype.base); end
+	end
 	local res = prototype.base or {}
 	
 	local function _get_special_functions(tab)
