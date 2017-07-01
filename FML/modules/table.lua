@@ -636,7 +636,7 @@ end
 _DOC.foreach = {
 	type = "function",
 	desc = [[ Call a function for every element in the table using `pairs` for iteration. ]],
-	notes = {"The function receives the index and the value as parameters.", RICH_NOTE},
+	notes = {"The function receives the value and it's index as parameters.", RICH_NOTE},
 	params = {
 		{
 			type = "table",
@@ -651,13 +651,13 @@ _DOC.foreach = {
 	},
 }
 function _M.foreach(tab, func)
-	for i, v in pairs(tab) do func(i, v); end
+	for i, v in pairs(tab) do func(v, i); end
 end
 
 _DOC.foreachi = _M.deep_copy(_DOC.foreach)
 _DOC.foreachi.desc = [[ Call a function for every element in the table using `ipairs` for ieration. ]]
 function _M.foreachi(tab, func)
-	for i, v in ipairs(tab) do func(i, v); end
+	for i, v in ipairs(tab) do func(v, i); end
 end
 
 _DOC.foreachi_all = _M.deep_copy(_M.foreach)
@@ -669,15 +669,75 @@ _M.insert(_DOC.foreachi_all.params, {
 	default = "nil",
 })
 function _M.foreachi_all(tab, func, indices)
-	for i, v in _M.ipairs_all(tab, indices) do func(i, v); end
+	for i, v in _M.ipairs_all(tab, indices) do func(v, i); end
 end
 
 _DOC.foreach_tab = _M.deep_copy(_DOC.foreach)
 _DOC.foreach_tab.desc = [[ Call a function for every table-type element in the table. ]]
 function _M.foreach_tab(tab, func)
 	for i, v in pairs(tab) do
-		if type(v) == "table" then func(i, v); end
+		if type(v) == "table" then func(v, i); end
 	end
+end
+
+_DOC.filter = {
+	type = "function",
+	desc = [[ Remove elements from table based on a condition. ]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to filter",
+		},
+		{
+			type = "function",
+			name = "func",
+			desc = "The filter function - if it returns false, the element will be removed. Gets value and index as parameters",
+		},
+		{
+			type = "Any",
+			name = "set",
+			desc = "The value to set to filtered fields",
+			default = "nil",
+		},
+	},
+}
+function _M.filter(tab, func, set)
+	for i, v in pairs(tab) do
+		if not func(v, i) then tab[i] = set; end
+	end
+end
+
+_DOC.select = {
+	type = "function",
+	desc = [[ Select a subset of a table based on a condition. ]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to select from",
+		},
+		{
+			type = "function",
+			name = "func",
+			desc = "The filter function - if returns true, the element will be selected. Gets value and index as parameters",
+		},
+	},
+	returns = {
+		{
+			type = "RichTable",
+			desc = "The selected subset",
+		},
+	},
+}
+function _M.select(tab, func)
+	local res = _M()
+	for i, v in pairs(tab) do
+		if func(v, i) then res[i] = v; end
+	end
+	return res
 end
 
 _DOC.unpack = {
@@ -953,6 +1013,8 @@ function _M.enrich(tab)
 		foreachi = _M.foreachi,
 		foreachi_all = _M.foreachi_all,
 		foreach_tab = _M.foreach_tab,
+		filter = _M.filter,
+		select = _M.select,
 		
 		-- The built-in functions happen to be usable as methods too
 		insert = _M.insert,
