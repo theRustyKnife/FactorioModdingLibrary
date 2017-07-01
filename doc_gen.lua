@@ -228,7 +228,9 @@ for name, module in pairs(complete_doc) do
 	local res = ""
 	local function write(s) res = res..s; end
 	
-	-- The title part
+	-- Title
+	write(h(1, module.name)..n(2))
+	-- The subtitle part
 	if module.type then write(i(module.type).." "); end
 	write(b(module.name)..n(2)..module.desc..n(2))
 	
