@@ -122,7 +122,7 @@ function _M.equals(tab1, tab2)
 	return _M.is_subset(tab1, tab2) and _M.is_subset(tab2, tab1)
 end
 
-_DOC.insert_all = {
+_DOC.merge = {
 	type = "function",
 	desc = [[ Insert all elements from src to dest. ]],
 	params = {
@@ -156,7 +156,7 @@ _DOC.insert_all = {
 		},
 	},
 }
-function _M.insert_all(dest, src, overwrite, deep)
+function _M.merge(dest, src, overwrite, deep)
 	if type(dest) ~= "table" or type(src) ~= "table" then return; end
 	for i, v in pairs(src) do
 		if overwrite or dest[i] == nil then
@@ -168,6 +168,7 @@ function _M.insert_all(dest, src, overwrite, deep)
 	
 	return dest
 end
+
 
 _DOC.any = {
 	type = "function",
