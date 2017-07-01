@@ -7,7 +7,7 @@ local table = FML.table
 local _M = {}
 local _DOC = FML.make_doc(_M, {
 	type = "module",
-	name = "data_container",
+	name = "data-container",
 	desc = [[ Allows carrying data between the data and runtime stages. ]],
 })
 
