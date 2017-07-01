@@ -197,10 +197,26 @@ _DOC.any = {
 	},
 }
 function _M.any(tab, func)
+	if not tab then return false; end
 	for i, v in pairs(tab) do
 		if func(i, v) then return true; end
-		return false
 	end
+	return false
+end
+
+_DOC.any_tab = {
+	type = "function",
+	desc = [[ Same as any, but only calls the function for tables. ]],
+	notes = {RICH_NOTE},
+	params = _DOC.any.params,
+	returns = _DOC.any.returns,
+}
+function _M.any_tab(tab, func)
+	if not tab then return false; end
+	for i, v in pairs(tab)do
+		if type(v) == "table" and func(i, v) then return true; end
+	end
+	return false
 end
 
 _DOC.getn = {
@@ -826,6 +842,7 @@ function _M.enrich(tab)
 		n_insert = _M.n_insert,
 		n_remove = _M.n_remove,
 		any = _M.any,
+		any_tab = _M.any_tab,
 		
 		-- The built-in functions happen to be usable as methods too
 		insert = _M.insert,
