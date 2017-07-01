@@ -633,6 +633,73 @@ function _M.highest_index(tab)
 	return _M.numeric_indices(tab):last()
 end
 
+_DOC.foreach = {
+	type = "function",
+	desc = [[ Call a function for every element in the table using `pairs` for iteration. ]],
+	notes = {"The function receives the index and the value as parameters.", RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to iterate over",
+		},
+		{
+			type = "function",
+			name = "func",
+			desc = "The function to call",
+		},
+	},
+}
+function _M.foreach(tab, func)
+	for i, v in pairs(tab) do func(i, v); end
+end
+
+_DOC.foreachi = _M.deep_copy(_DOC.foreach)
+_DOC.foreachi.desc = [[ Call a function for every element in the table using `ipairs` for ieration. ]]
+function _M.foreachi(tab, func)
+	for i, v in ipairs(tab) do func(i, v); end
+end
+
+_DOC.foreachi_all = _M.deep_copy(_M.foreach)
+_DOC.foreachi_all.desc = [[ Call a function for every element in the table using `ipairs_all` for iteration. ]]
+_M.insert(_DOC.foreachi_all.params, {
+	type = {"Array[int]", "bool"},
+	name = "indices",
+	desc = "The indices to use",
+	default = "nil",
+})
+function _M.foreachi_all(tab, func, indices)
+	for i, v in _M.ipairs_all(tab, indices) do func(i, v); end
+end
+
+_DOC.foreach_tab = _M.deep_copy(_DOC.foreach)
+_DOC.foreach_tab.desc = [[ Call a function for every table-type element in the table. ]]
+function _M.foreach_tab(tab, func)
+	for i, v in pairs(tab) do
+		if type(v) == "table" then func(i, v); end
+	end
+end
+
+_DOC.unpack = {
+	type = "function",
+	desc = [[ Unpack the elements of a table to individual vars. ]],
+	notes = {"Alias for the built-in `unpack`.", RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to unpack",
+		},
+	},
+	returns = {
+		{
+			type = "...",
+			desc = "The unpacked values",
+		},
+	},
+}
+_M.unpack = unpack
+
 _DOC.ipairs_all = {
 	type = "function",
 	short_desc = "Get an iterator over all numeric indices.",
@@ -657,14 +724,15 @@ _DOC.ipairs_all = {
 		},
 	},
 	returns = {
-		type = "int, Any function()",
-		desc = "The iterator function",
+		{
+			type = "int, Any function()",
+			desc = "The iterator function",
+		},
 	},
 }
 function _M.ipairs_all(tab, indices)
 	if indices == nil or indices == true then indices = tab._ids or _M.numeric_indices(tab)
 	else indices = indices or _M.numeric_indices(tab); end
-	indices = indices or _M.numeric_indices(tab)
 	local i = 1
 	return function()
 		local res_i = indices[i]
@@ -881,12 +949,17 @@ function _M.enrich(tab)
 		any = _M.any,
 		any_tab = _M.any_tab,
 		insert_all = _M.insert_all,
+		foreach = _M.foreach,
+		foreachi = _M.foreachi,
+		foreachi_all = _M.foreachi_all,
+		foreach_tab = _M.foreach_tab,
 		
 		-- The built-in functions happen to be usable as methods too
 		insert = _M.insert,
 		remove = _M.remove,
 		concat = _M.concat,
 		sort = _M.sort,
+		unpack = _M.unpack,
 		
 		-- The built-in iterators
 		pairs = pairs,
