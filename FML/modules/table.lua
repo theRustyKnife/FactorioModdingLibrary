@@ -169,6 +169,40 @@ function _M.insert_all(dest, src, overwrite, deep)
 	return dest
 end
 
+_DOC.any = {
+	type = "function",
+	short_desc = "Check if any value in table fulfills a criteria.",
+	desc = [[
+	Iterate over a table and apply a function to the elements. As soon as the function true, any will return true. If
+	such situation does not happen, false is returned.
+	]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to apply the function to",
+		},
+		{
+			type = "bool function(Any i, Any v)",
+			name = "func",
+			desc = "The function to apply",
+		},
+	},
+	returns = {
+		{
+			type = "bool",
+			desc = "true if any of the calls returned true",
+		},
+	},
+}
+function _M.any(tab, func)
+	for i, v in pairs(tab) do
+		if func(i, v) then return true; end
+		return false
+	end
+end
+
 _DOC.getn = {
 	type = "function",
 	desc = [[ Alias for the table_size function. ]],
@@ -791,6 +825,7 @@ function _M.enrich(tab)
 		ipairs_all = _M.ipairs_all,
 		n_insert = _M.n_insert,
 		n_remove = _M.n_remove,
+		any = _M.any,
 		
 		-- The built-in functions happen to be usable as methods too
 		insert = _M.insert,
