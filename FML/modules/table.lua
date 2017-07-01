@@ -169,6 +169,42 @@ function _M.merge(dest, src, overwrite, deep)
 	return dest
 end
 
+_DOC.insert_all = {
+	type = "function",
+	desc = [[ Insert all elements from src to dest using the insert function. ]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "dest",
+			desc = "The table to insert into",
+		},
+		{
+			type = "table",
+			name = "src",
+			desc = "The table whose elements to insert",
+		},
+		{
+			type = "bool",
+			name = "deep",
+			desc = "If true, values will be deep coppied before insertion",
+			default = "false",
+		},
+	},
+	returns = {
+		{
+			type = "table",
+			desc = "A reference to the original table, with the inserted values",
+		},
+	},
+}
+function _M.insert_all(dest, src, deep)
+	for _, v in pairs(src) do
+		_M.insert(dest, (deep and _M.deep_copy(v)) or v)
+	end
+	
+	return dest
+end
 
 _DOC.any = {
 	type = "function",
@@ -844,6 +880,7 @@ function _M.enrich(tab)
 		n_remove = _M.n_remove,
 		any = _M.any,
 		any_tab = _M.any_tab,
+		insert_all = _M.insert_all,
 		
 		-- The built-in functions happen to be usable as methods too
 		insert = _M.insert,
