@@ -660,9 +660,9 @@ function _M.foreachi(tab, func)
 	for i, v in ipairs(tab) do func(v, i); end
 end
 
-_DOC.foreachi_all = _M.deep_copy(_M.foreach)
+_DOC.foreachi_all = _M.deep_copy(_DOC.foreach)
 _DOC.foreachi_all.desc = [[ Call a function for every element in the table using `ipairs_all` for iteration. ]]
-_M.insert(_DOC.foreachi_all.params, {
+table.insert(_DOC.foreachi_all.params, {
 	type = {"Array[int]", "bool"},
 	name = "indices",
 	desc = "The indices to use",
