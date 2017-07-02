@@ -210,8 +210,8 @@ _DOC.any = {
 	type = "function",
 	short_desc = "Check if any value in table fulfills a criteria.",
 	desc = [[
-	Iterate over a table and apply a function to the elements. As soon as the function true, any will return true. If
-	such situation does not happen, false is returned.
+	Iterate over a table and apply a function to the elements. As soon as the function returns true, any will return
+	true. If such situation does not happen, false is returned.
 	]],
 	notes = {RICH_NOTE},
 	params = {
