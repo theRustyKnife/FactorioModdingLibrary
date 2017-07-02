@@ -740,6 +740,56 @@ function _M.select(tab, func)
 	return res
 end
 
+_DOC.map = {
+	type = "function",
+	desc = [[ Create a transformed copy of the table based on a mapping function. ]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to map",
+		},
+		{
+			type = "function",
+			name = "func",
+			desc = "The mapping function, gets value and index as parameters",
+		},
+	},
+	returns = {
+		{
+			type = "RichTable",
+			desc = "The mapped table",
+		},
+	},
+}
+function _M.map(tab, func)
+	local res = _M()
+	for i, v in pairs(tab) do res[i] = func(v, i); end
+	return res
+end
+
+_DOC.transform = {
+	type = "function",
+	desc = [[ Transform all elements in a table using a function. ]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to transform",
+		},
+		{
+			type = "function",
+			name = "func",
+			desc = "The transform function",
+		},
+	},
+}
+function _M.transform(tab, func)
+	for i, v in pairs(tab) do tab[i] = func(v, i); end
+end
+
 _DOC.unpack = {
 	type = "function",
 	desc = [[ Unpack the elements of a table to individual vars. ]],
@@ -1015,6 +1065,8 @@ function _M.enrich(tab)
 		foreach_tab = _M.foreach_tab,
 		filter = _M.filter,
 		select = _M.select,
+		map = _M.map,
+		transform = _M.transform,
 		
 		-- The built-in functions happen to be usable as methods too
 		insert = _M.insert,
