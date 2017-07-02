@@ -115,8 +115,8 @@ _DOC.get_recipe_icons = {
 	},
 	returns = {
 		{
-			type = "string",
-			desc = "The found icon path",
+			type = "table",
+			desc = "The found icons table",
 		},
 	},
 }
