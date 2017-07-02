@@ -62,5 +62,39 @@ function _M.result_name(result)
 	return result.name or result[1]
 end
 
+_DOC.get_possible_results = {
+	type = "function",
+	short_desc = "Get all the possible results of a recipe.",
+	desc = [[ Get all the possible results of a recipe, including both the normal and expensive modes. ]],
+	notes = {"At the moment, it is possible that one result will be returned multiple times. This will likely be fixed."}
+	params = {
+		{
+			type = "VanillaPrototype",
+			name = "recipe",
+			desc = "The recipe to check",
+		},
+	},
+	returns = {
+		{
+			type = "Array[string]",
+			desc = "The result names",
+		},
+	},
+}
+function _M.get_possible_results(recipe)
+	--TODO: make sure no reult can be returned multiple times
+	local res = table()
+	local function _get_results(recipe)
+		if recipe.result then res:insert(recipe.result); end
+		for _, result in pairs(recipe.results or {}) do res:insert(_M.result_name(result)); end
+	end
+	
+	_get_results(recipe)
+	if recipe.expensive then _get_results(recipe.expensive); end
+	if recipe.normal then _get_results(recipe.normal); end
+	
+	return res
+end
+
 
 return _M
