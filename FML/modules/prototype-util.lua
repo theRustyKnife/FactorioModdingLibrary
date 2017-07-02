@@ -29,6 +29,12 @@ _DOC.is_result = {
 			desc = "The recipe to search in",
 		},
 	},
+	returns = {
+		{
+			type = "bool",
+			desc = "true if item is result of recipe",
+		},
+	},
 }
 function _M.is_result(item, recipe)
 	local function _is_result(item, recipe)
