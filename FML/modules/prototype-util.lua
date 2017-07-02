@@ -67,7 +67,7 @@ _DOC.get_possible_results = {
 	type = "function",
 	short_desc = "Get all the possible results of a recipe.",
 	desc = [[ Get all the possible results of a recipe, including both the normal and expensive modes. ]],
-	notes = {"At the moment, it is possible that one result will be returned multiple times. This will likely be fixed."}
+	notes = {"At the moment, it is possible that one result will be returned multiple times. This will likely be fixed."},
 	params = {
 		{
 			type = "VanillaPrototype",
@@ -166,7 +166,7 @@ _DOC.get_recipe_locale = {
 function _M.get_recipe_locale(recipe)
 	local item, result_item
 	local results = _M.get_possible_results(recipe)
-	for_, type in pairs(config.DATA.RESULT_TYPES) do
+	for _, type in pairs(config.DATA.RESULT_TYPES) do
 		item = data.raw[type][recipe.name]
 		result_item = data.raw[type][results[1]]
 		if item or result_item then break; end
