@@ -113,6 +113,12 @@ _DOC.get_recipe_icons = {
 			default = "true",
 		},
 	},
+	returns = {
+		{
+			type = "string",
+			desc = "The found icon path",
+		},
+	},
 }
 function _M.get_recipe_icons(recipe, default)
 	if recipe.icon then return {{icon = recipe.icon}}; end
