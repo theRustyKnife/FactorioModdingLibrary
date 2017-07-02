@@ -50,6 +50,11 @@ return {
 			type = "recipe",
 			ingredients = {{"iron-plate", 20}},
 		},
+		
+		-- Possible prototype types of recipe results
+		RESULT_TYPES = {"item", "module", "tool", "fluid", "ammo"},
+		-- Possible types of items, that is things that can be put into an inventory
+		ITEM_TYPES = {"item", "module", "tool", "ammo"},
 	},
 	
 	

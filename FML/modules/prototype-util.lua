@@ -1,4 +1,5 @@
 local FML = require "therustyknife.FML"
+local config = require "therustyknife.FML.config"
 local table = FML.table
 
 
@@ -82,7 +83,7 @@ _DOC.get_possible_results = {
 	},
 }
 function _M.get_possible_results(recipe)
-	--TODO: make sure no reult can be returned multiple times
+	--TODO: make sure no result can be returned multiple times
 	local res = table()
 	local function _get_results(recipe)
 		if recipe.result then res:insert(recipe.result); end
@@ -94,6 +95,54 @@ function _M.get_possible_results(recipe)
 	if recipe.normal then _get_results(recipe.normal); end
 	
 	return res
+end
+
+_DOC.get_recipe_icons = {
+	type = "function",
+	desc = [[ Try to get the appropriate icon for this recipe in the icons table format. ]],
+	params = {
+		{
+			type = "VanillaPrototype",
+			name = "recipe",
+			desc = "The recipe to get icons for",
+		},
+		{
+			type = {"bool", "string"},
+			name = "default",
+			desc = "If true, use the default icon, if string, use this as the default, if false, return nil if not found",
+			default = "true",
+		},
+	},
+}
+function _M.get_recipe_icons(recipe, default)
+	if recipe.icon then return {{icon = recipe.icon}}; end
+	if recipe.icons then return recipe.icons; end
+	
+	local function _get_icons(item)
+		if not item then return nil; end
+		if item.icon then return {{icon = item.icon}}; end
+		if item.icons then return item.icons; end
+		return nil
+	end
+	
+	local possible_results = _M.get_possible_results(recipe)
+	for _, type in pairs(config.RESULT_TYPES) do
+		local first_icons
+		for _, result in pairs(possible_results) do
+			local icons = _get_icons(data.raw[type][result])
+			if result == recipe.name and icons then return icons; end
+			first_icons = first_icons or icons
+		end
+		if first_icons then return first_icons; end
+	end
+	
+	FML.log.w("Icon not found for: "..recipe.name)
+	
+	if default == nil or default then
+		if type(default) == "string" then return default; end
+		return config.DATA.PATH.NO_ICON
+	end
+	return nil
 end
 
 
