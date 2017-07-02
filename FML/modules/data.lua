@@ -156,7 +156,7 @@ function _M.make(prototype, deep)
 		local each, tabs, vals, _for = _get_special_functions(src)
 		
 		-- Apply the special functions
-		for val_name, val in pairs(src) do
+		for val_name, val in pairs(dest) do
 			if each then _call_val(dest[val_name], val_name, dest, each); end
 			if type(val) == "table" and tabs then _call_val(dest[val_name], val_name, dest, tabs); end
 			if type(val) ~= "table" and vals then _call_val(dest[val_name], val_name, dest, vals); end
