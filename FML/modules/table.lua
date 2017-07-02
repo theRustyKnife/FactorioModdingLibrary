@@ -790,6 +790,59 @@ function _M.transform(tab, func)
 	for i, v in pairs(tab) do tab[i] = func(v, i); end
 end
 
+_DOC.reverse = {
+	type = "function",
+	short_desc = "Reverse the values and indices of a table.",
+	desc = [[
+	Create a table with values from another table as indices and indices as values.  
+	Such table can then be used for finiding whether or not a table contains a vlaue or not. Depending on how many times
+	you want to do this, it may be significantly faster than using `table.contains`.
+	]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to reverse",
+		},
+	},
+	returns = {
+		{
+			type = "RichTable",
+			desc = "The reversed table",
+		},
+	},
+}
+function _M.reverse(tab)
+	local res = _M()
+	for i, v in pairs(tab) do res[v] = i; end
+	return res
+end
+
+_DOC.indices = {
+	type = "function",
+	desc = [[ Get an Array of the indices this table uses. ]],
+	notes = {RICH_NOTE},
+	params = {
+		{
+			type = "table",
+			name = "tab",
+			desc = "The table to find indices for",
+		},
+	},
+	returns = {
+		{
+			type = "Array[Any]",
+			desc = "An array of indices in the table",
+		},
+	},
+}
+function _M.indices(tab)
+	local res = _M()
+	for i, _ in pairs(tab) do res:insert(i); end
+	return res
+end
+
 _DOC.unpack = {
 	type = "function",
 	desc = [[ Unpack the elements of a table to individual vars. ]],
@@ -1067,6 +1120,8 @@ function _M.enrich(tab)
 		select = _M.select,
 		map = _M.map,
 		transform = _M.transform,
+		reverse = _M.reverse,
+		indices = _M.indices,
 		
 		-- The built-in functions happen to be usable as methods too
 		insert = _M.insert,
