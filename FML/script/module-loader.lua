@@ -75,7 +75,7 @@ the final form.
 	if log_func == true then log_func = log; end
 	
 	local loaded, err = load_func(path)
-	if loaded == nil then
+	if type(loaded) ~= "table" and type(loaded) ~= "function" then
 		if err and log_func then
 			log_func("Loading FML module from '"..tostring(path).."' failed: "..(err or "No error message."))
 		end
@@ -97,7 +97,7 @@ load_func, init and log_func is passed to load_from_file.
 	
 	for _, module in ipairs(modules) do
 		if res_table[module.name] == nil then
-			res_table[module.name] = _M.load_from_file(module.path, load_func, log_func) or res_table[module.name]
+			res_table[module.name] = _M.load_from_file(module.path, load_func, init, log_func) or res_table[module.name]
 		end
 	end
 	
