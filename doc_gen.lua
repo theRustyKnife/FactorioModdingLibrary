@@ -12,20 +12,34 @@ local other_docs
 other_docs = require "docs.init" or {}
 
 
+print "Loading FML..."
+local module_loader = {}; require(".FML.script.module-loader")(module_loader)
+local FML_stdlib = module_loader.init(require(".FML.script.FML-stdlib"))
+local FML_config = require ".FML.config"
+
+local modules = {}
+module_loader.load_from_files(FML_config.MODULES_TO_LOAD, modules, FML_stdlib.safe_require)
+
+local FML_data = module_loader.load_std(FML_stdlib, nil, "data", FML_config, FML_config.VERSION)
+local FML_control = module_loader.load_std(FML_stdlib, nil, "runtime", FML_config, FML_config.VERSION)
+therustyknife = {}
+
 local function empty() end
 
-
-print "Loading FML in data stage..."
-_G.data = {raw = {item = {}}, extend = empty}
-local FML_data = require ".FML.data"
-_G.data = nil
-
-print "Loading FML in runtime stage..."
-script = {on_init = empty, on_load = empty, on_configuration_changed = empty, on_event = empty}
-remote = {add_interface = empty, remove_interface = empty, call = empty, interfaces = {}}
-local FML_control = require ".FML.control"
+data = {raw = {item = {}}, extend = empty}
+script = {on_init = empty, on_load = empty, on_event = empty, on_configuration_changed = empty}
+for _, module in ipairs(FML_config.MODULES_TO_LOAD) do
+	if modules[module.name] then
+		therustyknife.FML = FML_data
+		FML_data[module.name] = module_loader.init(modules[module.name])
+		therustyknife.FML = FML_control
+		FML_control[module.name] = module_loader.init(modules[module.name])
+	end
+end
+data = nil
 script = nil
-remote = nil
+
+therustyknife = nil
 
 
 print "Mereging docs..."
