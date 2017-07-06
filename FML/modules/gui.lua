@@ -35,7 +35,6 @@ return function(_M)
 		end)
 		
 		
-		local _M = {}
 		local _DOC = FML.make_doc(_M, {
 			type = "module",
 			name = "GUI",
@@ -51,5 +50,5 @@ return function(_M)
 				global.watched_entities.instances:insert(entity)
 			else error("Wrong argument to watch_entity (expected string or entity, got "..type(entity)); end
 		end
-	else return nil; end
+	else return nil, true; end
 end
