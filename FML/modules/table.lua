@@ -1123,6 +1123,11 @@ return function(_M)
 			reverse = _M.reverse,
 			indices = _M.indices,
 			
+			-- Serpent functions can be used as methods
+			line = serpent.line,
+			block = serpent.block,
+			dump = serpent.dump,
+			
 			-- The built-in functions happen to be usable as methods too
 			insert = _M.insert,
 			remove = _M.remove,
