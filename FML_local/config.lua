@@ -1,11 +1,4 @@
 return {
-	-- FML version info
-	VERSION = {
-		NAME = "0.1.0-alpha.4.1",
-		CODE = 6,
-	},
-	
-	
 	-- Settings that need to be configured to reflect the mod FML is installed in
 	MOD = {
 		NAME = "FML-client-test",
