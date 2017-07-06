@@ -5,18 +5,6 @@ return {
 	},
 	
 	
-	-- Modules with their paths that FML will attempt to load
-	MODULES_TO_LOAD = {
-		{name = "log", path = ".modules.log"},
-		{name = "remote", path = ".modules.remote"},
-		{name = "table", path = ".modules.table"},
-		{name = "format", path = ".modules.format"},
-		{name = "events", path = ".modules.events"},
-		{name = "GUI", path = ".modules.GUI"},
-		{name = "Semver", path = ".modules.Semver"},
-	},
-	
-	
 	LOG = {
 		-- If true, log messages will be printed to the console as well
 		IN_CONSOLE = true,
