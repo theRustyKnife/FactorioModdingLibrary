@@ -50,6 +50,16 @@ If module is anything else than a function, it's going to be returned as-is.
 	return module
 end
 
+function _M.init_all(FML, modules, init_func)
+--[[
+Init all the modules in the given FML instance. Use init_func for initialization, or the init function if none is given.
+]]
+	init_func = init_func or _M.init
+	for _, module in ipairs(modules) do
+		if FML[module.name] then FML[module.name] = init_func(FML[module.name]); end
+	end
+end
+
 function _M.load_from_file(path, load_func, init, log_func)
 --[[
 Load and return a module from the file at path, using load_func. Returns nil if the module didn't return a table.
