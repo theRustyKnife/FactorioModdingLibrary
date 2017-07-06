@@ -21,6 +21,8 @@ function _M.load_std(std, res_table, stage, config, version)
 	res_table.get_version_code = pack_method(std.get_version_code, version)
 	res_table.get_version_name = pack_method(std.get_version_name, version)
 	
+	res_table.init_all = function() _M.init_all(res_table, config.MODULES_TO_LOAD); end
+	
 	if stage == "data" then
 		res_table.put_to_global = std.put_to_global
 		res_table.register_module = pack_method(std.register_module, res_table)
