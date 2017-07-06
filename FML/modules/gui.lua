@@ -5,7 +5,7 @@ local table = FML.table
 
 
 if FML.STAGE == "data" then
-	return function(_M, set)
+	return function(_M)
 		FML.data.make{
 			{
 				type = "custom-input",
@@ -21,7 +21,7 @@ if FML.STAGE == "data" then
 			},
 		}
 		
-		set(nil)
+		return nil, true
 	end
 
 elseif FML.STAGE == "runtime" then
