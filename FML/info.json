@@ -2,7 +2,7 @@
 	"name": "FML",
 	"version": "0.1.0",
 	"factorio_version": "0.15",
-	"title": "FML",
+	"title": "Factorio Modding Library",
 	"author": "TheRustyKnife",
 	"contact": "therustyknife13@gmail.com",
 	"description": "A library made to ease Factorio modders' work. Doesn't do anything on it's own.",
