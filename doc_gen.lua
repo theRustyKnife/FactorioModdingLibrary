@@ -258,7 +258,7 @@ for name, module in pairs(complete_doc) do
 	
 	write(hr(2))
 	
-	if module.metamethods then
+	if module.metamethods and next(module.metamethods) then
 		-- Metamethod overview
 		write(h(2, "Metamethod Overview")..n())
 		
@@ -274,7 +274,7 @@ for name, module in pairs(complete_doc) do
 		write(n()..hr(2))
 	end
 	
-	if module.funcs then
+	if module.funcs and next(module.funcs) then
 		-- Function overview
 		write(h(2, "Function Overview")..n())
 		
@@ -290,7 +290,7 @@ for name, module in pairs(complete_doc) do
 		write(n()..hr(2))
 	end
 	
-	if module.metamethods then
+	if module.metamethods and next(module.metamethods) then
 		--Metamethod detail
 		write(h(2, "Metamethod Detail")..n())
 		
@@ -300,7 +300,7 @@ for name, module in pairs(complete_doc) do
 		end
 	end
 	
-	if module.funcs then
+	if module.funcs and next(module.funcs) then
 		-- Function detail
 		write(h(2, "Function Detail")..n())
 		
