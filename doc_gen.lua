@@ -26,6 +26,7 @@ therustyknife = {}
 
 local function empty() end
 
+serpent = {}
 data = {raw = {item = {}}, extend = empty}
 script = {on_init = empty, on_load = empty, on_event = empty, on_configuration_changed = empty}
 for _, module in ipairs(FML_config.MODULES_TO_LOAD) do
