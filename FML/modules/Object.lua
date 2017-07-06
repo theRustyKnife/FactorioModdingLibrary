@@ -3,7 +3,7 @@ return function(_M)
 	
 	
 	local _DOC = FML.make_doc(_M, {
-		type = "Class",
+		type = "class",
 		name = "Object",
 		short_desc = "A base class for objects in Lua.",
 		desc = [[
