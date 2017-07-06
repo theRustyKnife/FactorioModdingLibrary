@@ -24,6 +24,9 @@ return {
 		{name = "prototype_util", path = ".modules.prototype-util"},
 	},
 	
+	-- The name of the item that's used for saving modules
+	FML_SETTING_NAME = "FML_FML-hack-setting",
+	
 	
 	LOG = {
 		-- If true, log messages will be printed to the console as well
