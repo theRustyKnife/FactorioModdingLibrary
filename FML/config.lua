@@ -1,8 +1,8 @@
 return {
 	-- FML version info
 	VERSION = {
-		NAME = "0.1.0-alpha.5.0",
-		CODE = 7,
+		NAME = "0.1.0-alpha.5.1",
+		CODE = 8,
 	},
 	
 	-- If true, errors from module loading will not be ignored
