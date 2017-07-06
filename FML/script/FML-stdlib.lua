@@ -4,9 +4,10 @@ return function(_M)
 
 
 	function _M.make_doc(module, doc)
-		doc.funcs = {}
+		doc.funcs = doc.funcs or {}
+		doc.metamethods = doc.metamethods or {}
 		module._DOC = doc
-		return doc.funcs
+		return doc.funcs, doc.metamethods
 	end
 
 
