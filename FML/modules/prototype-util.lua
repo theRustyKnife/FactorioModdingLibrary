@@ -1,12 +1,12 @@
-local FML = require "therustyknife.FML"
-local config = require "therustyknife.FML.config"
-local table = FML.table
-
-
-if FML.STAGE ~= "data" then return nil; end
-
-
 return function(_M)
+	local FML = therustyknife.FML
+	local config = therustyknife.FML.config
+	local table = FML.table
+
+
+	if FML.STAGE ~= "data" then return nil, true; end
+
+	
 	local _DOC = FML.make_doc(_M, {
 		type = "module",
 		name = "prototype-util",

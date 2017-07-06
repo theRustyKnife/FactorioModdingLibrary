@@ -1,11 +1,11 @@
-local FML = require "therustyknife.FML"
-local config = require "therustyknife.FML.config"
+return function(_M)
+	local FML = therustyknife.FML
+	local config = therustyknife.FML.config
 
-local table = FML.table
-
-
-if FML.STAGE == "data" then
-	return function(_M)
+	local table = FML.table
+	
+	
+	if FML.STAGE == "data" then
 		FML.data.make{
 			{
 				type = "custom-input",
@@ -22,10 +22,8 @@ if FML.STAGE == "data" then
 		}
 		
 		return nil, true
-	end
 
-elseif FML.STAGE == "runtime" then
-	return function(_M)
+	elseif FML.STAGE == "runtime" then
 		local global
 		
 		FML.events.on_load(function()
@@ -53,5 +51,5 @@ elseif FML.STAGE == "runtime" then
 				global.watched_entities.instances:insert(entity)
 			else error("Wrong argument to watch_entity (expected string or entity, got "..type(entity)); end
 		end
-	end
-else return nil; end
+	else return nil; end
+end

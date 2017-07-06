@@ -1,10 +1,11 @@
-local FML = require "therustyknife.FML"
-local config = require "therustyknife.FML.config"
-
-
-if FML.STAGE ~= "data" then return nil; end
-
 return function(_M)
+	local FML = therustyknife.FML
+	local config = therustyknife.FML.config
+
+
+	if FML.STAGE ~= "data" then return nil, true; end
+
+
 	local _DOC = FML.make_doc(_M, {
 		type = "module",
 		name = "data",
@@ -262,7 +263,7 @@ return function(_M)
 		}
 		
 		if properties.set_minable_result == nil or properties.set_minable_result then
-			entity_prototype.minable = entity_prototype.minable or config.DATA.DEFAULT_MINABLE
+			entity_prototype.minable = entity_prototype.minable or FML.config.DATA.DEFAULT_MINABLE
 			entity_prototype.minable.result = res.name
 		end
 		
@@ -299,7 +300,7 @@ return function(_M)
 	function _M.make_recipe_for(item_prototype, properties)
 		properties = properties or {}
 		
-		local base = properties.base or config.DATA.RECIPE_BASE
+		local base = properties.base or FML.config.DATA.RECIPE_BASE
 		
 		base.name = item_prototype.name
 		base.result = item_prototype.name

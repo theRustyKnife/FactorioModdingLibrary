@@ -1,45 +1,45 @@
-local FML = require "therustyknife.FML"
-local config = require "therustyknife.FML.config"
-
-local table = FML.table
-
-
---TODO: make this a module, possibly special-cased like remote --UPDATE: special casing not necessary, it's just gonna 
--- be a dependency of the modules that use it.
-
---[[
-TODO: this
-Allow permanent event handlers to be registered. These will have to be functions accepting two parameters:
-	- table event - All the event data, as in any standard event handler.
-	- table _G - The current global scope. The function can't use any upvalues as that would make it a closure and break
-	              on serialization. This should be a viable alternative to that.
-	- ... - Any other constant parameters specified when registering the handler. This allows the function to use 
-	        variables from the local scope at the time of creation. Be careful as these need to be serializable as well 
-			and thus, closures can't be used.
-Some notes on this:
-	Any function calls need to be done either via the extra parameters (if the function is not a closure), or via the _G
-	 parameter, in which case the function needs to be reliably present in the global scope, or somepalce accessible 
-	from there.
-
-Another thought:
-Allow handlers to be specified as interface Callbacks. This way, the mod that registered the handler would only have to 
-make sure the interface is re-exposed after deserialization. This could be handled by FML in a large part:
-	- There will be a function, which would take a function, interface name and function name
-		- This function will expose the interface with the given function inside, and return a Callback to it.
-		- It will be called in a similar fassion the script.on_event function is - directly in the script.body and 
-		  every time the script is loaded.
-	- When registering a handler, the Callback could be passed in and will be saved as the handler function.
-
-This would also make using this module without installing it into the local instance easier, as Callbacks would be 
-basically natively supported.
-]]
-
-
-if FML.STAGE ~= "runtime" then return nil; end
-
-local global
-
 return function(_M)
+	local FML = therustyknife.FML
+	local config = therustyknife.FML.config
+
+	local table = FML.table
+
+
+	--TODO: make this a module, possibly special-cased like remote --UPDATE: special casing not necessary, it's just gonna 
+	-- be a dependency of the modules that use it.
+
+	--[[
+	TODO: this
+	Allow permanent event handlers to be registered. These will have to be functions accepting two parameters:
+		- table event - All the event data, as in any standard event handler.
+		- table _G - The current global scope. The function can't use any upvalues as that would make it a closure and break
+					  on serialization. This should be a viable alternative to that.
+		- ... - Any other constant parameters specified when registering the handler. This allows the function to use 
+				variables from the local scope at the time of creation. Be careful as these need to be serializable as well 
+				and thus, closures can't be used.
+	Some notes on this:
+		Any function calls need to be done either via the extra parameters (if the function is not a closure), or via the _G
+		 parameter, in which case the function needs to be reliably present in the global scope, or somepalce accessible 
+		from there.
+
+	Another thought:
+	Allow handlers to be specified as interface Callbacks. This way, the mod that registered the handler would only have to 
+	make sure the interface is re-exposed after deserialization. This could be handled by FML in a large part:
+		- There will be a function, which would take a function, interface name and function name
+			- This function will expose the interface with the given function inside, and return a Callback to it.
+			- It will be called in a similar fassion the script.on_event function is - directly in the script.body and 
+			  every time the script is loaded.
+		- When registering a handler, the Callback could be passed in and will be saved as the handler function.
+
+	This would also make using this module without installing it into the local instance easier, as Callbacks would be 
+	basically natively supported.
+	]]
+
+
+	if FML.STAGE ~= "runtime" then return nil, true; end
+
+	local global
+	
 	local handlers = {
 		init = table(), -- same as script.on_init
 		load = table(), -- same as script.on_load, but runs after on_init as well

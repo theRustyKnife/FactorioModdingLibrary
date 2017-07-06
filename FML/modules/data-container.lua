@@ -1,10 +1,10 @@
-local FML = require "therustyknife.FML"
-local config = require "therustyknife.FML.config"
-
-local table = FML.table
-
-
 return function(_M)
+	local FML = therustyknife.FML
+	local config = therustyknife.FML.config
+
+	local table = FML.table
+
+
 	local _DOC = FML.make_doc(_M, {
 		type = "module",
 		name = "data-container",

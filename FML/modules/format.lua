@@ -1,7 +1,7 @@
-local FML = require "therustyknife.FML"
-
-
 return function(_M)
+	local FML = therustyknife.FML
+	
+	
 	local _DOC = FML.make_doc(_M, {
 		type = "module",
 		name = "format",

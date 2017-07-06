@@ -1,14 +1,15 @@
-local FML = require "therustyknife.FML"
-local config = require "therustyknife.FML.config"
-
-
---TODO: allow using mod name as tag automatically
---TODO: logging to file (named 'tag'.log to allow individual files for each mod)
---TODO: add tickstamp to logs
---TODO: log loading saves or clear log on load?
---TODO: log to file/console only for certain players?
-
 return function(_M)
+	local FML = therustyknife.FML
+	local config = therustyknife.FML.config
+
+
+	--TODO: allow using mod name as tag automatically
+	--TODO: logging to file (named 'tag'.log to allow individual files for each mod)
+	--TODO: add tickstamp to logs
+	--TODO: log loading saves or clear log on load?
+	--TODO: log to file/console only for certain players?
+
+	
 	local function empty() end
 
 	local print

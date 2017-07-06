@@ -1,10 +1,10 @@
-local FML = require "therustyknife.FML"
-
-
-if FML.STAGE ~= "runtime" then return nil; end
-
-
 return function(_M)
+	local FML = therustyknife.FML
+
+
+	if FML.STAGE ~= "runtime" then return nil, true; end
+
+
 	local function get_function_internal(clbck)
 	--[[ Get the interface function without checking if it exists. ]]
 		return function(...) return remote.call(clbck.interface, clbck.func, ...); end
