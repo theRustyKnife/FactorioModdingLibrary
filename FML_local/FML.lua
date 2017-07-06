@@ -4,8 +4,8 @@ local CONFIG_PATH = ".config"
 
 local FML_import = loadstring(settings.global["FML_FML-hack-setting"].value)()
 
-local FML_stdlib = FML_import.FML_stdlib()
-local module_loader = FML_import.module_loader()
+local module_loader = {}; FML_import.module_loader(module_loader)
+local FML_stdlib = module_loader.init(FML_import.FML_stdlib)
 
 local config = FML_stdlib.merge_configs(FML_stdlib.safe_require(CONFIG_PATH) or {}, FML_import.config)
 
