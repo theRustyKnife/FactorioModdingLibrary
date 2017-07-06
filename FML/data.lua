@@ -16,7 +16,7 @@ local module_lookup = FML_stdlib.get_module_lookup(config.MODULES_TO_LOAD)
 local log_func = true
 -- Try to load the log module first, so we can use the logging functions
 if module_lookup["log"] then
-	_M.log = module_loader.load_from_file(module_lookup["log"], FML_stdlib.safe_require, log_func)
+	_M.log = module_loader.load_from_file(module_lookup["log"], FML_stdlib.safe_require, true, log_func)
 	-- Make sure we're not entirely dependent on the logging module - use default log if not available
 	log_func = _M.log and _M.log.e or true
 end
@@ -25,6 +25,7 @@ module_loader.load_from_files(
 		config.MODULES_TO_LOAD,
 		_M,
 		function(path) return FML_stdlib.safe_require(path, config.FORCE_LOAD_MODULES); end,
+		true,
 		log_func
 	)
 

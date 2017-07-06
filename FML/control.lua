@@ -11,11 +11,10 @@ package.loaded["therustyknife.FML.config"] = config -- Config access for modules
 local module_lookup = FML_stdlib.get_module_lookup(config.MODULES_TO_LOAD)
 
 
---TODO: make sure this works
 local log_func = true
 -- Try to load the log module first
 if module_lookup["log"] then
-	_M.log = module_loader.load_from_file(module_lookup["log"], FML_stdlib.safe_require, log_func)
+	_M.log = module_loader.load_from_file(module_lookup["log"], FML_stdlib.safe_require, true, log_func)
 	-- Use default log function if loading failed
 	log_func = _M.log and _M.log.w or true
 end
@@ -24,6 +23,7 @@ module_loader.load_from_files(
 		config.MODULES_TO_LOAD,
 		_M,
 		function(path) return FML_stdlib.safe_require(path, config.FORCE_LOAD_MODULES); end,
+		true,
 		log_func
 	)
 assert(_M.remote, "FML couldn't find the remote module.")
