@@ -243,6 +243,9 @@ for name, module in pairs(complete_doc) do
 	local res = ""
 	local function write(s) res = res..s; end
 	
+	-- FML title
+	write(h(5, i("FML "..FML_config.VERSION.NAME))..n())
+	
 	-- Title
 	write(h(1, module.name)..n(2))
 	-- The subtitle part
@@ -321,6 +324,9 @@ if other_docs.JUNCTION then
 	print "Generating junction page..."
 	local res = ""
 	local function write(s) res = res..s; end
+	
+	-- FML title
+	write(h(5, i("FML "..FML_config.VERSION.NAME))..n())
 	
 	-- Header
 	write(other_docs.JUNCTION.HEADER_TEXT..n(2))
