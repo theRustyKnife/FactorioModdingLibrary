@@ -10,7 +10,7 @@ local _M = {}
 function _M.load_std(std, res_table, stage, config, version)
 --[[ Maps functions from std to their respective positions in the main module. ]]
 	res_table = res_table or {}
-	res_table.CONFIG = config
+	res_table.config = config
 	
 	res_table.STAGE = stage
 	res_table.VERSION = version
