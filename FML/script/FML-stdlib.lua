@@ -41,6 +41,14 @@ return function(_M)
 		return res
 	end
 
+	function _M.merge_configs(local_config, remote_config)
+	--[[ Basic table inheritance used to allow overriding FML's default config with custom values. ]]
+		for key, value in pairs(local_config) do
+			if type(value) == "table" and remote_config[key] then _M.merge_configs(value, remote_config[key]); end
+		end
+		return setmetatable(local_config, {__index = remote_config})
+	end
+	
 	function _M.put_to_global(namespace, package_name, package)
 	--[[ Put a package into the global namespace. Useful during the data stage. ]]
 		_G[namespace] = _G[namespace] or {}
