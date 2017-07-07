@@ -334,13 +334,19 @@ if other_docs.JUNCTION then
 	-- The individual categories
 	for _, category in ipairs(other_docs.JUNCTION.CATEGORIES or {}) do
 		if to_list[category.name] then
+			-- Sort alphabetically
+			local names = {}
+			for _, module in pairs(to_list[category.name]) do table.insert(names, module.name); end
+			table.sort(names)
+			
 			-- The category title
 			write(h(2, category.title)..n(2))
 			
 			-- Table header
 			write(tab_row("Name", "Description")..tab_line(2))
 			-- The modules
-			for name, module in pairs(to_list[category.name]) do
+			for _, name in ipairs(names) do
+				local module = to_list[category.name][name]
 				write(tab_row(wiki_link(module.name), module.short_desc or module.desc))
 			end
 			write(n())
