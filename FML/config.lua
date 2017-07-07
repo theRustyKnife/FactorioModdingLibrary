@@ -17,7 +17,6 @@ return {
 		{name = "table", path = ".modules.table"},
 		{name = "format", path = ".modules.format"},
 		{name = "data", path = ".modules.data"},
-		{name = "data_container", path = ".modules.data-container"},
 		{name = "events", path = ".modules.events"},
 		{name = "GUI", path = ".modules.GUI"},
 		{name = "Semver", path = ".modules.Semver"},
