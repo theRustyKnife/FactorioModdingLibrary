@@ -204,7 +204,7 @@ return function(_M)
 				},
 				{
 					type = "string",
-					name = data_name,
+					name = "data_name",
 					desc = "The blueprint data group to get",
 				},
 			},
