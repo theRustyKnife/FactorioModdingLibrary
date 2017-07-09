@@ -172,7 +172,7 @@ local function parse_type(t)
 	if not t then return type_style("Any"); end
 	if type(t) == "string" then return type_style(t); end
 	local res = ""
-	for _, tt in ipairs(t) do res = res..(res~="" and "," or "")..tt; end
+	for _, tt in ipairs(t) do res = res..(res~="" and "," or "")..type_style(tt); end
 	return "{"..res.."}"
 end
 
