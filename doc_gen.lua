@@ -152,20 +152,24 @@ local function tab_line(nn)
 	return res..n()
 end
 
+local function type_style(type) return i(wiki_link(type)); end
+
 local function parse_type(t)
-	if not t then return "Any"; end
-	if type(t) == "string" then return t; end
-	return "{"..table.concat(t, ", ").."}"
+	if not t then return type_style("Any"); end
+	if type(t) == "string" then return type_style(t); end
+	local res = ""
+	for _, tt in ipairs(t) do res = res..(res~="" and "," or "")..tt; end
+	return "{"..res.."}"
 end
 
 local function parse_params(params, default)
-	if not params then return default or ""; end
+	if not params then return default and type_style(default) or ""; end
 	local res = ""
 	for _, param in ipairs(params) do
 		if res ~= "" then res = res..", "; end
 		if not param.name and param.type == "..." then res = res.."..."
 		else
-			res = res..i(parse_type(param.type))
+			res = res..parse_type(param.type)
 			if param.name then res = res.." "..param.name; end
 		end
 	end
@@ -182,7 +186,7 @@ local function func_detail(func)
 	
 	write(h(3, func.name)..n())
 	
-	write(parse_params(func.returns, i("nil")).." "..func_header(func)..br())
+	write(parse_params(func.returns, "nil").." "..func_header(func)..br())
 	write(func.desc..n(2))
 	
 	if func.notes then
@@ -193,7 +197,7 @@ local function func_detail(func)
 	if func.params then
 		write(h(4, "Parameters")..n())
 		for _, param in ipairs(func.params) do
-			write("* "..i(parse_type(param.type)).." "..param.name)
+			write("* "..parse_type(param.type).." "..param.name)
 			if param.default then write(" (default: "..code(param.default)..")"); end
 			if param.desc then write(" - "..param.desc); end
 			write(n())
@@ -205,7 +209,7 @@ local function func_detail(func)
 		for _, ret in ipairs(func.returns) do
 			write("* ")
 			if ret.type == "..." then write("...")
-			else write(i(parse_type(ret.type))); end
+			else write(parse_type(ret.type)); end
 			if ret.desc then write(" - "..ret.desc); end
 			write(n())
 		end
@@ -271,7 +275,7 @@ for name, module in pairs(complete_doc) do
 		
 		-- Table rows
 		for _, func in ipairs(module.metamethods) do
-			write(tab_row(parse_params(func.returns, i("nil")), func_header(func), func.short_desc or func.desc))
+			write(tab_row(parse_params(func.returns, "nil"), func_header(func), func.short_desc or func.desc))
 		end
 		
 		write(n()..hr(2))
@@ -287,7 +291,7 @@ for name, module in pairs(complete_doc) do
 		
 		-- Table rows
 		for _, func in ipairs(module.funcs) do
-			write(tab_row(parse_params(func.returns, i("nil")), func_header(func), func.short_desc or func.desc))
+			write(tab_row(parse_params(func.returns, "nil"), func_header(func), func.short_desc or func.desc))
 		end
 		
 		write(n()..hr(2))
