@@ -1,8 +1,8 @@
 return {
 	-- FML version info
 	VERSION = {
-		NAME = "0.1.0-alpha.5.1",
-		CODE = 8,
+		NAME = "0.1.0-alpha.5.2",
+		CODE = 9,
 	},
 	
 	-- If true, errors from module loading will not be ignored
@@ -22,6 +22,7 @@ return {
 		{name = "Semver", path = ".modules.Semver"},
 		{name = "prototype_util", path = ".modules.prototype-util"},
 		{name = "Object", path = ".modules.Object"},
+		{name = "blueprint_data", path = ".modules.blueprint-data"},
 	},
 	
 	-- The name of the item that's used for saving modules
@@ -43,6 +44,7 @@ return {
 	DATA = {
 		PATH = {
 			NO_ICON = "__FML__/graphics/icons/clear.png",
+			TRANS = "__FML__/graphics/util/trans.png",
 		},
 		
 		-- The default minable values
@@ -68,6 +70,13 @@ return {
 		},
 	},
 	
+	
+	BLUEPRINT_DATA = {
+		PROTOTYPE_NAME = "FML_blueprint-data_entity_",
+		ICON = "__base__/graphics/icons/blueprint-book.png",
+		DEFAUL_COLLISION_BOX = {{0, 0}, {0, 0}},
+		ITEM_NAME = "FML_blueprint-data_item",
+	},
 	
 	DATA_CONTAINER = {
 		PROTOTYPE_NAME = "FML_data-container-item",
