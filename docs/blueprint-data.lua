@@ -1,5 +1,5 @@
 return {
-	BlueprintData = {
+	BlueprintData = {_DOC = {
 		type = "concept",
 		name = "BlueprintData",
 		short_desc = "An object representing data persistent in blueprints.",
@@ -39,8 +39,8 @@ return {
 				desc = [[ Sets data to the object. ]],
 			},
 		},
-	},
-	BlueprintDataPrototype = {
+	}},
+	BlueprintDataPrototype = {_DOC = {
 		type = "concept",
 		name = "BlueprintDataPrototype",
 		short_desc = "A definition of settings to be stored in a blueprint.",
@@ -59,5 +59,5 @@ return {
 		]],
 		notes = {[[ Setting names should not start with an underscore, as such names could clash with the methods of
 		BlueprintData and other internal things.]]},
-	},
+	}},
 }
