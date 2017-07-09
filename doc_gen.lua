@@ -152,7 +152,21 @@ local function tab_line(nn)
 	return res..n()
 end
 
-local function type_style(type) return i(wiki_link(type)); end
+local function type_style(type)
+	if type:sub(1, 1) == "[" then
+		type = type:sub(2, type:len()-1)
+		local nested = type:find("%[")
+		local dict_s, dict_e = type:find(": ")
+		
+		if dict_s and dict_s < (nested or math.huge) then
+			return "["..type_style(type:sub(1, dict_s-1))..": "..type_style(type:sub(dict_e+1, type:len())).."]"
+		else return "["..type_style(type).."]"; end
+	end
+	
+	local nested = type:find("%[")
+	if nested then return type_style(type:sub(1, nested-1))..type_style(type:sub(nested, type:len())); end
+	return i(wiki_link(type))
+end
 
 local function parse_type(t)
 	if not t then return type_style("Any"); end
@@ -163,7 +177,7 @@ local function parse_type(t)
 end
 
 local function parse_params(params, default)
-	if not params then return default and type_style(default) or ""; end
+	if not params then return default and parse_type(default) or ""; end
 	local res = ""
 	for _, param in ipairs(params) do
 		if res ~= "" then res = res..", "; end
