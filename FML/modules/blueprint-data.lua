@@ -47,30 +47,7 @@ return function(_M)
 			return res, slots
 		end
 		
-		--[[ --TODO: add this to the doc
-		Format for setting prototypes:
-		{
-			name = "data-group-name", -- Ideally the entity this data is going to be associated with
-			settings = {
-				int_setting_name = {
-					type = "int",
-					index = 1, -- Must be unique
-					default = 0, -- Returned if this setting had no value stored, if nil, nil is returned
-				},
-				bool_setting_name = {
-					type = "bool",
-					index = 2, -- Must be unique
-					default = false, -- Returned if this setting had no value stored, if nil, nil is returned
-				},
-				float_setting_name = {
-					type = "float",
-					index = 3, -- Must be unique
-					exponent_index = 4, -- This is where the exponent is stored, if nil, index+1 will be used -- Must be unique
-					default = 0, -- Returned if this setting had no value stored, if nil, nil is returned
-				},
-			},
-		}
-		]]
+		
 		_DOC.add_prototype = {
 			type = "function",
 			short_desc = "Add a new blueprint data prototype.",

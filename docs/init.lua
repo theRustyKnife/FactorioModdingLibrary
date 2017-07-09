@@ -33,5 +33,6 @@ return {
 			]],
 		}},
 		Semver = require "Semver",
+		blueprint_data = require "blueprint-data",
 	},
 }

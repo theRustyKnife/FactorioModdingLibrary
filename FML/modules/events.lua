@@ -5,8 +5,8 @@ return function(_M)
 	local table = FML.table
 
 
-	--TODO: make this a module, possibly special-cased like remote --UPDATE: special casing not necessary, it's just gonna 
-	-- be a dependency of the modules that use it.
+	--TODO: make a part of this module in the remote instance, that would handle all the processing heavy checks and just
+	-- raise an event if it happens
 
 	--[[
 	TODO: this
@@ -246,4 +246,7 @@ return function(_M)
 	end
 
 	--TODO: raise_event
+	
+	
+	-- Custom events --TODO: move this into another file/module
 end

@@ -918,7 +918,7 @@ return function(_M)
 		Insert the given value into the table. If a position is given, the value is inserted before the element currently 
 		at that position, otherwise it is appended to the end of the table.  
 		When an element is inserted, both size and element indices are updated. The end of the table is deduced from the `n`
-		 field, thus can be specified by the user.
+		field, thus can be specified by the user.
 		]],
 		notes = {RICH_NOTE, built_in_note("table.insert")},
 		params = {
