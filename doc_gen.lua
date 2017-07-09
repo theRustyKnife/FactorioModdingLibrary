@@ -86,20 +86,20 @@ local function _strip_newlines(v)
 		local strip = true
 		local first = true
 		local last_chars = {"", ""}
+		local reg_char = false
 		v:gsub(".", function(c)
 			if c == "\n" then
-				if not strip then
-					if table.concat(last_chars) == "  " then res = res.."\n"; end
-				end
+				if table.concat(last_chars) == "  " or not reg_char then res = res.."\n"; end
 				strip = true
+				reg_char = false
 			elseif strip and white_chars[c] then strip = true
 			elseif strip and c == "`" then
-				if last_chars[1] == "`" then res = res.."\n\t"; strip = false; first = false end
+				if last_chars[1] == "`" then res = res.."\t"; strip = false; first = false; reg_char = true; end
 			elseif strip then
 				if last_chars[1] == "`" then res = res.." `"..c
 				else res = res..(first and "" or " ")..c; end
-				strip = false; first = false
-			else res = res..c; strip = false; first = false; end
+				strip = false; first = false; reg_char = true
+			else res = res..c; strip = false; first = false; reg_char = true; end
 			table.remove(last_chars); table.insert(last_chars, 1, c)
 		end)
 		return res

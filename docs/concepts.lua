@@ -42,7 +42,7 @@ return {
 			using the set function is really only necessary if you want to set nil to the attribute. If the function
 			did not set the attribute value in any of the above ways, the original value will be preserved.  
 			
-			#### Special Attributes ####
+			#### Special Attributes ####  
 			In any prototype definition you can put a special table in the `_for` field. The table has the following
 			structure:  
 			``{
