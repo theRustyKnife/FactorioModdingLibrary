@@ -48,8 +48,8 @@ return {
 		A definition of settings to be stored in a blueprint.  
 		The format is a table with two fields:  
 		 - name - The name of this prototype  
-		 - settings - A dictionary of setting names mapped to the setting definitions
-		Settings are tables in the following format:  
+		 - settings - A dictionary of setting names mapped to the setting definitions  
+		Settings are tables in the following format:
 		``{
 		``	type = string, -- One of "int", "bool", "float" (float is not yet implemented). Determines what type of data can be stored in this setting.
 		``	index = int, -- The index is equivalent to the signal slot it is going to be stored in - has to be unique.
