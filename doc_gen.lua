@@ -94,7 +94,7 @@ local function _strip_newlines(v)
 				reg_char = false
 			elseif strip and white_chars[c] then strip = true
 			elseif strip and c == "`" then
-				if last_chars[1] == "`" then res = res.."\t"; strip = false; first = false; reg_char = true; end
+				if last_chars[1] == "`" then res = res.."\n\t"; strip = false; first = false; reg_char = true; end
 			elseif strip then
 				if last_chars[1] == "`" then res = res.." `"..c
 				else res = res..(first and "" or " ")..c; end
