@@ -115,10 +115,10 @@ return {
 		type = "concept",
 		name = "Subclass",
 		short_desc = "The base to build new classes from.",
-		desc = [[
+		desc = [=[
 		The base to build new classes from. Created from the [[Object|Object]] module.  
 		A Subclass is basically a a table to put functions into. This table already has the metatables and constructor
 		setup to work like a class.
-		]],
+		]=],
 	}},
 }
