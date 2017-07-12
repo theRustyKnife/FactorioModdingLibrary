@@ -169,7 +169,7 @@ local function type_style(type)
 			local comma_start, comma_end = type:find(", ")
 			--TODO: support multi-layer nesting
 			
-			res = res..type_style(type:sub(1, (comma_start or type:len()+1)-1))
+			res = res..(res=="{" and "" or ", ")..type_style(type:sub(1, (comma_start or type:len()+1)-1))
 			if not comma_start then break; end
 			type = type:sub(comma_end+1, type:len())
 		end
@@ -185,7 +185,7 @@ local function parse_type(t)
 	if not t then return type_style("Any"); end
 	if type(t) == "string" then return type_style(t); end
 	local res = ""
-	for _, tt in ipairs(t) do res = res..(res~="" and "," or "")..type_style(tt); end
+	for _, tt in ipairs(t) do res = res..(res~="" and ", " or "")..type_style(tt); end
 	return "{"..res.."}"
 end
 
