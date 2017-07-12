@@ -38,6 +38,7 @@ return {
 	LocalisedString = {_DOC = {
 		type = "concept",
 		name = "LocalisedString",
+		short_desc = "A string that supports translations.",
 		desc = [[
 		Localised strings are a way to support translation of in-game text. It is an array where the first element is the key and the remaining elements are parameters that will be substituted for placeholders in the template designated by the key.  
 		The key identifies the string template. For example, "gui-alert-tooltip.attack" (for the template "__1__ objects are being damaged"; see the file data/core/locale/en.cfg).  
