@@ -40,7 +40,7 @@ return function(_M)
 		},
 		returns = {
 			{
-				type = {"table", "table function(bool force)"},
+				type = {"table", "function"},
 				desc = "The prototype base or function to obtain it",
 			},
 		},
