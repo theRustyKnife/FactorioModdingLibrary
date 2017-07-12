@@ -888,7 +888,7 @@ return function(_M)
 		},
 		returns = {
 			{
-				type = "int, function",
+				type = "function",
 				desc = "The iterator function",
 			},
 		},
