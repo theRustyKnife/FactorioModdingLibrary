@@ -24,4 +24,9 @@ return {
 		name = "function",
 		desc = [[ A function. ]],
 	}},
+	int = {_DOC = {
+		type = "type",
+		name = "int",
+		desc = [[ An integer value. ]],
+	}},
 }
