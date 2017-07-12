@@ -221,7 +221,7 @@ return function(_M)
 				desc = "The table to apply the function to",
 			},
 			{
-				type = "bool function(Any i, Any v)",
+				type = "function",
 				name = "func",
 				desc = "The function to apply",
 			},
@@ -888,7 +888,7 @@ return function(_M)
 		},
 		returns = {
 			{
-				type = "int, Any function()",
+				type = "int, function",
 				desc = "The iterator function",
 			},
 		},
@@ -1036,7 +1036,7 @@ return function(_M)
 				desc = "The table to sort",
 			},
 			{
-				type = "function(Any a,  Any b)",
+				type = "function",
 				name = "comp",
 				desc = "The comparator function",
 				default = "the < operator",

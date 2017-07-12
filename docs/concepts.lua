@@ -121,4 +121,63 @@ return {
 		setup to work like a class.
 		]=],
 	}},
+	Module = {_DOC = {
+		type = "concept",
+		name = "Module",
+		short_desc = "A collection of functions and variables.",
+		desc = [[
+		A module is what require should acquire from a file - a table with functions and possibly variables (constants).
+		]],
+	}},
+	CallBack = {_DOC = {
+		type = "concept",
+		name = "CallBack",
+		short_desc = "A serializable representation of remote functions.",
+		desc = [[
+		A table describing a specific remote function with the interface name (in the `interface` field) and function
+		name (in the `func` field).
+		]]
+	}},
+	RichCallBack = {_DOC = {
+		type = "concept",
+		name = "RichCallBack",
+		desc = [=[ Same as [[CallBack|CallBack]] but can be called using it's methods. ]=],
+		metamethods = {
+			__call = {
+				desc = [[ Call the function this RichCallBack represents. ]],
+				params = {
+					{
+						type = "Any",
+						name = "...",
+						desc = "The parameters passed to the remote function",
+					},
+				},
+				returns = {
+					{
+						type = "...",
+						desc = "Any values the remote function returned",
+					},
+				},
+			},
+		},
+		funcs = {
+			call = {
+				type = "method",
+				desc = [[ Call the function this RichCallBack represents. ]],
+				params = {
+					{
+						type = "Any",
+						name = "...",
+						desc = "The parameters passed to the remote function",
+					},
+				},
+				returns = {
+					{
+						type = "...",
+						desc = "Any values the remote function returned",
+					},
+				},
+			},
+		},
+	}},
 }

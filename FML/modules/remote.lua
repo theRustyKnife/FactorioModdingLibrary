@@ -88,7 +88,7 @@ return function(_M)
 		},
 		returns = {
 			{
-				type = "function(...)",
+				type = "function",
 				desc = "The safe function",
 			},
 		},
@@ -111,7 +111,7 @@ return function(_M)
 		},
 		returns = {
 			{
-				type = "function(...)",
+				type = "function",
 				desc = "The function",
 			},
 		},
