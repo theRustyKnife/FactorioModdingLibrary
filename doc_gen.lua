@@ -162,6 +162,19 @@ local function type_style(type)
 			return "["..type_style(type:sub(1, dict_s-1))..": "..type_style(type:sub(dict_e+1, type:len())).."]"
 		else return "["..type_style(type).."]"; end
 	end
+	if type:sub(1, 1) == "{" then
+		type = type:sub(2, type:len()-1)
+		local res = "{"
+		while true do
+			local comma_start, comma_end = type:find(", ")
+			--TODO: support multi-layer nesting
+			
+			res = res..type_style(type:sub(1, (comma_start or type:len()+1)-1))
+			if not comma_start then break; end
+			type = type:sub(comma_end+1, type:len())
+		end
+		return res.."}"
+	end
 	
 	local nested = type:find("%[")
 	if nested then return type_style(type:sub(1, nested-1))..type_style(type:sub(nested, type:len())); end
