@@ -156,6 +156,8 @@ return function(_M)
 		end
 		
 		if data.mod_startup_settings_changed then run(handlers.startup_settings_change); end
+		
+		run(handlers.load)
 	end)
 
 
