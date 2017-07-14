@@ -456,7 +456,7 @@ return function(_M)
 			if type(i) == "number" and i%1 == 0 then res:insert(i); end
 		end
 		res:sort()
-		if in_place then tab[_ids] = res; end
+		if in_place then tab._ids = res; end
 		return res
 	end
 
@@ -1108,6 +1108,7 @@ return function(_M)
 			highest_index = _M.highest_index,
 			ipairs_all = _M.ipairs_all,
 			n_insert = _M.n_insert,
+			n_insert_at_next_index = _M.n_insert_at_next_index,
 			n_remove = _M.n_remove,
 			any = _M.any,
 			any_tab = _M.any_tab,
