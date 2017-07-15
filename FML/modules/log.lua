@@ -36,10 +36,15 @@ return function(_M)
 	_DOC.get_location = {
 		type = "function",
 		desc = [[ Get a string designating the current execution location of the script. ]],
-		notes = {[[
-		This does not work very well when the method is called through the remote interface. If a remote call is made, the
-		function will simply return `"remote"`.
-		]]},
+		notes = {"If the info can't be obtained (too high stack level), \"unknown\" will be printed."},
+		params = {
+			{
+				type = "int",
+				name = "level",
+				desc = "Which level of the stack to consider",
+				default = "2",
+			},
+		},
 		returns = {
 			{
 				type = "string",
@@ -49,7 +54,7 @@ return function(_M)
 	}
 	function _M.get_location(level)
 		local info = debug.getinfo(level or 2)
-		if not info then return "remote"; end
+		if not info then return "unknown"; end
 		local res = info.name
 		if res == nil or res == "" then res = info.short_src; end
 		return res..":"..info.currentline
@@ -68,8 +73,8 @@ return function(_M)
 		},
 	}
 	if config.LOG.D then
-		function _M.d(message)
-			print(_M.get_location(3)..":Debug: "..tostring(message))
+		function _M.d(message, level)
+			print(_M.get_location(level or 3)..":Debug: "..tostring(message))
 		end
 	else _M.d = empty; end
 
@@ -85,8 +90,8 @@ return function(_M)
 		},
 	}
 	if config.LOG.W then
-		function _M.w(message)
-			print(_M.get_location(3)..":Warning: "..tostring(message))
+		function _M.w(message, level)
+			print(_M.get_location(level or 3)..":Warning: "..tostring(message))
 		end
 	else _M.w = empty; end
 
@@ -102,8 +107,56 @@ return function(_M)
 		},
 	}
 	if config.LOG.E then
-		function _M.e(message)
-			print(_M.get_location(3)..":Error: "..tostring(message))
+		function _M.e(message, level)
+			print(_M.get_location(level or 3)..":Error: "..tostring(message))
 		end
 	else _M.e = empty; end
+	
+	_DOC.dump = {
+		type = "function",
+		short_desc = "Dump a value into the log.",
+		desc = [[
+		Dump a value into the log using the ser_func function. It is assumed to be a debug
+		level message.
+		]],
+		params = {
+			{
+				type = {"string", "Any"},
+				name = "message",
+				desc = [[
+				The message to be printed before the dumped value. If value is nil, this will be used as the value and
+				no message will be printed
+				]],
+			},
+			{
+				type = "Any",
+				name = "value",
+				desc = "The value to be dumped",
+			},
+		},
+	}
+	_DOC.set_ser_func = {
+		type = "function",
+		short_desc = "Set the function that dump will use for conversion to string.",
+		desc = [[
+		Set the function that dump will use for conversion to string. This function has to take the value as argument
+		and return a string representing the value. This is set to serpent.line by default.
+		]],
+		params = {
+			{
+				type = "function",
+				name = "func",
+				desc = "The function to use",
+			},
+		},
+	}
+	if config.LOG.D then
+		local ser_func = serpent.line
+		function _M.set_ser_func(func) ser_func = func; end
+		
+		function _M.dump(message, value)
+			if value then _M.d(message..ser_func(value), 4); return; end
+			_M.d(ser_func(message), 4)
+		end
+	else _M.dump = empty; _M.set_ser_func = empty; end
 end
