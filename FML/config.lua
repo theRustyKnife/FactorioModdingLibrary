@@ -28,6 +28,11 @@ return {
 	-- The name of the item that's used for saving modules
 	FML_SETTING_NAME = "FML_FML-hack-setting",
 	
+	LIB_DATA_DUMP_PATH = {
+		ROOT = "lib_data",
+		DEFINES = "defines",
+	},
+	
 	
 	LOG = {
 		-- If true, log messages will be printed to the console as well

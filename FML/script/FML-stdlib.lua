@@ -55,6 +55,13 @@ return function(_M)
 		_G[namespace] = _G[namespace] or {}
 		_G[namespace][package_name] = package
 	end
+	
+	function _M.dump_lib_data(config)
+		game.write_file(
+				config.LIB_DATA_DUMP_PATH.ROOT.."\\"..config.LIB_DATA_DUMP_PATH.DEFINES,
+				serpent.dump(defines)
+			)
+	end
 
 
 	function _M.get_global(namespace, package_name, name)

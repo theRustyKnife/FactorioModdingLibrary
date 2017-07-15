@@ -30,6 +30,7 @@ return function(_M)
 			res_table.get_structure = pack_method(std.get_structure, res_table)
 			res_table.get_global = std.get_global
 			res_table.get_fml_global = function(name) return std.get_global("therustyknife", "FML", name); end
+			res_table.dump_lib_data = pack_method(std.dump_lib_data, config)
 		end
 		
 		return res_table

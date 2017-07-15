@@ -12,6 +12,14 @@ local other_docs
 other_docs = require "docs.init" or {}
 
 
+function read_all(file)
+    local f = io.open(file, "rb")
+    local content = f:read("*all")
+    f:close()
+    return content
+end
+
+
 print "Loading FML..."
 local module_loader = {}; require(".FML.script.module-loader")(module_loader)
 local FML_stdlib = module_loader.init(require(".FML.script.FML-stdlib"))
@@ -29,6 +37,7 @@ local function empty() end
 serpent = {}
 data = {raw = {item = {}}, extend = empty}
 script = {on_init = empty, on_load = empty, on_event = empty, on_configuration_changed = empty}
+defines = loadstring(read_all("lib_data\\"..FML_config.LIB_DATA_DUMP_PATH.DEFINES))()
 for _, module in ipairs(FML_config.MODULES_TO_LOAD) do
 	if modules[module.name] then
 		therustyknife.FML = FML_data
@@ -39,6 +48,7 @@ for _, module in ipairs(FML_config.MODULES_TO_LOAD) do
 end
 data = nil
 script = nil
+defines = nil
 
 therustyknife = nil
 
