@@ -193,7 +193,7 @@ return function(_M)
 				FML.log.w("Permanent handlers not supported when registering for multiple events - using regular handlers.")
 			end
 			
-			for _, id in pairs(event_id) do _M.on(event_id, handler); end
+			for _, id in pairs(event_id) do _M.on(id, handler); end
 			return
 		end
 		
