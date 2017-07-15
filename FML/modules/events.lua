@@ -258,7 +258,7 @@ return function(_M)
 			defines.events.on_robot_pre_mined,
 		},
 		BUILT = {
-			deifnes.events.on_built_entity,
+			defines.events.on_built_entity,
 			defines.events.on_robot_built_entity,
 		},
 	}
