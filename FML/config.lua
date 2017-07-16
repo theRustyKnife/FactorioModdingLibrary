@@ -20,6 +20,7 @@ return {
 		{name = "prototype_util", path = ".modules.prototype-util"},
 		{name = "Object", path = ".modules.Object"},
 		{name = "blueprint_data", path = ".modules.blueprint-data.init"},
+		{name = "surface", path = ".modules.surface"},
 	},
 	
 	-- The name of the item that's used for saving modules
