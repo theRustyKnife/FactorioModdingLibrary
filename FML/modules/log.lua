@@ -21,7 +21,7 @@ return function(_M)
 	else print = log; end
 
 
-	local _DOC = FML.make_doc(_M, {
+	local _DOC, _MT = FML.make_doc(_M, {
 		type = "module",
 		name = "log",
 		short_desc = "Utility for logging.",
@@ -159,4 +159,13 @@ return function(_M)
 			else _M.d(ser_func(message), 4); end
 		end
 	else _M.dump = empty; _M.set_ser_func = empty; end
+	
+	
+	_MT.__call = {
+		desc = [[ Same as `log.d`. ]],
+		notes = {"Mainly exists for compatibility with the built-in log function. It's recommended to use `log.d` instead."},
+		params = _DOC.d.params,
+	}
+	if config.LOG.D then setmetatable(_M, {__call = function(_, message) _M.d(message); end})
+	else setmetatable(_M, {__call = empty}); end
 end
