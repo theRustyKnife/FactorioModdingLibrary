@@ -49,6 +49,10 @@ return function(_M)
 			local res = _M or {}
 			local ret, override = module(res, ...)
 			return (override and ret) or res, override
+		elseif type(module) == "table" and module.__load then
+			local res = _M or {}
+			module:__load(res, _M.init, ...)
+			return res
 		end
 		return module
 	end
@@ -82,6 +86,21 @@ return function(_M)
 			end
 			return nil
 		end
+		
+		-- For loading nested/multi-file modules
+		local function _make_mod(module)
+			if type(module) == "table" and module._M then
+				function module:__load(_M, init_func, ...)
+					_M = _M or {}
+					for _, m in ipairs(self) do
+						if type(m) == "function" then init_func(m, _M, ...)
+						else m:__load(_M, init_func, ...); end
+					end
+				end
+				for _, m in ipairs(module) do _make_mod(m); end
+			end
+		end
+		_make_mod(loaded)
 		
 		if init then return init(loaded); end
 		return loaded
