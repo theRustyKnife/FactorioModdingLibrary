@@ -4,9 +4,26 @@ if not OUT_DIR or OUT_DIR == "" then OUT_DIR = "doc-out"; end
 local t = os.rename(OUT_DIR, OUT_DIR)
 if not t then print("Can't write to directory "..OUT_DIR.."..."); return; end
 
+local function curr_dir() return io.popen"cd":read'*l'; end
+local function script_loc(level)
+	local path = debug.getinfo(level).source
+	local path_end = path:find("[/\\][^/\\]*$")
+	if not path_end then return "" end
+	return path:sub(2, path_end-1)
+end
+local current_dir = curr_dir()
+package.path = ";./?.lua;"..current_dir.."\\?.lua;"..current_dir.."\\FML\\?.lua;"..current_dir.."\\docs\\?.lua;"..package.path
 
-current_dir = io.popen"cd":read'*l'
-package.path = ";"..current_dir.."\\?.lua;"..current_dir.."\\FML\\?.lua;"..current_dir.."\\docs\\?.lua;"..package.path
+local _require = require
+require = function(path)
+	if path:sub(1, 1) == "." then
+		local normal_path = package.path
+		package.path = ";"..script_loc(3).."\\?.lua;"..package.path
+		local res = {_require(path)}
+		package.path = normal_path
+		return unpack(res)
+	else return _require(path); end
+end
 
 local other_docs
 other_docs = require "docs.init" or {}
