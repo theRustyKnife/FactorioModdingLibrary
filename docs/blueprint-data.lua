@@ -52,13 +52,24 @@ return {
 		 
 		Settings are tables in the following format:  
 		``{
-		``	type = string, -- One of "int", "bool", "float" (float is not yet implemented). Determines what type of data can be stored in this setting.
+		``	type = string, -- One of "int", "bool", "float", "enum" (float is not yet implemented). Determines what type of data can be stored in this setting.
 		``	index = int, -- The index is equivalent to the signal slot it is going to be stored in - has to be unique.
 		``	default = Any, -- The default value of this setting, nil if not specified.
 		``	exponent_index = int, -- Only for float, determines the slot to store the exponent in - has to be unique.
+		``	options = Dictionary[string: int], -- Only for enum, determines the values it can have.
 		``}
 		]],
-		notes = {[[ Setting names should not start with an underscore, as such names could clash with the methods of
-		BlueprintData and other internal things.]]},
+		notes = {
+			[[
+			Setting names should not start with an underscore, as such names could clash with the methods of
+			BlueprintData and other internal things.
+			]],
+			[[
+			Be careful when changing any indices as it will likely break beackwards compatibility. If you're adding a
+			setting, avoid using an index that was already used before in that group, as the values might get carried
+			over from over the previous setting.
+			]],
+			"For enum options, the same rules as above apply.",
+		},
 	}},
 }

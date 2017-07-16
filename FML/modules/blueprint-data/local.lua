@@ -39,6 +39,18 @@ return function(_M)
 					res[name].exponent_index = setting.exponent_index or setting.index+1
 					if res[name].exponent_index > slots then slots = res[name].exponent_index; end
 				end
+				if setting.type == "enum" then
+					res[name].options = setting.options
+					res[name].lookup = {}
+					local first
+					local ok = false
+					for name, i in pairs(setting.options) do
+						res[name].lookup[i] = name
+						first = first or i
+						ok = ok or res[name].default == i
+					end
+					if not ok then res[name].default = first; end
+				end
 			end
 			
 			return res, slots
@@ -129,6 +141,14 @@ return function(_M)
 			return entity
 		end
 		
+		local function load_prototype(name)
+			if not prototypes[name] then
+				assert(game.entity_prototypes[entity_name(name)], "Blueprint data named "..data_name.." doesn't exist")
+				prototypes[name] = loadstring(trimed_description(entity_name(name)))()
+			end
+			return prototypes[name]
+		end
+		
 		local funcs = {
 			_reset = function(data) -- Reset all settings to the default (destroy the entity)
 				if data.__entity then
@@ -161,7 +181,7 @@ return function(_M)
 				local signal = data.__control_behavior.get_signal(setting.index)
 				if not signal or not signal.signal then return setting.default; end
 				
-				if setting.type == "int" then return signal.count; end
+				if setting.type == "int" or setting.type == "enum" then return signal.count; end
 				if setting.type == "bool" then return signal.count ~= 0; end
 				--TODO: implement
 				if setting.type == "float" then error("Blueprint data float is not yet implemented."); end
@@ -181,7 +201,7 @@ return function(_M)
 				end
 				
 				local setting = prototype.settings[key]
-				if setting.type == "int" then
+				if setting.type == "int" or setting.type == "enum" then
 					data.__control_behavior.set_signal(setting.index, {signal = SIGNAL, count = value})
 				elseif setting.type == "bool" then
 					value = value and 1 or 0
@@ -223,16 +243,9 @@ return function(_M)
 			end
 			
 			associate_entity(parent.name, data_name)
+			load_prototype(data_name) -- Make sure the prototype is loaded
 			
 			local data_entity_name = entity_name(data_name)
-			
-			if not prototypes[data_name] then -- Make sure the prototype is loaded
-				assert(game.entity_prototypes[data_entity_name], "Blueprint data named "..data_name.." doesn't exist")
-				FML.log.d(trimed_description(data_entity_name))
-				FML.log.d(serpent.line(loadstring(trimed_description(data_entity_name))))
-				prototypes[data_name] = loadstring(trimed_description(data_entity_name))()
-			end
-			
 			local entity = get_entity(parent, data_name, false)
 			local res = setmetatable({
 				__type = data_name,
@@ -248,5 +261,30 @@ return function(_M)
 			
 			return res
 		end
+		
+		
+		_DOC.get_enum = {
+			type = "function",
+			desc = [[ Return the options for a given enum. ]],
+			params = {
+				{
+					type = "string",
+					name = "group",
+					desc = "The name of the setting group",
+				},
+				{
+					type = "string",
+					name = "name",
+					desc = "The name if the enum setting",
+				},
+			},
+			returns = {
+				{
+					type = "Dictionary[string: int]",
+					desc = "The enum options",
+				},
+			},
+		}
+		function _M.get_enum(group, name) return load_prototype(group)[name].options; end
 	end
 end
