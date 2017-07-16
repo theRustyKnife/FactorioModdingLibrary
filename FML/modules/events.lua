@@ -115,6 +115,9 @@ return function(_M)
 		handlers[mod]:insert(func)
 	end
 
+	
+	function _M.sim_init() run(handlers.init); run(handlers.load); end
+	function _M.sim_load() run(handlers.load); end
 
 	script.on_init(function()
 		init() -- Init the globals
