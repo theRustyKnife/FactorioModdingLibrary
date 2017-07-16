@@ -37,7 +37,7 @@ return function(_M)
 	end
 
 
-	function _M.init(module, _M, ...)
+	function _M.init(module, __M, ...)
 	--[[
 	Init a loaded module. If module is a function, it's going to be called with any other parameters passed. If _M wasn't
 	passed, or it is nil, an empty table is going to be passed to the module instead.
@@ -46,11 +46,11 @@ return function(_M)
 	If module is anything else than a function, it's going to be returned as-is.
 	]]
 		if type(module) == "function" then
-			local res = _M or {}
+			local res = __M or {}
 			local ret, override = module(res, ...)
 			return (override and ret) or res, override
 		elseif type(module) == "table" and module.__load then
-			local res = _M or {}
+			local res = __M or {}
 			module:__load(res, _M.init, ...)
 			return res
 		end
