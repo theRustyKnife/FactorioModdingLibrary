@@ -155,8 +155,8 @@ return function(_M)
 		function _M.set_ser_func(func) ser_func = func; end
 		
 		function _M.dump(message, value)
-			if value then _M.d(message..ser_func(value), 4); return; end
-			_M.d(ser_func(message), 4)
+			if value then _M.d(message..ser_func(value), 4)
+			else _M.d(ser_func(message), 4); end
 		end
 	else _M.dump = empty; _M.set_ser_func = empty; end
 end
