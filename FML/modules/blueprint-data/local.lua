@@ -4,14 +4,15 @@ return function(_M)
 	local table = FML.table
 	
 	
-	local _DOC = FML.make_doc(_M, {
-		type = "module",
-		name = "blueprint-data",
-		desc = [[ Allows saving data for entities in blueprints. ]],
-	})
-	
-	
 	local function entity_name(data_name) return config.BLUEPRINT_DATA.PROTOTYPE_NAME..data_name; end
+	local entity_name_length = config.BLUEPRINT_DATA.PROTOTYPE_NAME:len()
+	local function is_supported_entity(entity_name)
+		local sub = entity_name:sub(1, entity_name_length)
+		return sub == config.BLUEPRINT_DATA.PROTOTYPE_NAME
+	end
+	local function get_data_name(entity_name)
+		return entity_name:sub(entity_name_length+1, entity_name:len())
+	end
 	
 	if FML.STAGE == "data" then
 		local PROTOTYPE_BASE = FML.data.inherit("constant-combinator")
@@ -108,8 +109,21 @@ return function(_M)
 	elseif FML.STAGE == "runtime" then
 		local SIGNAL = {type = "item", name = config.BLUEPRINT_DATA.ITEM_NAME}
 		
+		local global
+		
 		local prototypes = {}
 		local lut = {}
+		
+		
+		FML.events.on_load(function()
+			global = FML.get_fml_global("blueprint_data")
+			global.data_entity_types = table(global.data_entity_types)
+			global.entity_data_types = table(global.entity_data_types)
+			FML.log.dump(
+					"Running on_load in blueprint-data, "..(config.MOD and config.MOD.NAME or "console")..", global: ",
+					global or "nil"
+				)
+		end)
 		
 		
 		local function trimed_description(entity_name)
@@ -120,11 +134,13 @@ return function(_M)
 			local entity_name = entity_name(data_name)
 			local entity = parent.surface.find_entity(entity_name, parent.position)
 			if entity or create == false then return entity; end
-			return parent.surface.create_entity{
+			entity = parent.surface.create_entity{
 				name = entity_name,
 				position = parent.position,
 				force = parent.force,
 			}
+			entity.destructible = false
+			return entity
 		end
 		
 		local funcs = {
@@ -216,9 +232,20 @@ return function(_M)
 			},
 		}
 		function _M.get(parent, data_name)
-			if parent.unit_number and lut[parent.unit_number] then return lut[parent.unit_number]; end
+			if parent.unit_number and lut[parent.unit_number] and lut[parent.unit_number][data_name] then
+				return lut[parent.unit_number][data_name]
+			end
 			
 			local data_entity_name = entity_name(data_name)
+			
+			-- Save this entity's relation with this data type
+			if not global.entity_data_types[parent.name] or not global.entity_data_types[parent.name][data_name] then
+				global.data_entity_types[data_name] = table(global.data_entity_types[data_name])
+				global.data_entity_types[data_name][parent.name] = true
+				global.entity_data_types[parent.name] = table(global.entity_data_types[parent.name])
+				global.entity_data_types[parent.name][data_name] = true
+			end
+			
 			if not prototypes[data_name] then -- Make sure the prototype is loaded
 				assert(game.entity_prototypes[data_entity_name], "Blueprint data named "..data_name.." doesn't exist")
 				FML.log.d(trimed_description(data_entity_name))
@@ -227,13 +254,59 @@ return function(_M)
 			end
 			
 			local entity = get_entity(parent, data_name, false)
-			return setmetatable({
+			local res = setmetatable({
 				__type = data_name,
 				__parent = parent,
 				__entity = entity,
 				__control_behavior = entity and entity.get_or_create_control_behavior(),
 			}, MT)
+			
+			if parent.unit_number then
+				lut[parent.unit_number] = table(lut[parent.unit_number])
+				lut[parent.unit_number][data_name] = res
+			end
+			
+			return res
 		end
 		
+		
+		FML.events.on_built(function(event)
+			local entity = event.created_entity
+			if entity.type == "entity-ghost" and is_supported_entity(entity.ghost_name) then
+				if entity.surface.find_entity(entity.ghost_name, entity.position) then entity.destroy()
+				else entity.revive(); end
+			end
+		end)
+		
+		FML.events.on_destroyed(function(event)
+			local entity = event.entity
+			local entity_name = entity.type == "entity_ghost" and entity.ghost_name or entity.name
+			if global.entity_data_types[entity_name] then
+				FML.log.dump("Clearing data entities for "..entity_name..": ", global.entity_data_types[entity_name])
+				for data_type, _ in pairs(global.entity_data_types[entity_name]) do
+					local data_entity = get_entity(entity, data_type, false)
+					if data_entity and data_entity.valid then data_entity.destroy(); end
+				end
+			end
+		end)
+		
+		FML.events.on(defines.events.on_marked_for_deconstruction, function(event)
+			FML.log.d("Deconstructing "..event.entity.name)
+			local entity = event.entity
+			if entity.to_be_deconstructed() and is_supported_entity(entity.name) then
+				local data_name = get_data_name(entity.name)
+				local found_entity
+				FML.log.dump("Data name: ", data_name)
+				FML.log.dump("data_entity_types: ", global.data_entity_types)
+				if global.data_entity_types[data_name] then
+					for entity_name, _ in pairs(global.data_entity_types[data_name]) do
+						found_entity = entity.surface.find_entity(entity_name, entity.position)
+						if found_entity then break; end
+					end
+				end
+				if found_entity then entity.cancel_deconstruction(entity.force)
+				else entity.destroy(); end
+			end
+		end)
 	end
 end
