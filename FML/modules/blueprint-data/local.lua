@@ -4,6 +4,9 @@ return function(_M)
 	local table = FML.table
 	
 	
+	local _DOC = _M._DOC.funcs
+	
+	
 	local function entity_name(data_name) return config.BLUEPRINT_DATA.PROTOTYPE_NAME..data_name; end
 	local entity_name_length = config.BLUEPRINT_DATA.PROTOTYPE_NAME:len()
 	local function is_supported_entity(entity_name)
