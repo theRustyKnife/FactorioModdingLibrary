@@ -17,5 +17,16 @@ return function()
 		end
 	end
 
+	-- Simulate the initialization events
+	--TODO: perhaps implement the config_change event?
+	local global = FML.get_fml_global("console")
+	if not global.__VERSION then
+		FML.events.sim_init()
+		global.__VERSION = FML.VERSION
+	end
+	FML.events.sim_load()
+	
+	FML.log.d("FML console loaded successfully.")
+	
 	return FML
 end
