@@ -8,14 +8,7 @@ return function(_M)
 	
 	
 	local function entity_name(data_name) return config.BLUEPRINT_DATA.PROTOTYPE_NAME..data_name; end
-	local entity_name_length = config.BLUEPRINT_DATA.PROTOTYPE_NAME:len()
-	local function is_supported_entity(entity_name)
-		local sub = entity_name:sub(1, entity_name_length)
-		return sub == config.BLUEPRINT_DATA.PROTOTYPE_NAME
-	end
-	local function get_data_name(entity_name)
-		return entity_name:sub(entity_name_length+1, entity_name:len())
-	end
+	
 	
 	if FML.STAGE == "data" then
 		local PROTOTYPE_BASE = FML.data.inherit("constant-combinator")
@@ -112,27 +105,17 @@ return function(_M)
 	elseif FML.STAGE == "runtime" then
 		local SIGNAL = {type = "item", name = config.BLUEPRINT_DATA.ITEM_NAME}
 		
-		local global
-		
 		local prototypes = {}
 		local lut = {}
 		
 		
-		FML.events.on_load(function()
-			global = FML.get_fml_global("blueprint_data")
-			global.data_entity_types = table(global.data_entity_types)
-			global.entity_data_types = table(global.entity_data_types)
-			FML.log.dump(
-					"Running on_load in blueprint-data, "..(config.MOD and config.MOD.NAME or "console")..", global: ",
-					global or "nil"
-				)
-		end)
-		
+		local associate_entity = FML.remote.get_rich_callback("therustyknife.FML.blueprint_data", "associate_entity")
 		
 		local function trimed_description(entity_name)
 			return string.gmatch(game.entity_prototypes[entity_name].localised_name[1], "[^%.]+")
 		end
 		
+		--TODO: change this to not be here and in shared at the same time
 		local function get_entity(parent, data_name, create)
 			local entity_name = entity_name(data_name)
 			local entity = parent.surface.find_entity(entity_name, parent.position)
@@ -239,15 +222,9 @@ return function(_M)
 				return lut[parent.unit_number][data_name]
 			end
 			
-			local data_entity_name = entity_name(data_name)
+			associate_entity(parent.name, data_name)
 			
-			-- Save this entity's relation with this data type
-			if not global.entity_data_types[parent.name] or not global.entity_data_types[parent.name][data_name] then
-				global.data_entity_types[data_name] = table(global.data_entity_types[data_name])
-				global.data_entity_types[data_name][parent.name] = true
-				global.entity_data_types[parent.name] = table(global.entity_data_types[parent.name])
-				global.entity_data_types[parent.name][data_name] = true
-			end
+			local data_entity_name = entity_name(data_name)
 			
 			if not prototypes[data_name] then -- Make sure the prototype is loaded
 				assert(game.entity_prototypes[data_entity_name], "Blueprint data named "..data_name.." doesn't exist")
@@ -271,45 +248,5 @@ return function(_M)
 			
 			return res
 		end
-		
-		
-		FML.events.on_built(function(event)
-			local entity = event.created_entity
-			if entity.type == "entity-ghost" and is_supported_entity(entity.ghost_name) then
-				if entity.surface.find_entity(entity.ghost_name, entity.position) then entity.destroy()
-				else entity.revive(); end
-			end
-		end)
-		
-		FML.events.on_destroyed(function(event)
-			local entity = event.entity
-			local entity_name = entity.type == "entity_ghost" and entity.ghost_name or entity.name
-			if global.entity_data_types[entity_name] then
-				FML.log.dump("Clearing data entities for "..entity_name..": ", global.entity_data_types[entity_name])
-				for data_type, _ in pairs(global.entity_data_types[entity_name]) do
-					local data_entity = get_entity(entity, data_type, false)
-					if data_entity and data_entity.valid then data_entity.destroy(); end
-				end
-			end
-		end)
-		
-		FML.events.on(defines.events.on_marked_for_deconstruction, function(event)
-			FML.log.d("Deconstructing "..event.entity.name)
-			local entity = event.entity
-			if entity.to_be_deconstructed() and is_supported_entity(entity.name) then
-				local data_name = get_data_name(entity.name)
-				local found_entity
-				FML.log.dump("Data name: ", data_name)
-				FML.log.dump("data_entity_types: ", global.data_entity_types)
-				if global.data_entity_types[data_name] then
-					for entity_name, _ in pairs(global.data_entity_types[data_name]) do
-						found_entity = entity.surface.find_entity(entity_name, entity.position)
-						if found_entity then break; end
-					end
-				end
-				if found_entity then entity.cancel_deconstruction(entity.force)
-				else entity.destroy(); end
-			end
-		end)
 	end
 end
