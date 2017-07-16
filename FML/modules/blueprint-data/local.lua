@@ -44,8 +44,8 @@ return function(_M)
 					res[name].lookup = {}
 					local first
 					local ok = false
-					for name, i in pairs(setting.options) do
-						res[name].lookup[i] = name
+					for option, i in pairs(setting.options) do
+						res[name].lookup[i] = option
 						first = first or i
 						ok = ok or res[name].default == i
 					end
