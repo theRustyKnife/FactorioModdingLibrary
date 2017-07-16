@@ -25,6 +25,7 @@ require = function(path)
 	else return _require(path); end
 end
 
+
 local other_docs
 other_docs = require "docs.init" or {}
 
@@ -38,6 +39,8 @@ end
 
 
 print "Loading FML..."
+local version_util = require ".FML.script.version-util"
+
 local module_loader = {}; require(".FML.script.module-loader")(module_loader)
 local FML_stdlib = module_loader.init(require(".FML.script.FML-stdlib"))
 local FML_config = require ".FML.config"
@@ -241,6 +244,7 @@ local function func_detail(func)
 	write(h(3, func.name)..n())
 	
 	write(parse_params(func.returns, "nil").." "..func_header(func)..br())
+	if func.deprecated then write("Deprecated since version "..version_util.name{code=func.deprecated}..br()); end
 	write(func.desc..n(2))
 	
 	if func.notes then
