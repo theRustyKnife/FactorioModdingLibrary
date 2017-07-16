@@ -1,9 +1,6 @@
 return {
-	-- FML version info
-	VERSION = {
-		NAME = "0.1.0-alpha.5.2",
-		CODE = 9,
-	},
+	-- FML version info obtained from the version history file
+	VERSION = require("script.version-util").config(),
 	
 	-- If true, errors from module loading will not be ignored
 	FORCE_LOAD_MODULES = true,
