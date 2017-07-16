@@ -36,6 +36,44 @@ return function(_M)
 		return _M.box(x-size, y-size, x+size, y+size)
 	end
 	
+	_DOC.move = {
+		desc = [[ Move a position. ]],
+		params = {
+			{
+				type = "Position",
+				name = "position",
+				desc = "The position to move",
+			},
+			{
+				type = "Direction",
+				name = "direction",
+				desc = "The direction to move in",
+			},
+			{
+				type = "float",
+				name = "distance",
+				desc = "How far to move",
+			},
+		},
+		returns = {
+			{
+				type = "Position",
+				desc = "The moved position",
+			},
+		},
+	}
+	function _M.move(position, direction, distance)
+		local x, y = _M.unpack_position(position)
+		
+		if     direction == defines.direction.north then y = y - distance
+		elseif direction == defines.direction.south then y = y + distance
+		elseif direction == defines.direction.east  then x = x + distance
+		elseif direction == defines.direction.west  then x = x - distance
+		end
+		
+		return _M.pack_position(x, y)
+	end
+	
 	
 	_DOC.unpack_position = {
 		type = "function",
