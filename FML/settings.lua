@@ -17,6 +17,7 @@ local to_export = {
 	config = config,
 	FML_stdlib = FML_stdlib.safe_require("script.FML-stdlib"),
 	module_loader = FML_stdlib.safe_require("script.module-loader"),
+	console = FML_stdlib.safe_require("script.console"),
 	modules = {},
 }
 module_loader.load_from_files(config.MODULES_TO_LOAD, to_export.modules, load_func, false, log_func)
