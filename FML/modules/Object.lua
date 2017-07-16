@@ -87,7 +87,7 @@ return function(_M)
 		if constructor ~= nil then
 			const = function(type, ...)
 				local ok, res = pcall(self.new, type)
-				return constructor(ok and res, ...)
+				return constructor(ok and res or type, ...)
 			end
 		else const = self.new; end
 		return setmetatable({
