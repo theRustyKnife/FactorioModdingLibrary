@@ -34,10 +34,11 @@ return function(_M)
 	This would also make using this module without installing it into the local instance easier, as Callbacks would be 
 	basically natively supported.
 	]]
-
-
+	
+	
 	if FML.STAGE ~= "runtime" then return nil, true; end
-
+	
+	
 	local global
 	
 	local handlers = {
@@ -85,7 +86,7 @@ return function(_M)
 	function _M.on_init(func) handlers.init:insert(func); end
 	_DOC.on_load = FML.table.deep_copy(_DOC.on_init); _DOC.on_load.desc = [[ Register a handler for the load event. ]]
 	function _M.on_load(func) handlers.load:insert(func); end
-	function _M.on_delayed_load(func) handlers.load:insert(func); end
+	function _M.on_delayed_load(func) handlers.delayed_load:insert(func); end
 	_DOC.on_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_config_change.desc = [[ Register a handler for the config_change event. ]]; _DOC.on_config_change.params[1].type = "function"
 	function _M.on_config_change(func) handlers.config_change:insert(func); end
 	_DOC.on_game_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_game_config_change.desc = [[ Register a handler for the game_config_change event. ]]; _DOC.on_game_config_change.params[1].type = "function"
@@ -118,14 +119,15 @@ return function(_M)
 	end
 
 	
-	function _M.sim_init() run(handlers.init); run(handlers.load); end
-	function _M.sim_load() run(handlers.load); end
+	function _M.sim_init() run(handlers.init); run(handlers.load); run(handlers.delayed_load); end
+	function _M.sim_load() run(handlers.load); run(handlers.delayed_load); end
 
 	script.on_init(function()
 		init() -- Init the globals
 		
 		run(handlers.init)
 		run(handlers.load)
+		run(handlers.delayed_load)
 	end)
 
 	script.on_load(function()
@@ -164,6 +166,7 @@ return function(_M)
 		if data.mod_startup_settings_changed then run(handlers.startup_settings_change); end
 		
 		run(handlers.load)
+		run(handlers.delayed_load)
 	end)
 
 

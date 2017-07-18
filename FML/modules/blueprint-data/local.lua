@@ -143,7 +143,7 @@ return function(_M)
 		
 		local function load_prototype(name)
 			if not prototypes[name] then
-				assert(game.entity_prototypes[entity_name(name)], "Blueprint data named "..data_name.." doesn't exist")
+				assert(game.entity_prototypes[entity_name(name)], "Blueprint data named "..name.." doesn't exist")
 				prototypes[name] = loadstring(trimed_description(entity_name(name)))()
 			end
 			return prototypes[name]

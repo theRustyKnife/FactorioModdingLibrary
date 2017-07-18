@@ -31,13 +31,15 @@ return function(_M)
 	-- create objects before load
 	local classes = table()
 	local global
-	FML.events.on_delayed_load(function()
-		global = table(FML.get_fml_global("Object"))
-		for _, object in ipairs(global)
-			if classes[object.__class_name] then classes[object.__class_name]:load(object)
-			else log.w("Couldn't find class '"..object.__class_name.."' to load an object."); end
-		end
-	end)
+	if FML.STAGE == "runtime" then
+		FML.events.on_delayed_load(function()
+			global = table(FML.get_fml_global("Object"))
+			for _, object in ipairs(global) do
+				if classes[object.__class_name] then classes[object.__class_name]:load(object)
+				else log.w("Couldn't find class '"..object.__class_name.."' to load an object."); end
+			end
+		end)
+	end
 	
 	
 	local function mt(type) return {__index = type}; end
@@ -152,7 +154,9 @@ return function(_M)
 		Any class that defines a destroy method, should call the destroy from it's superclass in it.
 		]],
 	}
-	function _M:destroy() end
+	function _M:destroy()
+		if self.__class_name and global then global:remove_v(self); end
+	end
 	
 	setmetatable(_M, {__call = _M.new})
 end
