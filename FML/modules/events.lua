@@ -43,6 +43,7 @@ return function(_M)
 	local handlers = {
 		init = table(), -- same as script.on_init
 		load = table(), -- same as script.on_load, but runs after on_init as well
+		delayed_load = table(), -- same as load, but runs after all the load handlers finished (internal only)
 		config_change = table(), -- same as script.on_configuration_changed
 		game_config_change = table(), -- runs when the game version changes (after config_change)
 		mod_config_change = table(), -- runs when the specified mod's version changes (after game_config_change)
@@ -84,6 +85,7 @@ return function(_M)
 	function _M.on_init(func) handlers.init:insert(func); end
 	_DOC.on_load = FML.table.deep_copy(_DOC.on_init); _DOC.on_load.desc = [[ Register a handler for the load event. ]]
 	function _M.on_load(func) handlers.load:insert(func); end
+	function _M.on_delayed_load(func) handlers.load:insert(func); end
 	_DOC.on_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_config_change.desc = [[ Register a handler for the config_change event. ]]; _DOC.on_config_change.params[1].type = "function"
 	function _M.on_config_change(func) handlers.config_change:insert(func); end
 	_DOC.on_game_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_game_config_change.desc = [[ Register a handler for the game_config_change event. ]]; _DOC.on_game_config_change.params[1].type = "function"
@@ -130,6 +132,7 @@ return function(_M)
 		init() -- Load the globals
 		
 		run(handlers.load)
+		run(handlers.delayed_load)
 	end)
 
 	script.on_configuration_changed(function(data)

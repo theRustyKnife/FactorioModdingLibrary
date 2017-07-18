@@ -1,5 +1,7 @@
 return function(_M)
 	local FML = therustyknife.FML
+	local table = FML.table
+	local log = FML.log
 	
 	
 	local _DOC = FML.make_doc(_M, {
@@ -24,6 +26,20 @@ return function(_M)
 		},
 	})
 	
+	
+	--TODO: allow explicitly adding objects to the global table via a method to compensate for the inability to properly
+	-- create objects before load
+	local classes = table()
+	local global
+	FML.events.on_delayed_load(function()
+		global = table(FML.get_fml_global("Object"))
+		for _, object in ipairs(global)
+			if classes[object.__class_name] then classes[object.__class_name]:load(object)
+			else log.w("Couldn't find class '"..object.__class_name.."' to load an object."); end
+		end
+	end)
+	
+	
 	local function mt(type) return {__index = type}; end
 	
 	_DOC.new = {
@@ -36,7 +52,16 @@ return function(_M)
 			},
 		},
 	}
-	function _M:new() return setmetatable({}, mt(self)); end
+	function _M:new()
+		local res = {}
+		if self.__class_name then
+			if global then
+				res.__class_name = self.__class_name
+				global:insert(res)
+			else log.w("Creating an object of type '"..self.__class_name.."' before global is accessible"); end
+		end
+		return setmetatable(res, mt(self))
+	end
 	
 	_DOC.load = {
 		type = "method",
@@ -67,8 +92,18 @@ return function(_M)
 		superconstructor without parameters succeeds, the result will be passed as the first argument, otherwise it will
 		be false. In such case, the constructor must call the superconstructor explicitly.  
 		Additionally, the super field is created, which allows easy access to the superclass.
+		
+		Either of the parameters may be omitted:  
+		 - If name is omitted, objects will have to be loaded manually. Also, instantiating any named objects before
+		 global is accessible for writing will cause them to not be saved for loading.
+		 - If constructor is omitted, the superclass's constructor will be used.  
 		]],
 		params = {
+			{
+				type = "string",
+				name = "name",
+				desc = "The name of the new class, will be used for loading - has to be unique", --TODO: make a naming convention wiki page explaining the formats (author.mod-name.ObjectName in this case)
+			},
 			{
 				type = "function",
 				name = "constructor",
@@ -82,7 +117,11 @@ return function(_M)
 			},
 		},
 	}
-	function _M:extend(constructor)
+	function _M:extend(name, constructor)
+		if type(name) == "function" then
+			name = nil
+			constructor = name
+		end
 		local const
 		if constructor ~= nil then
 			const = function(type, ...)
@@ -90,13 +129,19 @@ return function(_M)
 				return constructor(ok and res or type, ...)
 			end
 		else const = self.new; end
-		return setmetatable({
+		local res = setmetatable({
 				super = setmetatable({}, mt(self)),
 				new = const,
 			}, {
 				__index = self,
 				__call = const,
 			})
+		
+		if name then
+			res.__class_name = name
+			classes[name] = res
+		end
+		return res
 	end
 	
 	_DOC.destroy = {
