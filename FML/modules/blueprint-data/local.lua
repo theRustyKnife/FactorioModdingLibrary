@@ -124,7 +124,7 @@ return function(_M)
 		local associate_entity = FML.remote.get_rich_callback("therustyknife.FML.blueprint_data", "associate_entity")
 		
 		local function trimed_description(entity_name)
-			return string.gmatch(game.entity_prototypes[entity_name].localised_name[1], "[^%.]+")
+			return game.entity_prototypes[entity_name].localised_name[1]
 		end
 		
 		--TODO: change this to not be here and in shared at the same time
@@ -143,6 +143,7 @@ return function(_M)
 		
 		local function load_prototype(name)
 			if not prototypes[name] then
+				FML.log.d("Loading prototype for "..name.."...")
 				assert(game.entity_prototypes[entity_name(name)], "Blueprint data named "..name.." doesn't exist")
 				prototypes[name] = loadstring(trimed_description(entity_name(name)))()
 			end
@@ -170,8 +171,6 @@ return function(_M)
 				if funcs[key] then return funcs[key]; end -- The methods have precedence
 				if type(key) == "string" and key:sub(1, 2) == "__" then return rawget(data, key); end
 				
-				FML.log.d(key)
-				
 				local prototype = prototypes[data.__type]
 				assert(prototype.settings[key],
 					"Blueprint data group "..data.__type.." doesn't contain key "..tostring(key))
@@ -189,8 +188,6 @@ return function(_M)
 			__newindex = function(data, key, value)
 				if type(key) == "string" and key:sub(1, 2) == "__" then rawset(data, key, value); return; end
 				
-				FML.log.d(serpent.line(data.__type))
-				FML.log.d(serpent.line(prototypes))
 				local prototype = prototypes[data.__type]
 				assert(prototype.settings[key],
 					"Blueprint data group "..data.__type.." doesn't contain key "..tostring(key))
@@ -285,6 +282,6 @@ return function(_M)
 				},
 			},
 		}
-		function _M.get_enum(group, name) return load_prototype(group)[name].options; end
+		function _M.get_enum(group, name) return load_prototype(group).settings[name].options; end
 	end
 end
