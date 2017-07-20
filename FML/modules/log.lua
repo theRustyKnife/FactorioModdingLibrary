@@ -123,7 +123,7 @@ return function(_M)
 				type = {"string", "Any"},
 				name = "message",
 				desc = [[
-				If this is string, it gets printed straigt away, otherwise it is considered to be one of the values
+				If this is string, it gets printed straight away, otherwise it is considered to be one of the values
 				]],
 			},
 			{

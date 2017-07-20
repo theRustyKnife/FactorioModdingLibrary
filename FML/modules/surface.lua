@@ -76,10 +76,10 @@ return function(_M)
 	
 	_DOC.shift = {
 		short_desc = "Shift a position by specific x and y values.",
-		desc = [[
+		desc = [=[
 		Shift a position by specific x and y values.  
 		The dx and dy may also be specified as a [[Position|Position]].
-		]],
+		]=],
 		params = {
 			{
 				type = "Position",
@@ -107,6 +107,8 @@ return function(_M)
 		if type(dx) ~= "number" then dx, dy = _M.unpack_position(dx); end
 		return _M.pack_position(x + dx, y + dy)
 	end
+	
+	--TODO: shift BoundingBox
 	
 	_DOC.expand = {
 		desc = [[ Expand a BoundingBox from the center out by the given values. ]],
