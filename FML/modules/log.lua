@@ -114,24 +114,22 @@ return function(_M)
 	
 	_DOC.dump = {
 		type = "function",
-		short_desc = "Dump a value into the log.",
+		short_desc = "Dump some values into the log.",
 		desc = [[
-		Dump a value into the log using the ser_func function. It is assumed to be a debug
-		level message.
+		Dump some values into the log using the ser_func function. It is assumed to be a debug level message.
 		]],
 		params = {
 			{
 				type = {"string", "Any"},
 				name = "message",
 				desc = [[
-				The message to be printed before the dumped value. If value is nil, this will be used as the value and
-				no message will be printed
+				If this is string, it gets printed straigt away, otherwise it is considered to be one of the values
 				]],
 			},
 			{
 				type = "Any",
-				name = "value",
-				desc = "The value to be dumped",
+				name = "...",
+				desc = "The values to be dumped",
 			},
 		},
 	}
@@ -154,9 +152,14 @@ return function(_M)
 		local ser_func = serpent.line
 		function _M.set_ser_func(func) ser_func = func; end
 		
-		function _M.dump(message, value)
-			if value then _M.d(message..ser_func(value), 4)
-			else _M.d(ser_func(message), 4); end
+		function _M.dump(message, ...)
+			local res = type(message) == "string" and message or (ser_func(message)..", ")
+			local first = true
+			for _, val in ipairs{...} do
+				res = res..(not first and ", " or "")..ser_func(val)
+				first = false
+			end
+			_M.d(res, 4)
 		end
 	else _M.dump = empty; _M.set_ser_func = empty; end
 	
