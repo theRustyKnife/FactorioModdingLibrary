@@ -93,11 +93,11 @@ return function(_M)
 		The constructor is the function that will be responsible for creating the new objects. If a call to the
 		superconstructor without parameters succeeds, the result will be passed as the first argument, otherwise it will
 		be false. In such case, the constructor must call the superconstructor explicitly.  
-		Additionally, the super field is created, which allows easy access to the superclass.
+		Additionally, the super field is created, which allows easy access to the superclass.  
 		
 		Either of the parameters may be omitted:  
 		 - If name is omitted, objects will have to be loaded manually. Also, instantiating any named objects before
-		 global is accessible for writing will cause them to not be saved for loading.
+		 global is accessible for writing will cause them to not be saved for loading.  
 		 - If constructor is omitted, the superclass's constructor will be used.  
 		]],
 		params = {
