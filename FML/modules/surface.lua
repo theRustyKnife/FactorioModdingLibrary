@@ -74,6 +74,73 @@ return function(_M)
 		return _M.pack_position(x, y)
 	end
 	
+	_DOC.shift = {
+		short_desc = "Shift a position by specific x and y values.",
+		desc = [[
+		Shift a position by specific x and y values.  
+		The dx and dy may also be specified as a [[Position|Position]].
+		]],
+		params = {
+			{
+				type = "Position",
+				name = "position",
+				desc = "The position to shift",
+			},
+			{
+				type = "float",
+				name = "dx",
+			},
+			{
+				type = "float",
+				name = "dy",
+			},
+		},
+		returns = {
+			{
+				type = "Position",
+				desc = "The shifted position",
+			},
+		},
+	}
+	function _M.shift(position, dx, dy)
+		local x, y = _M.unpack_position(position)
+		if type(dx) ~= "number" then dx, dy = _M.unpack_position(dx); end
+		return _M.pack_position(x + dx, y + dy)
+	end
+	
+	_DOC.expand = {
+		desc = [[ Expand a BoundingBox from the center out by the given values. ]],
+		notes = {"The values can be negative to shrink the box."},
+		params = {
+			{
+				type = "BoundingBox",
+				name = "box",
+				desc = "The BoundingBox to expand",
+			},
+			{
+				type = "float",
+				name = "dx",
+			},
+			{
+				type = "float",
+				name = "dy",
+				default = "same as dx",
+			},
+		},
+		returns = {
+			{
+				type = "BoundingBox",
+				desc = "The expanded BoundingBox",
+			},
+		},
+	}
+	function _M.expand(box, dx, dy)
+		dy = (dy or dx)/2
+		dx = dx/2
+		local x1, y1, x2, y2 = _M.unbox(box)
+		return _M.box(x1-dx, y1-dy, x2+dx, y2+dy)
+	end
+	
 	
 	_DOC.unpack_position = {
 		type = "function",
@@ -126,7 +193,7 @@ return function(_M)
 		},
 	}
 	function _M.pack_position(x, y)
-		return {x, y, x = x, y = y}
+		return setmetatable({x = x, y = y}, {__index = {x, y}})
 	end
 	
 	_DOC.box = {
@@ -160,8 +227,42 @@ return function(_M)
 		},
 	}
 	function _M.box(x1, y1, x2, y2)
-		--TODO: make this according to the API doc as well (top_left, bottom_right)
 		--TODO: make this function accept two Positions as well
-		return {_M.pack_position(x1, y1), _M.pack_position(x2, y1)}
+		local left_top, right_bottom = _M.pack_position(x1, y1), _M.pack_position(x2, y1)
+		return setmetatable({left_top = left_top, right_bottom = right_bottom}, {__index = {left_top, right_bottom}})
+	end
+	
+	_DOC.unbox = {
+		desc = [[ Get the individual coordinate values from a BoundingBox. ]],
+		params = {
+			{
+				type = "BoundingBox",
+				name = "box",
+				desc = "The box to unbox",
+			},
+		},
+		returns = {
+			{
+				type = "float",
+				desc = "Left edge coordinate",
+			},
+			{
+				type = "float",
+				desc = "Top edge coordinate",
+			},
+			{
+				type = "float",
+				desc = "Right edge coordinate",
+			},
+			{
+				type = "float",
+				desc = "Bottom edge coordinate",
+			},
+		},
+	}
+	function _M.unbox(box)
+		local x1, y1 = _M.unpack_position(box[1] or box.left_top)
+		local x2, y2 = _M.unpack_position(box[2] or box.right_bottom)
+		return x1, y1, x2, y2
 	end
 end
