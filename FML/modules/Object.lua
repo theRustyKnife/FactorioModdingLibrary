@@ -62,6 +62,7 @@ return function(_M)
 				global:insert(res)
 			else log.w("Creating an object of type '"..self.__class_name.."' before global is accessible"); end
 		end
+		res.__type_name = res.__class_name or tostring(self)
 		return setmetatable(res, mt(self))
 	end
 	
@@ -82,11 +83,14 @@ return function(_M)
 			},
 		},
 	}
-	function _M:load(object) return setmetatable(object, mt(self)); end
+	function _M:load(object)
+		if not object.__class_name then object.__type_name = tostring(self):sub(("table: "):len()+1, -1); end
+		return setmetatable(object, mt(self))
+	end
 	
 	_DOC.extend = {
 		type = "method",
-		short_desc = "Create a subcless of this class.",
+		short_desc = "Create a subclass of this class.",
 		desc = [[
 		Create a subclass of this class. Handles all the necessary technicalities of setting up the metatables and
 		allows to override the cosntructor of the parent class.  
@@ -143,6 +147,7 @@ return function(_M)
 			res.__class_name = name
 			classes[name] = res
 		end
+		res.__type_name = res.__class_name or tostring(res):sub(("table: "):len()+1, -1) -- Use the table address if name was not specified
 		return res
 	end
 	
@@ -157,6 +162,35 @@ return function(_M)
 	function _M:destroy()
 		if self.__class_name and global then global:remove_v(self); end
 	end
+	
+	
+	_DOC.typeof = {
+		type = "method",
+		short_desc = "Get the type of the given object.",
+		desc = [[
+		Get a string designating the type of the given object. If name was specified when creating the class it is used
+		as the type, otherwise, the parent class's adress will be used.
+		]],
+		notes = {
+			"Comparing types when name wasn't specified might not be 100% reliable through save/load - use with caution.",
+			"This is in no way related to the built-in `type` function, the type here is the class the object was created from.",
+		},
+		params = {
+			{
+				type = "Object",
+				name = "o",
+				desc = "The object to get the type of",
+			},
+		},
+		returns = {
+			{
+				type = "string",
+				desc = "The type of this object",
+			},
+		},
+	}
+	function _M:typeof(o) return o.__type_name; end
+	
 	
 	setmetatable(_M, {__call = _M.new})
 end
