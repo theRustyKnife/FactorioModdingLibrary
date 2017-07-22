@@ -260,6 +260,11 @@ return function(_M)
 	
 	
 	-- Custom events --TODO: move this into another file/module
+	-- Add all the base events directly to the module to allow for simple syntax like events.on_tick
+	for name, event_id in pairs(defines.events) do
+		if not _M[name] then _M[name] = function(...) _M.on(event_id, ...); end; end
+	end
+	
 	_M.GROUPS = {
 		DESTROYED = {
 			defines.events.on_entity_died,
@@ -274,8 +279,7 @@ return function(_M)
 	
 	-- Ease of use functions for groups
 	for name, events in pairs(_M.GROUPS) do
-		_M["on_"..name:lower()] = function(handler, permanent)
-			_M.on(events, handler, permanent)
-		end
+		name = "on_"..name:lower()
+		if not _M[name] then _M[] = function(...) _M.on(events, ...); end; end
 	end
 end
