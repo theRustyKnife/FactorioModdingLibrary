@@ -174,6 +174,7 @@ return function(_M)
 		notes = {
 			"Comparing types when name wasn't specified might not be 100% reliable through save/load - use with caution.",
 			"This is in no way related to the built-in `type` function, the type here is the class the object was created from.",
+			"Can also be used as a method on any Object.",
 		},
 		params = {
 			{
@@ -189,7 +190,7 @@ return function(_M)
 			},
 		},
 	}
-	function _M:typeof(o) return o.__type_name; end
+	function _M.typeof(o) return o.__type_name; end
 	
 	
 	setmetatable(_M, {__call = _M.new})
