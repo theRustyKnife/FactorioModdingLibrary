@@ -230,7 +230,7 @@ return function(_M)
 	}
 	function _M.box(x1, y1, x2, y2)
 		--TODO: make this function accept two Positions as well
-		local left_top, right_bottom = _M.pack_position(x1, y1), _M.pack_position(x2, y1)
+		local left_top, right_bottom = _M.pack_position(x1, y1), _M.pack_position(x2, y2)
 		return setmetatable({left_top = left_top, right_bottom = right_bottom}, {__index = {left_top, right_bottom}})
 	end
 	
