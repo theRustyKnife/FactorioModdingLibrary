@@ -50,6 +50,7 @@ module_loader.load_from_files(FML_config.MODULES_TO_LOAD, modules, FML_stdlib.sa
 
 local FML_data = module_loader.load_std(FML_stdlib, nil, "data", FML_config, FML_config.VERSION)
 local FML_control = module_loader.load_std(FML_stdlib, nil, "runtime", FML_config, FML_config.VERSION)
+local FML_settings = module_loader.load_std(FML_stdlib, nil, "settings", FML_config, FML_config.VERSION)
 therustyknife = {}
 
 local function empty() end
@@ -62,6 +63,8 @@ for _, module in ipairs(FML_config.MODULES_TO_LOAD) do
 	if modules[module.name] then
 		therustyknife.FML = FML_data
 		FML_data[module.name] = module_loader.init(modules[module.name])
+		therustyknife.FML = FML_settings
+		FML_settings[module.name] = module_loader.init(modules[module.name])
 		therustyknife.FML = FML_control
 		FML_control[module.name] = module_loader.init(modules[module.name])
 	end
@@ -95,6 +98,7 @@ local function _make_doc_for(FML, rec)
 	end
 end
 _make_doc_for(FML_data)
+_make_doc_for(FML_settings)
 _make_doc_for(FML_control)
 _make_doc_for(other_docs.DOCS, true)
 

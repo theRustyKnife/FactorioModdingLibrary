@@ -9,19 +9,19 @@ return {
 	
 	-- Modules with their paths that FML will attempt to load
 	MODULES_TO_LOAD = {
-		{name = "log", path = ".modules.log"},
-		{name = "remote", path = ".modules.remote"},
-		{name = "table", path = ".modules.table"},
-		{name = "format", path = ".modules.format"},
-		{name = "data", path = ".modules.data"},
-		{name = "events", path = ".modules.events"},
-		{name = "GUI", path = ".modules.GUI"},
-		{name = "Semver", path = ".modules.Semver"},
-		{name = "prototype_util", path = ".modules.prototype-util"},
-		{name = "Object", path = ".modules.Object"},
-		{name = "blueprint_data", path = ".modules.blueprint-data.init"},
-		{name = "surface", path = ".modules.surface"},
-		{name = "random_util", path = ".modules.random-util"},
+		{name = "log", path = "modules.log"},
+		{name = "remote", path = "modules.remote"},
+		{name = "table", path = "modules.table"},
+		{name = "format", path = "modules.format"},
+		{name = "data", path = "modules.data"},
+		{name = "events", path = "modules.events"},
+		{name = "GUI", path = "modules.GUI"},
+		{name = "Semver", path = "modules.Semver"},
+		{name = "prototype_util", path = "modules.prototype-util"},
+		{name = "Object", path = "modules.Object"},
+		{name = "blueprint_data", path = "modules.blueprint-data.init"},
+		{name = "surface", path = "modules.surface"},
+		{name = "random_util", path = "modules.random-util"},
 	},
 	
 	-- The name of the item that's used for saving modules

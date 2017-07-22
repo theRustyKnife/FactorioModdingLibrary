@@ -3,7 +3,7 @@ return function(_M)
 	local config = therustyknife.FML.config
 
 
-	if FML.STAGE ~= "data" then return nil, true; end
+	if not (FML.STAGE == "data" or FML.STAGE == "settings") then return nil, true; end
 
 
 	local _DOC = FML.make_doc(_M, {
