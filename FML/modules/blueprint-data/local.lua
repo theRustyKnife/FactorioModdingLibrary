@@ -161,7 +161,7 @@ return function(_M)
 			_copy = function(data, from) -- Copy settings from another data
 				assert(data.__type == from.__type,
 					"Attempt to copy blueprint data from a different type (from "..from.__type.." to "..data.__type..")")
-				if not from.__entity then data:reset(); return; end
+				if not from.__entity then data:_reset(); return; end
 				data.__control_behavior.parameters = from.__control_behavior.parameters
 			end,
 		}
