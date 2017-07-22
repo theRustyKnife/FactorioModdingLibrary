@@ -280,6 +280,6 @@ return function(_M)
 	-- Ease of use functions for groups
 	for name, events in pairs(_M.GROUPS) do
 		name = "on_"..name:lower()
-		if not _M[name] then _M[] = function(...) _M.on(events, ...); end; end
+		if not _M[name] then _M[name] = function(...) _M.on(events, ...); end; end
 	end
 end
