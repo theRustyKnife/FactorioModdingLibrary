@@ -71,6 +71,7 @@ return {
 		NAMES = {
 			OPEN_KEY = "FML_open-entity-gui",
 			CLOSE_KEY = "FML_close-entity-gui",
+			CLOSE_KEY_OVERRIDE = "FML_close-entity-gui-override",
 		},
 	},
 	
