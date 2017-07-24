@@ -79,9 +79,15 @@ return function(_M)
 					desc = "The bounding box to use for this blueprint data group",
 					default = "{{0, 0}, {0, 0}}",
 				},
+				{
+					type = "LocalisedString",
+					name = "localised_name",
+					desc = "The localized name of the proxy entity/item, nil will be used if false is passed",
+					default = '{"entity-name.blueprint-data-entity"}',
+				},
 			},
 		}
-		function _M.add_prototype(prototype, collision_box)
+		function _M.add_prototype(prototype, collision_box, localised_name)
 			collision_box = collision_box or config.BLUEPRINT_DATA.DEFAULT_COLLISION_BOX
 			if type(prototype) == "table" and not prototype.name then
 				for _, p in pairs(prototype) do _M.add_prototype(p, collision_box); end
@@ -93,6 +99,8 @@ return function(_M)
 				base = PROTOTYPE_BASE,
 				properties = {
 					name = entity_name(prototype.name),
+					localised_name = (localised_name == nil and {"entity-name.blueprint-data-entity"})
+							or localised_name or nil, -- We don't want false ending up in the name...
 					icon = config.BLUEPRINT_DATA.ICON,
 					flags = {"placeable-off-grid", "placeable-neutral", "player-creation"},
 					collision_mask = {},
@@ -107,9 +115,9 @@ return function(_M)
 							x = 0, y = 0, width = 0, height = 0,
 						}},
 					},
-					localised_name = {serpent.dump{name = prototype.name, settings = settings}}, -- This is where the data is stored
+					localised_description = {serpent.dump{name = prototype.name, settings = settings}}, -- This is where the data is stored
 				},
-				generate = {"item"},
+				generate = {item = {properties = {flags = {"hidden"}}}},
 			}
 		end
 		--TODO: a way to alter already added prototypes?
@@ -124,7 +132,7 @@ return function(_M)
 		local associate_entity = FML.remote.get_rich_callback("therustyknife.FML.blueprint_data", "associate_entity")
 		
 		local function trimed_description(entity_name)
-			return game.entity_prototypes[entity_name].localised_name[1]
+			return game.entity_prototypes[entity_name].localised_description[1]
 		end
 		
 		--TODO: change this to not be here and in shared at the same time
