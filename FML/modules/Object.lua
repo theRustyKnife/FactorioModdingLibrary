@@ -193,6 +193,26 @@ return function(_M)
 	function _M.typeof(o) return o.__type_name; end
 	
 	
+	_DOC.abstract = {
+		type = "method",
+		desc = [[
+		Create a method that is supposed to be implemented in any subclass of this class.  
+		Throws an error if the method is called on a class that doesn't implement it.
+		]],
+		params = {
+			{
+				type = "string",
+				name = "name",
+				desc = "The name of the method",
+			},
+			{
+				type = "string",
+				name = "err",
+				desc = "The message to display when an attempting to call this method",
+				default = "A message",
+			},
+		},
+	}
 	function _M:abstract(name, err)
 		self[name] = function()
 			error(tostring(err) or "The abstract method "..name.." is not implemented in "..self.__type_name)
