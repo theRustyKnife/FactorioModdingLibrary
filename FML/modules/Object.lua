@@ -195,6 +195,7 @@ return function(_M)
 	
 	_DOC.abstract = {
 		type = "method",
+		short_desc = "Make a method to be implement by subclasses.",
 		desc = [[
 		Create a method that is supposed to be implemented in any subclass of this class.  
 		Throws an error if the method is called on a class that doesn't implement it.
