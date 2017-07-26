@@ -1,3 +1,4 @@
+--TODO: make this not be a giant pile of mess - sort into different files, rework the actual gui creation mechanic, ...
 return function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
@@ -126,5 +127,46 @@ return function(_M)
 		
 		
 		--TODO: implement high-level GUI
+		
+		
+		-- GUI opening mechanics
+		--TODO: allow registering entities in data as well
+		local watched_names = table()
+		
+		local global
+		FML.events.on_load(function()
+			global = table(FML.get_fml_global("GUI"))
+		end)
+		
+		
+		function _M.watch_opening(what)
+			if type(what) == "table" then for _, e in pairs(what) do _M.watch_opening(e); end
+			else watched_names[what] = true; end
+		end
+		
+		function _M.unwatch_opening(what)
+			if type(what) == "table" then for _, e in pairs(what) do _M.unwatch_opening(e); end
+			else wached_names[what] = nil; end
+		end
+		
+		
+		FML.events.on(config.GUI.NAMES.OPEN_KEY, function(event)
+			local player = game.players[event.player_index]
+			if player and player.selected and player.selected.valid and wached_names[player.selected.name] then
+				if player.selected.operable then
+					global.post_open = table(global.post_open) -- make sure the table exists
+					global.post_open:insert(player.selected)
+				end
+				player.selected.operable = false
+				--TODO: raise the event or do whatever is needed
+			end
+		end)
+		
+		FML.events.on_tick(function(event)
+			if global.post_open then
+				for _, e in ipairs(global.post_open) do if e.valid then e.operable = true; end end
+				global.post_open = nil
+			end
+		end)
 	else return nil, true; end
 end
