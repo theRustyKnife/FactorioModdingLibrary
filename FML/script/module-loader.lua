@@ -31,6 +31,7 @@ return function(_M)
 			res_table.get_global = std.get_global
 			res_table.get_fml_global = function(name) return std.get_global("therustyknife", "FML", name); end
 			res_table.dump_lib_data = pack_method(std.dump_lib_data, config)
+			res_table.FML_EVENT_ID = std.FML_EVENT_ID -- The id of the shared FML event used for *cough* hacking *cough*
 		end
 		
 		return res_table

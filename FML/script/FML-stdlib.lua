@@ -35,6 +35,8 @@ return function(_M)
 		return res
 	end
 
+	if script then _M.FML_EVENT_ID = script.generate_event_name(); end
+	
 	function _M.get_module_lookup(modules)
 	--[[ Convert the module definition in the config format into a path lookup table by name. ]]
 		local res = {}
