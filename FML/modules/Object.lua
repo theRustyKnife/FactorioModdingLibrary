@@ -193,5 +193,12 @@ return function(_M)
 	function _M.typeof(o) return o.__type_name; end
 	
 	
+	function _M:abstract(name, err)
+		self[name] = function()
+			error(tostring(err) or "The abstract method "..name.." is not implemented in "..self.__type_name)
+		end
+	end
+	
+	
 	setmetatable(_M, {__call = _M.new})
 end
