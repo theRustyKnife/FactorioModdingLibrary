@@ -2,6 +2,7 @@ return function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
 	local table = FML.table
+	local log = FML.log
 	
 	
 	local _DOC = _M._DOC.funcs
@@ -125,6 +126,7 @@ return function(_M)
 	elseif FML.STAGE == "runtime" then
 		local SIGNAL = {type = "item", name = config.BLUEPRINT_DATA.ITEM_NAME}
 		
+		local global
 		local prototypes = {}
 		local lut = {}
 		
@@ -219,6 +221,14 @@ return function(_M)
 		}
 		
 		
+		FML.events.on_delayed_load(function()
+			log.d("Loading BlueprintData instances...")
+			global = FML.get_fml_global("blueprint_data")
+			global.data = table(global.data)
+			for _, data in ipairs(global.data) do setmetatable(data, MT); end
+		end)
+		
+		
 		_DOC.get = {
 			type = "function",
 			desc = "Get a BlueprintData object for an entity.",
@@ -262,6 +272,10 @@ return function(_M)
 			if parent.unit_number then
 				lut[parent.unit_number] = table(lut[parent.unit_number])
 				lut[parent.unit_number][data_name] = res
+			end
+			
+			if global then global.data:insert(res)
+			else log.w("Created BlueprintData before global was accessible - it isn't going to be loaded automatically.")
 			end
 			
 			return res
