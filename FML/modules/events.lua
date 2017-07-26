@@ -208,9 +208,8 @@ return function(_M)
 		
 		if permanent then
 			--TODO: implement
-			error("Permanent handlers have not been implemented yet.")
-		
-		else
+			FML.log.w("Permanent handlers not implemented yes - using regular handlers.")
+		end--else
 			if not runtime_handlers[event_id] then
 				runtime_handlers[event_id] = table()
 				local handlers = runtime_handlers[event_id]
@@ -220,7 +219,7 @@ return function(_M)
 				end)
 			end
 			return runtime_handlers[event_id]:n_insert_at_next_index(handler)
-		end
+		--end
 	end
 
 	_DOC.remove_handler = {
