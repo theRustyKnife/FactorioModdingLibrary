@@ -212,6 +212,12 @@ return function(_M)
 				default = "A message",
 			},
 		},
+		returns = {
+			{
+				type = "function",
+				desc = "The dummy function",
+			},
+		},
 	}
 	function _M:abstract(name, err)
 		self[name] = function()

@@ -55,10 +55,11 @@ therustyknife = {}
 
 local function empty() end
 
-serpent = {}
-data = {raw = {item = {}}, extend = empty}
+serpent = {line = tostring}
+data = {raw = {item = {}, ["gui-style"] = {default = {}}}, extend = empty}
 script = {on_init = empty, on_load = empty, on_event = empty, on_configuration_changed = empty}
 defines = loadstring(read_all("lib_data\\"..FML_config.LIB_DATA_DUMP_PATH.DEFINES))()
+log = empty
 for _, module in ipairs(FML_config.MODULES_TO_LOAD) do
 	if modules[module.name] then
 		therustyknife.FML = FML_data
