@@ -29,3 +29,13 @@ Modules that are recommended to be localized:
 - table (icludes all the built-in Lua table functions so it is compatible with existing code)
 - log (provides the `__call` metamethod to remain compatible with code using Factorio's log function)
 - *Any other module that you use often, obviously*
+
+---
+
+It's advised to put a well visible notice on the mod page that your mod requires FML to work. Eventough Factorio does
+show what dependencies a mod has, it's not very well visible, so users will likely miss it and report issues to you as
+the mod author.  
+Also not a bad idea is to put the notice directly into the mod's description (`info.json`) so the user can see the dependencies
+when downloading from the built-in mod browser.
+
+All of the above can (and should) be applied to any important (non-optional) dependency, not just FML specifically.
