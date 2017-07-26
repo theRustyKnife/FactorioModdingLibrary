@@ -168,5 +168,10 @@ return function(_M)
 				global.post_open = nil
 			end
 		end)
+		
+		FML.events.on({config.GUI.NAMES.CLOSE_KEY, config.GUI.NAMES.CLOSE_KEY_OVERRIDE}, function(event)
+			log.d("Pressed close GUI key")
+			--TODO: implement
+		end)
 	else return nil, true; end
 end
