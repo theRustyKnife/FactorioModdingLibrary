@@ -22,6 +22,7 @@ return {
 		{name = "blueprint_data", path = "modules.blueprint-data.init"},
 		{name = "surface", path = "modules.surface"},
 		{name = "random_util", path = "modules.random-util"},
+		{name = "handlers", path = "modules.handlers"},
 	},
 	
 	-- The name of the item that's used for saving modules
