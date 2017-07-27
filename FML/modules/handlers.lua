@@ -5,11 +5,12 @@ return function(_M)
 	if FML.STAGE ~= "runtime" then return nil, true; end
 	
 	
+	--TODO: find a better name for this module - handlers is dumb and misleading
 	local _DOC = FML.make_doc(_M, {
 		type = "module",
 		name = "handlers",
 		short_desc = "Allows defining functions that code can rely on existing through save/load.",
-		description = [[
+		desc = [[
 		Allows defining functions that code can rely on existing through save/load.
 		
 		The functions are defined somewhat like prototypes - only during the initial phase of the runtime stage. This is
