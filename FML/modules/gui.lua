@@ -4,6 +4,7 @@ return function(_M)
 	local config = therustyknife.FML.config
 
 	local table = FML.table
+	local log = FML.log
 	
 	
 	local STYLES = {
@@ -146,13 +147,13 @@ return function(_M)
 		
 		function _M.unwatch_opening(what)
 			if type(what) == "table" then for _, e in pairs(what) do _M.unwatch_opening(e); end
-			else wached_names[what] = nil; end
+			else watched_names[what] = nil; end
 		end
 		
 		
 		FML.events.on(config.GUI.NAMES.OPEN_KEY, function(event)
 			local player = game.players[event.player_index]
-			if player and player.selected and player.selected.valid and wached_names[player.selected.name] then
+			if player and player.selected and player.selected.valid and watched_names[player.selected.name] then
 				if player.selected.operable then
 					global.post_open = table(global.post_open) -- make sure the table exists
 					global.post_open:insert(player.selected)
