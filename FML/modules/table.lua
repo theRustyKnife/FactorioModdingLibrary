@@ -904,6 +904,44 @@ return function(_M)
 			return res_i, res_v
 		end
 	end
+	
+	_DOC.mk = {
+		short_desc = "Make a table in another table.",
+		desc = [[
+		Make a table at a specified key in the given parent. This is mostly a shorthand for initializing the global table,
+		reducing `global.my_table = table(global.my_table)` to `table.mk(global, "my_table")`.  
+		There are other uses however and other parameter variations. The parent parameter may be omitted entirely, in which
+		case `_G` is used. `_G` will also be used if `nil` was passed as parent.
+		]],
+		notes = {RICH_NOTE},
+		params = {
+			{
+				type = "table",
+				name = "parent",
+				desc = "The table to make the new one in",
+			},
+			{
+				type = "Any",
+				name = "name",
+				desc = "The key that will be used for the new table",
+			},
+		},
+		returns = {
+			{
+				type = "RichTable",
+				desc = "The newly created table",
+			},
+		},
+	}
+	function _M.mk(parent, name)
+		if name == nil then
+			name = parent
+			parent = _G
+		end
+		if parent == nil then parent = _G; end
+		parent[name] = _M(parent[name])
+		return parent[name]
+	end
 
 
 	-- Add Lua's table library functions to allow overriding the table global with this module
@@ -1123,6 +1161,7 @@ return function(_M)
 			transform = _M.transform,
 			reverse = _M.reverse,
 			indices = _M.indices,
+			mk = mk,
 			
 			-- Serpent functions can be used as methods
 			line = serpent.line,
