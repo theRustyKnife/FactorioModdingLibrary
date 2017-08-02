@@ -909,11 +909,12 @@ return function(_M)
 		short_desc = "Make a table in another table.",
 		desc = [[
 		Make a table at a specified key in the given parent. This is mostly a shorthand for initializing the global table,
-		reducing `global.my_table = table(global.my_table)` to `table.mk(global, "my_table")`.  
+		reducing `global.my_table = table(global.my_table)` to `table.mk(global, "my_table")`. If called on a RichTable,
+		this becomes `rich_tab:mk("my_table")`, or even `rich_tab:mk"my_table"`.  
 		There are other uses however and other parameter variations. The parent parameter may be omitted entirely, in which
 		case `_G` is used. `_G` will also be used if `nil` was passed as parent.
 		]],
-		notes = {RICH_NOTE},
+		notes = {RICH_NOTE, "As this method is intended to shorten table initialization, 'mk' was used instead of the longer 'make'"},
 		params = {
 			{
 				type = "table",
