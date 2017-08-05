@@ -53,13 +53,17 @@ local FML_control = module_loader.load_std(FML_stdlib, nil, "runtime", FML_confi
 local FML_settings = module_loader.load_std(FML_stdlib, nil, "settings", FML_config, FML_config.VERSION)
 therustyknife = {}
 
+local function dummy()
+	return setmetatable({}, {__index = dummy})
+end
+
 local function empty() end
 
 serpent = {line = tostring}
 data = {raw = {item = {}, ["gui-style"] = {default = {}}}, extend = empty}
 script = {on_init = empty, on_load = empty, on_event = empty, on_configuration_changed = empty}
 defines = loadstring(read_all("lib_data\\"..FML_config.LIB_DATA_DUMP_PATH.DEFINES))()
-remote = {add_interface = empty, interfaces = {}}
+remote = {add_interface = empty, interfaces = dummy()}
 log = empty
 for _, module in ipairs(FML_config.MODULES_TO_LOAD) do
 	if modules[module.name] then
