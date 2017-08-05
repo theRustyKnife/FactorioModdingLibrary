@@ -27,7 +27,7 @@ return function(_M)
 		]],
 		[[
 		Since FML can also use this module to store functions, it is recommended to use the standard naming scheme
-		(`author-name.mod-name.value-name`) to avoid clashes.
+		(`author-name.mod-name.value-name`) to avoid clashes. FML follows this convention.
 		]],
 		},
 	})

@@ -9,25 +9,25 @@ return function(_M)
 	})
 
 
+	_DOC.position = {
+		type = "function",
+		desc = [[ Format a Position to a human-readable format. ]],
+		params = {
+			{
+				type = "Position",
+				name = "pos",
+				desc = "The position to format",
+			},
+		},
+		returns = {
+			{
+				type = "string",
+				desc = "The formatted position",
+			},
+		},
+	}
 	-- Require surface for printing positions and stuff
 	if FML.surface then
-		_DOC.position = {
-			type = "function",
-			desc = [[ Format a Position to a human-readable format. ]],
-			params = {
-				{
-					type = "Position",
-					name = "pos",
-					desc = "The position to format",
-				},
-			},
-			returns = {
-				{
-					type = "string",
-					desc = "The formatted position",
-				},
-			},
-		}
 		function _M.position(pos)
 			local x, y = FML.surface.unpack_position(pos)
 			return string.format("[%g, %g]", x, y)
