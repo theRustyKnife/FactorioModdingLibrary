@@ -1,1 +1,4 @@
 - Replace `int` with `uint` where appropriate
+- A way to save circuit connections in blueprints
+- Fix that loading console might not properly work due to caches in the remote instance
+- A way to designate submodules to only run in certain stages
