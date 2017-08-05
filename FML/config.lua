@@ -2,6 +2,9 @@ return {
 	-- FML version info obtained from the version history file
 	VERSION = require("script.version-util").config(),
 	
+	-- Mod info - console by default, as that should be the only way to get to this value
+	MOD = {NAME = "console"},
+	
 	-- If true, errors from module loading will not be ignored
 	FORCE_LOAD_MODULES = true,
 	-- If true, errors in module loading will be logged
@@ -15,7 +18,7 @@ return {
 		{name = "format", path = "modules.format"},
 		{name = "data", path = "modules.data"},
 		{name = "events", path = "modules.events"},
-		{name = "GUI", path = "modules.GUI"},
+		{name = "GUI", path = "modules.GUI.init"},
 		{name = "Semver", path = "modules.Semver"},
 		{name = "prototype_util", path = "modules.prototype-util"},
 		{name = "Object", path = "modules.Object"},
