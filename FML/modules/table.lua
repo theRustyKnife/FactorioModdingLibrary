@@ -1162,7 +1162,7 @@ return function(_M)
 			transform = _M.transform,
 			reverse = _M.reverse,
 			indices = _M.indices,
-			mk = mk,
+			mk = _M.mk,
 			
 			-- Serpent functions can be used as methods
 			line = serpent.line,
