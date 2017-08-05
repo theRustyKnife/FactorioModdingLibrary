@@ -7,6 +7,6 @@ return {
 			desc = [[ Allows saving data for entities in blueprints. ]],
 		})
 	end,
-	require ".shared",
-	require ".local",
+	_M_require ".shared",
+	_M_require ".local",
 }

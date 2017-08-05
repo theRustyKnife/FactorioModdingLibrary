@@ -80,7 +80,9 @@ return function(_M)
 		if init and type(init) ~= "function" then init = _M.init; end
 		if log_func == true then log_func = log; end
 		
+		_G._M_require = load_func -- To allow nested modules to load submodules using the proper function --TODO: consider replacing require with this
 		local loaded, err = load_func(path)
+		_G._M_require = nil
 		if type(loaded) ~= "table" and type(loaded) ~= "function" then
 			if err and log_func then
 				log_func("Loading FML module from '"..tostring(path).."' failed: "..(err or "No error message."))
