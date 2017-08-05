@@ -59,6 +59,7 @@ serpent = {line = tostring}
 data = {raw = {item = {}, ["gui-style"] = {default = {}}}, extend = empty}
 script = {on_init = empty, on_load = empty, on_event = empty, on_configuration_changed = empty}
 defines = loadstring(read_all("lib_data\\"..FML_config.LIB_DATA_DUMP_PATH.DEFINES))()
+remote = {add_interface = empty, interfaces = {}}
 log = empty
 for _, module in ipairs(FML_config.MODULES_TO_LOAD) do
 	if modules[module.name] then
@@ -70,6 +71,7 @@ for _, module in ipairs(FML_config.MODULES_TO_LOAD) do
 		FML_control[module.name] = module_loader.init(modules[module.name])
 	end
 end
+remote = nil
 data = nil
 script = nil
 defines = nil
