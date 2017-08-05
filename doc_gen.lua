@@ -16,9 +16,10 @@ package.path = ";./?.lua;"..current_dir.."\\?.lua;"..current_dir.."\\FML\\?.lua;
 
 local _require = require
 require = function(path)
+	package.loaded = {}
 	if path:sub(1, 1) == "." then
 		local normal_path = package.path
-		package.path = ";"..script_loc(3).."\\?.lua;"..package.path
+		package.path = ";"..script_loc(3).."?.lua;"..package.path
 		local res = {_require(path)}
 		package.path = normal_path
 		return unpack(res)
@@ -46,7 +47,7 @@ local FML_stdlib = module_loader.init(require(".FML.script.FML-stdlib"))
 local FML_config = require ".FML.config"
 
 local modules = {}
-module_loader.load_from_files(FML_config.MODULES_TO_LOAD, modules, FML_stdlib.safe_require)
+module_loader.load_from_files(FML_config.MODULES_TO_LOAD, modules, require)
 
 local FML_data = module_loader.load_std(FML_stdlib, nil, "data", FML_config, FML_config.VERSION)
 local FML_control = module_loader.load_std(FML_stdlib, nil, "runtime", FML_config, FML_config.VERSION)
