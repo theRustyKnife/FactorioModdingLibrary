@@ -1,4 +1,5 @@
-*Random note*
+*Random note*  
+**Adding FML to existing mod**
 
 Mod version needs to be incremented when FML is first installed (and possibly updated?) because of global modifications.
 This is only really a problem when developing as the mod is going to be distributed to user as a *new version*.
@@ -25,6 +26,9 @@ the console API. Be aware however, that this is not intended usage and therefore
 
 ---
 
+*Random note*
+**Module localization**
+
 Certain modules are intended to be localized before usage, that means doing something like `local table = FML.table`.
 This is not required for the functionality of the module, but makes it's usage much more convenient.  
 Modules that are recommended to be localized:  
@@ -35,6 +39,9 @@ Modules that are recommended to be localized:
 
 ---
 
+*Random note*
+**User notice**
+
 It's advised to put a well visible notice on the mod page that your mod requires FML to work. Eventough Factorio does
 show what dependencies a mod has, it's not very well visible, so users will likely miss it and report issues to you as
 the mod author.  
@@ -44,6 +51,9 @@ when downloading from the built-in mod browser.
 All of the above can (and should) be applied to any important (non-optional) dependency, not just FML specifically.
 
 ---
+
+*Random note*
+**FML updates**
 
 FML updates are distributed via the FML mod on the mod portal, so there's no need to change anything in your code to update
 to a new FML release.
@@ -84,6 +94,7 @@ but don't leave them in releases.
 ---
 
 *Random note*
+**Global functions**
 
 The "global" functions (for lack of a better name) will basically be functions in a table somewhere in FML. This will be
 requested to put functions into. This whole system is basically a way to define "prototypes" of functions so they can be
@@ -117,3 +128,40 @@ definitions on appropriate places and (*perhaps more importantly*) it **will wor
 
 After reading the mess I just wrote, I feel like it would be appropriate to mention that this is mostly related
 to the "event handler" functions from the GUI module, not really anything with events per se.
+
+---
+
+*Random note*  
+**Blueprint proxy wire connections**
+
+Let's talk about saving wire connections in blueprints. So far, I have two ideas:
+
+Since we can already save primitive data quite easily, why not use that to save positions of entities to connect to?
+The positions would be relative to the entity that is being saved and a value indicating the wire type would added as well.  
+This approach has (expectedly) many downsides:
+
+- There would probably have to be one data entity per connection. This is largely confusing for players who don't know how
+things work.
+- Connections to entities from outside the blueprint would be saved as well, which may result in the entity connecting to
+the wrong target.
+- There's no event for connecting wires. Fuck.
+- Blueprint rotation will likely not be possible with this.
+
+The other approach is to provide a solid way of handling the ghost entities in blueprints. What might work here is to
+save the connections when the blueprint is placed and then destroy the ghost. Then we would wait for the main entity to
+be built and reconnect the newly created proxy.  
+This sounds like a ton of work and fragile hackery tho.
+
+---
+
+*Random note*  
+
+GUI opening handler functions must follow these rules:
+
+- Do not do anything if the event is already handled (status is not `false`) unless the mod that handled the event is
+a known dependency that you want to change the behavior of. To emphasise: The mod should be declared a (optional) dependency
+in `info.json`.
+- Return the root element of the resulting GUI or nil. If nil, FML will behave like the event wasn't handled. The validity
+of the element will be used to determine if the GUI is still open.
+- If you want to handle close events on the GUI that the handler is running for, return a name of a global function as a
+second value. This is done this way to discourage desync-prone code.
