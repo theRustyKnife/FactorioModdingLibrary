@@ -1163,6 +1163,7 @@ return function(_M)
 			reverse = _M.reverse,
 			indices = _M.indices,
 			mk = _M.mk,
+			insert_at_next_index = _M.insert_at_next_index
 			
 			-- Serpent functions can be used as methods
 			line = serpent.line,
