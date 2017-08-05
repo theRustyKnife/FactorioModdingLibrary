@@ -25,10 +25,18 @@ return {
 		added = {"Some GUI functions, still not great...", "Object.abstract"},
 		changes = {"events no longer throws an error on attempt to register permanent handler"}
 	},
-	--[[
 	{
 		code = 13,
-		name = "",
+		name = "0.1.0-alpha.7.0",
+		added = {
+			'handlers module for "permanent" handler functions',
+			"table.mk for easy table initialization",
+			"A prototype version of GUI",
+		},
+		fixes = {"format.position is properly available", "insert_at_next_index is available in RichTable"},
+		changes = {
+			"Local config is now in embedded in the main file to allow single file install",
+			"`_M_require` is now available to nested modules in the global scope for loading submodules",
+		},
 	},
-	--]]
 }
