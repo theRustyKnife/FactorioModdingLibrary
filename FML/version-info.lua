@@ -44,4 +44,15 @@ return {
 		name = "0.1.0-alpha.7.1",
 		changed = {"Entity GUI now works almost like vanilla"},
 	},
+	{
+		code = 15,
+		name = "0.1.0-alpha.8.0",
+		added = {"remote.call_when_loaded", "GUI.controls.CheckboxGroup"},
+		fixes = {
+			"GUI.watch_opening now works properly before load",
+			"Fixed GUI.entity_base crashing",
+			"Fixed typo in GUI.entity_segment",
+			"Fixed _copy crashing with non-default settings",
+		},
+	},
 }
