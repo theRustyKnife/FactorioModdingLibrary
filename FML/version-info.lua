@@ -55,4 +55,15 @@ return {
 			"Fixed _copy crashing with non-default settings",
 		},
 	},
+	{
+		code = 16,
+		name = "0.1.0-alpha.8.1",
+		added = {"GUI.controls.RadiobuttonGroup"},
+		fixes = {
+			"Fixed GUI.entity_base segment width",
+			"Entity GUI can't be opened with full cursor"
+			"Fixed blueprint-data prototypes not getting loaded after save/load",
+			"Fixed that unimplemented abstract methods would print the wrong type",
+		},
+	},
 }

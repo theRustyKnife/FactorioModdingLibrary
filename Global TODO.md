@@ -2,3 +2,7 @@
 - A way to save circuit connections in blueprints
 - Fix that loading console might not properly work due to caches in the remote instance
 - A way to designate submodules to only run in certain stages
+- Find a way to document nested modules
+- Differentiate methods from functions and regular from keyword arguments
+- Allow setting locale and provide some basic formatting options
+- Simulate the inventory camera by cloning the entity to a surface with plain grey tiles
