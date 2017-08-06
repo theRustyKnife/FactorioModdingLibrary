@@ -31,22 +31,6 @@ return function(_M)
 		end
 		
 		
-		local function block_gui(player)
-			---[[ LEGACY
-			if player.selected then
-				if player.selected.operable then
-					global.post_open = table(global.post_open) -- make sure the table exists
-					global.post_open:insert(player.selected)
-				end
-				player.selected.operable = false
-			end
-			--]]
-			--[[ HOPEFULLY WILL WORK SOON
-			player.opened = defines.gui_type.none
-			--]]
-		end
-		
-		
 		function _M.watch_opening(what)
 			if type(what) == "table" then for _, e in pairs(what) do _M.watch_opening(e); end
 			else watched_names[what] = true; end
@@ -60,11 +44,14 @@ return function(_M)
 		
 		function _M.close_gui(player_index)
 			if not global.open_guis[player_index] or not global.open_guis[player_index].valid then return; end
-			--[[ HOPEFULLY WILL WORK SOON
-			player.opened = defines.gui_type.none
-			--]]
+			
+			local player = game.players[player_index]
+			
+			global:mk"to_close"
+			global.to_close:insert(player)
+			
 			interfaces:foreach(function(interface)
-				interface.on_close{player = game.players[player_index], element = global.open_guis[player_index]}
+				interface.on_close{player = player, element = global.open_guis[player_index]}
 			end)
 			if global.open_guis[player_index].valid then
 				global.open_guis[player_index].destroy()
@@ -81,46 +68,46 @@ return function(_M)
 			if player 
 					and not player.opened_self and player.opened_gui_type == defines.gui_type.none -- Check if other gui isn't open
 					and player.selected and player.selected.valid and watched_names[player.selected.name] then -- Check if our gui isn't open
-				-- Prevent the normal GUI from appearing
-				block_gui(player)
-				
 				if not (global.open_guis[player.index] and global.open_guis[player.index].valid) then
 					log.d("Player #"..player.index..' opened "'..player.selected.name..'" at '..FML.format.position(player.selected.position))
-					init_interfaces()
-					-- Call all the local instances
-					local status = false
-					local element
-					interfaces:foreach(function(interface, mod)
-						local res = interface.on_open{
-								player = player, -- The player that did the opening
-								entity = player.selected, -- The entity that was opened
-								opened = status, -- The name of the mod that handled the opening or false if not handled yet
-								element = element, -- The root element of the gui that was created by the mod that handled
-									-- the opening or nil if not handled yet
-							}
-						if res then status = mod; end
-						element = res or element
-					end)
-					
-					if status and element and element.valid then global.open_guis[player.index] = element
-					else global.open_guis[player.index] = nil; end
-					
-					log.dump("Status: ", status)
+					if player.selected.operable then --TODO: check how this works with forces
+						init_interfaces()
+						-- Call all the local instances
+						local status = false
+						local element
+						interfaces:foreach(function(interface, mod)
+							local res = interface.on_open{
+									player = player, -- The player that did the opening
+									entity = player.selected, -- The entity that was opened
+									opened = status, -- The name of the mod that handled the opening or false if not handled yet
+									element = element, -- The root element of the gui that was created by the mod that handled
+										-- the opening or nil if not handled yet
+								}
+							if res then status = mod; end
+							element = res or element
+						end)
+						
+						if status and element and element.valid then global.open_guis[player.index] = element
+						else global.open_guis[player.index] = nil; end
+						
+						log.dump("Status: ", status)
+					else log.d("The opened entity is not operable"); end
 				end
-			elseif global.open_guis[player.index] and global.open_guis[player.index].valid then
-				block_gui(player) -- Block non watched entity guis if a gui is open
 			end
 		end)
 		
-		---[[ LEGACY
 		FML.events.on_tick(function(event)
-			-- Reset operable on the entities that were opened last tick
-			if global.post_open then
-				for _, e in ipairs(global.post_open) do if e.valid then e.operable = true; end end
-				global.post_open = nil
+			-- Prevent the player's inventory from appearing when closing our gui
+			if global.to_close then
+				for _, player in ipairs(global.to_close) do player.opened = nil; end
+				global.to_close = nil
+			end
+			
+			-- Prevent any gui from opening over our gui
+			for player_index, elem in pairs(global.open_guis) do
+				if elem.valid then game.players[player_index].opened = nil; end
 			end
 		end)
-		--]]
 		
 		FML.events.on(config.GUI.NAMES.CLOSE_KEY, function(event)
 			_M.close_gui(event.player_index) -- This should handle everything
