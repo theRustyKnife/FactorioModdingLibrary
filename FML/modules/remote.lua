@@ -1,8 +1,7 @@
 return function(_M)
 	local FML = therustyknife.FML
-
-
 	if FML.STAGE ~= "runtime" then return nil, true; end
+	local table = FML.table
 
 
 	local function get_function_internal(clbck)
@@ -281,12 +280,36 @@ return function(_M)
 		return true
 	end
 
-	_DOC.exopse_interface = {
+	_DOC.expose_interface = {
 		type = "function",
 		deprecated = 5,
 		desc = "Use remote.add_interface instead.",
 	}
 	_M.expose_interface = _M.add_interface
+	
+	
+	_DOC.call_when_loaded = {
+		desc = [[ Call a given remote function now or once remote calls become available. ]],
+		notes = {"The return values of the call are discarded, as it's not guaranteed the call will run immediately."},
+		params = {
+			{
+				type = {"function", "Callback"},
+				name = "func",
+				desc = "The function to call",
+			},
+			{
+				type = "Any",
+				name = "...",
+				desc = "The parameters to pass to the function",
+			},
+		},
+	}
+	local to_call = table()
+	function _M.call_when_loaded(func, ...)
+		if type(func) == "table" then func = _M.get_function(func); end
+		if not pcall(func, ...) then to_call:insert{func = func, args = {...}}; end
+	end
+	FML.events.on_load(function() for _, v in ipairs(to_call) do v.func(unpack(v.args)); end end)
 
 
 	--TODO: Callback handling - simple way to generate a callback from a function, where FML is going to handle exposing the

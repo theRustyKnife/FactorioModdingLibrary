@@ -13,11 +13,11 @@ return {
 	-- Modules with their paths that FML will attempt to load
 	MODULES_TO_LOAD = {
 		{name = "log", path = "modules.log"},
-		{name = "remote", path = "modules.remote"},
 		{name = "table", path = "modules.table"},
+		{name = "events", path = "modules.events"},
+		{name = "remote", path = "modules.remote"},
 		{name = "format", path = "modules.format"},
 		{name = "data", path = "modules.data"},
-		{name = "events", path = "modules.events"},
 		{name = "GUI", path = "modules.GUI.init"},
 		{name = "Semver", path = "modules.Semver"},
 		{name = "prototype_util", path = "modules.prototype-util"},
