@@ -34,6 +34,12 @@ return function(_M)
 				vertical_spacing = 0,
 				horizontal_spacing = 0,
 			},
+			[_M.STYLES.table.no_space] = {
+				type = "table_style",
+				parent = "table_style",
+				vertical_spacing = 0,
+				horizontal_spacing = 0,
+			},
 		})
 		
 		return nil, true --TODO: check what this does

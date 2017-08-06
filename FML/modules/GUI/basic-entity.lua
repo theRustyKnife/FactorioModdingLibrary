@@ -42,14 +42,14 @@ return function(_M)
 				style = _M.STYLES.flow.no_space,
 			}
 			local primary_col = frame.add{
-				type = "flow",
-				direction = "vertical",
-				style = _M.STYLES.flow.no_space,
+				type = "table",
+				colspan = 1,
+				style = _M.STYLES.table.no_space,
 			}
 			local secondary_col = frame.add{
-				type = "flow",
-				direction = "vertical",
-				style = _M.STYLES.flow.no_space,
+				type = "table",
+				colspan = 1,
+				style = _M.STYLES.table.no_space,
 			}
 			local title = _M.entity_title{
 					parent = primary_col, entity = args.entity, cam = args.cam, cam_zoom = args.cam_zoom
@@ -59,12 +59,14 @@ return function(_M)
 		
 		-- A single segment of an entity's gui
 		function _M.entity_segment(args) -- parent, name, title, direction
-			return args.parent.add{
+			local res = args.parent.add{
 				type = "frame",
 				name = args.name,
 				caption = args.title,
 				direction = args.direction or "vertical",
 			}
+			res.style.resize_row_to_width = true
+			return res
 		end
 		
 		--TODO: implement high-level GUI
