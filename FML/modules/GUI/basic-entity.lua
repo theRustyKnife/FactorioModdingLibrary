@@ -58,7 +58,7 @@ return function(_M)
 		end
 		
 		-- A single segment of an entity's gui
-		function _M.entity_segement(args) -- parent, name, title, direction
+		function _M.entity_segment(args) -- parent, name, title, direction
 			return args.parent.add{
 				type = "frame",
 				name = args.name,
