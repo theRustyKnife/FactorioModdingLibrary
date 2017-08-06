@@ -61,7 +61,7 @@ return {
 		added = {"GUI.controls.RadiobuttonGroup"},
 		fixes = {
 			"Fixed GUI.entity_base segment width",
-			"Entity GUI can't be opened with full cursor"
+			"Entity GUI can't be opened with full cursor",
 			"Fixed blueprint-data prototypes not getting loaded after save/load",
 			"Fixed that unimplemented abstract methods would print the wrong type",
 		},
