@@ -39,4 +39,9 @@ return {
 			"`_M_require` is now available to nested modules in the global scope for loading submodules",
 		},
 	},
+	{
+		code = 14,
+		name = "0.1.0-alpha.7.1",
+		changed = {"Entity GUI now works almost like vanilla"},
+	},
 }
