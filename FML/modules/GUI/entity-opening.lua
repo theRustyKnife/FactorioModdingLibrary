@@ -46,7 +46,7 @@ return function(_M)
 		}
 		function _M.watch_opening(what, on_open)
 			log.d("Watch: "..what)
-			GUI_remote.watch_opening(what)
+			FML.remote.call_when_loaded(GUI_remote.watch_opening, what)
 			local_handlers.open:mk(what)
 			return local_handlers.open[what]:insert_at_next_index(on_open)
 		end

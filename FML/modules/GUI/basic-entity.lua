@@ -39,22 +39,22 @@ return function(_M)
 				type = "flow",
 				name = args.name,
 				direction = "horizontal",
-				style = STYLES.flow.no_space,
+				style = _M.STYLES.flow.no_space,
 			}
 			local primary_col = frame.add{
 				type = "flow",
 				direction = "vertical",
-				style = STYLES.flow.no_space,
+				style = _M.STYLES.flow.no_space,
 			}
 			local secondary_col = frame.add{
 				type = "flow",
 				direction = "vertical",
-				style = STYLES.flow.no_space,
+				style = _M.STYLES.flow.no_space,
 			}
 			local title = _M.entity_title{
 					parent = primary_col, entity = args.entity, cam = args.cam, cam_zoom = args.cam_zoom
 				}
-			return {primary = primary_col, secondary = secondary_col, title = title}
+			return {root = frame, primary = primary_col, secondary = secondary_col, title = title}
 		end
 		
 		-- A single segment of an entity's gui
