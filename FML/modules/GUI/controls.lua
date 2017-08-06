@@ -8,9 +8,12 @@ return function(_M)
 	
 	local global
 	FML.events.on_load(function()
+		local function mk_tabs(parent) parent:mk"elems"; parent:mk"objects"; end
+		
 		global = table.mk(FML.get_fml_global("GUI"), "controls")
-		global:mk"checkbox_group"; global.checkbox_group:mk"objects"; global.checkbox_group:mk"elems"
-		global:mk"radiobutton_group"; global.radiobutton_group:mk"objects"; global.radiobutton_group:mk"elems"
+		global:mk"checkbox_group"; mk_tabs(global.checkbox_group)
+		global:mk"radiobutton_group"; mk_tabs(global.radiobutton_group)
+		global:mk"number_selctor"; mk_tabs(global.number_selctor)
 	end)
 	
 	function _M.controls.prune()
@@ -51,6 +54,8 @@ return function(_M)
 			self.id = global.checkbox_group.elems:insert_at_next_index(self.root)
 			global.checkbox_group.objects[self.id] = self
 		end
+		
+		return self
 	end)
 	
 	function _M.controls.CheckboxGroup:destroy()
@@ -119,6 +124,8 @@ return function(_M)
 		
 		self.id = global.radiobutton_group.elems:insert_at_next_index(self.root)
 		global.radiobutton_group.objects[self.id] = self
+		
+		return self
 	end)
 	
 	function _M.controls.RadiobuttonGroup:destroy()
@@ -151,6 +158,68 @@ return function(_M)
 			local parent = event.element.parent
 			local id = global.radiobutton_group.elems:index_of(parent)
 			if id then global.radiobutton_group.objects[id]:select(event.element.name); end
+		end
+	end)
+	
+	
+	------- NumberSelector -------
+	
+	-- Constructor args: parent, name, caption, value, on_change, meta, min, max
+	_M.controls.NumberSelector = FML.Object:extend("therustyknife.FML.GUI.controls.NumberSelector", function(self, args)
+		self.name = args.name
+		self.on_change = args.on_change
+		self.meta = args.meta
+		self.value = tonumber(args.value or 0)
+		self.min = args.min
+		self.max = args.max
+		
+		self.root = args.parent.add{
+			type = "flow",
+			name = args.name,
+			direction = "horizontal",
+		}
+		
+		if args.caption then
+			self.root.add{
+				type = "label",
+				caption = args.caption,
+			}
+		end
+		
+		self.root.add{
+			type = "textfield",
+			text = self.value,
+		}
+		
+		self.id = global.number_selctor.elems:insert_at_next_index(self.root)
+		global.number_selctor.objects[self.id] = self
+		
+		return self
+	end)
+	
+	function _M.controls.NumberSelector:destroy()
+		if self.root.valid then self.root.destroy(); end
+		if self.id then
+			global.number_selctor.elems[self.id] = nil
+			global.number_selctor.objects[self.id] = nil
+		end
+		
+		_M.controls.NumberSelector.super.destroy(self)
+	end
+	
+	FML.events.on_gui_text_changed(function(event)
+		local id = global.number_selctor.elems:index_of(event.element.parent)
+		if id then
+			local self = global.number_selctor.objects[id]
+			
+			local new_value = tonumber(event.element.text) or self.value
+			if self.min and new_value < self.min then new_value = self.min; end
+			if self.max and new_value > self.max then new_value = self.max; end
+			
+			event.element.text = new_value
+			self.value = new_value
+			
+			if self.on_change then FML.handlers.call(self.on_change, self); end
 		end
 	end)
 end
