@@ -1,3 +1,5 @@
+--TODO: a way to keep frames the same width
+
 return {
 	_M = true,
 	function(_M)
@@ -11,5 +13,6 @@ return {
 	_M_require ".data",
 	_M_require ".shared",
 	_M_require ".entity-opening",
+	_M_require ".controls",
 	_M_require ".basic-entity",
 }
