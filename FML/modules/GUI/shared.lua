@@ -71,7 +71,7 @@ return function(_M)
 					and player.selected and player.selected.valid and watched_names[player.selected.name] then -- Check if our gui isn't open
 				if not (global.open_guis[player.index] and global.open_guis[player.index].valid) then
 					log.d("Player #"..player.index..' opened "'..player.selected.name..'" at '..FML.format.position(player.selected.position))
-					if player.selected.operable then --TODO: check how this works with forces
+					if player.selected.operable and not player.cursor_stack.valid_for_read then --TODO: check how this works with forces
 						init_interfaces()
 						-- Call all the local instances
 						local status = false
@@ -92,7 +92,7 @@ return function(_M)
 						else global.open_guis[player.index] = nil; end
 						
 						log.dump("Status: ", status)
-					else log.d("The opened entity is not operable"); end
+					else log.d("The opened entity is not operable or player holds item"); end
 				end
 			end
 		end)
