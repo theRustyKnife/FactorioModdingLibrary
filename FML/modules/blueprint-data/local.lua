@@ -185,7 +185,7 @@ return function(_M)
 				if funcs[key] then return funcs[key]; end -- The methods have precedence
 				if type(key) == "string" and key:sub(1, 2) == "__" then return rawget(data, key); end
 				
-				local prototype = prototypes[data.__type]
+				local prototype = load_prototype(data.__type)
 				assert(prototype.settings[key],
 					"Blueprint data group "..data.__type.." doesn't contain key "..tostring(key))
 				
@@ -202,7 +202,7 @@ return function(_M)
 			__newindex = function(data, key, value)
 				if type(key) == "string" and key:sub(1, 2) == "__" then rawset(data, key, value); return; end
 				
-				local prototype = prototypes[data.__type]
+				local prototype = load_prototype(data.__type)
 				assert(prototype.settings[key],
 					"Blueprint data group "..data.__type.." doesn't contain key "..tostring(key))
 				
