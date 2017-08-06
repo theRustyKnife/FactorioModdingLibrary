@@ -91,11 +91,12 @@ return function(_M)
 		function _M.add_prototype(prototype, collision_box, localised_name)
 			collision_box = collision_box or config.BLUEPRINT_DATA.DEFAULT_COLLISION_BOX
 			if type(prototype) == "table" and not prototype.name then
-				for _, p in pairs(prototype) do _M.add_prototype(p, collision_box); end
+				for _, p in pairs(prototype) do _M.add_prototype(p, collision_box, localised_name); end
 				return
 			end
 			
 			local settings, slots = parse_settings(prototype.settings)
+			log.dump('Make blueprint-data-entity "'..entity_name(prototype.name)..'" with collision_box ', collision_box)
 			FML.data.make{
 				base = PROTOTYPE_BASE,
 				properties = {
@@ -146,6 +147,7 @@ return function(_M)
 				name = entity_name,
 				position = parent.position,
 				force = parent.force,
+				direction = parent.supports_direction and parent.direction or nil,
 			}
 			entity.destructible = false
 			return entity
