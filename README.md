@@ -7,3 +7,8 @@ To add the library to your mod, grab the file from the `FML_local` directory and
 To use it do these things as needed:
 - In the data and settings stage (`data.lua` and `settings.lua`) simply access the library via the global variable `therustyknife.FML`: `local FML = therustyknife.FML`
 - In the runtime stage (`control.lua`) require the local FML file on top of your `control.lua` using `require "<path-to-the-file>"`. Then access the library using the global variable `therustyknife.FML`, similarly to the data stage.
+
+## Other info ##
+There should be a somewhat usable documentation on the [wiki](https://github.com/theRustyKnife/FactorioModdingLibrary/wiki).
+
+For a bunch of random notes, see [Random Notes.md](https://github.com/theRustyKnife/FactorioModdingLibrary/blob/0.1-dev/Random%20Notes.md).
