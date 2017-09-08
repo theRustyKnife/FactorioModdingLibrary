@@ -10,6 +10,7 @@ return function(_M)
 	--TODO: log to file/console only for certain players?
 
 	
+	local log = _G.log -- Save the vanilla log function to prevent inifinite recursion issues
 	local function empty() end
 
 	local print
