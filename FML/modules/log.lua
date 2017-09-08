@@ -154,10 +154,12 @@ return function(_M)
 		function _M.set_ser_func(func) ser_func = func; end
 		
 		function _M.dump(message, ...)
-			local res = type(message) == "string" and message or (ser_func(message)..", ")
+			local args = FML.table.pack(...)
+			local res = (args.n > 0 and type(message) == "string" and message)
+					or (ser_func(message)..(args.n > 0 and ", " or ""))
 			local first = true
-			for _, val in ipairs{...} do
-				res = res..(not first and ", " or "")..ser_func(val)
+			for i = 1, args.n do
+				res = res..(not first and ", " or "")..ser_func(args[i])
 				first = false
 			end
 			_M.d(res, 4)
