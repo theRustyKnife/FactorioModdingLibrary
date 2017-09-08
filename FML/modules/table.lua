@@ -91,28 +91,6 @@ return function(_M)
 		
 		return true
 	end
-	
-	_DOC.pack = {
-		short_desc = "Create an array from the passed arguments.",
-		desc = [[
-		Create an array from the passed arguments. It also sets the `n` field to the number of arguments, including `nil`s.
-		]],
-		notes = {"The table returned by this function is not an array as described [[here|Array]], in that it has the `n` field defined."},
-		params = {
-			{
-				type = "Any",
-				name = "...",
-				desc = "The values to pack into an array",
-			},
-		},
-		returns = {
-			{
-				type = "table",
-				desc = "The resulting array",
-			},
-		},
-	}
-	function _M.pack(...) return {n = select("#", ...); ...} end
 
 	_DOC.equals = {
 		type = "function",
@@ -298,9 +276,9 @@ return function(_M)
 	}
 	_M.getn = table_size
 
-	_DOC.get_next_index = {
+	_DOC.get_free_index = {
 		type = "function",
-		desc = [[ Get the next free integer index in tab. ]],
+		desc = [[ Get the first free integer index in tab. ]],
 		notes = {RICH_NOTE},
 		params = {
 			{
@@ -322,13 +300,19 @@ return function(_M)
 			},
 		},
 	}
-	function _M.get_next_index(tab, start)
+	function _M.get_free_index(tab, start)
 		start = start or 1
 		local i = 1
 		while true do
 			if tab[i] == nil then return i; end
 			i = i + 1
 		end
+	end
+	
+	--TODO: docs
+	--TODO: insert functions using this
+	function _M.get_next_index(tab)
+		return _M.maxn(tab)+1
 	end
 
 	_DOC.is_empty = {
@@ -418,6 +402,35 @@ return function(_M)
 	end
 
 
+	_DOC.insert_at_free_index = {
+		type = "function",
+		desc = [[ Insert the given element at the first free numeric index. ]],
+		notes = {"Uses table.get_free_index to find the index.", RICH_NOTE},
+		params = {
+			{
+				type = "table",
+				name = "tab",
+				desc = "The table to insert into",
+			},
+			{
+				type = "Any",
+				name = "element",
+				desc = "The element to insert",
+			},
+		},
+		returns = {
+			{
+				type = "int",
+				desc = "The index the element was inserted at",
+			},
+		},
+	}
+	function _M.insert_at_free_index(tab, element)
+		local index = _M.get_free_index(tab)
+		tab[index] = element
+		return index
+	end
+	
 	_DOC.insert_at_next_index = {
 		type = "function",
 		desc = [[ Insert the given element at the first free numeric index. ]],
@@ -516,6 +529,38 @@ return function(_M)
 		tab[index] = value
 	end
 
+	_DOC.n_insert_at_free_index = {
+		type = "function",
+		desc = [[ Insert the given value at the next integer index and update `_ids`. ]],
+		notes = {
+			"Can only be used on tables that already have the `_ids` field present (numerically indexed tables).",
+			RICH_NOTE,
+		},
+		params = {
+			{
+				type = "table",
+				name = "tab",
+				desc = "The table to insert into",
+			},
+			{
+				type = "Any",
+				name = "value",
+				desc = "The value to insert",
+			},
+		},
+		returns = {
+			{
+				type = "int",
+				desc = "The index the value was inserted to",
+			},
+		},
+	}
+	function _M.n_insert_at_free_index(tab, value)
+		local index = _M.get_free_index(tab)
+		_M.n_insert(tab, index, value)
+		return index
+	end
+	
 	_DOC.n_insert_at_next_index = {
 		type = "function",
 		desc = [[ Insert the given value at the next integer index and update `_ids`. ]],
@@ -635,8 +680,9 @@ return function(_M)
 
 	_DOC.highest_index = {
 		type = "function",
-		desc = [[ Get the highest numeric index in the table. ]],
-		notes = {RICH_NOTE},
+		short_desc = "Get the highest index in the table.",
+		desc = [[ Get the highest numeric index in the table, including zero and negative indices. ]],
+		notes = {"Use `maxn` whenever possible isntead of this - it is much faster.", RICH_NOTE},
 		params = {
 			{
 				type = "table",
@@ -1105,6 +1151,54 @@ return function(_M)
 		},
 	}
 	_M.sort = table.sort
+	
+	_DOC.maxn = {
+		short_desc = "Return the largest positive numerical index of the given table.",
+		desc = [[
+		Return the largest positive numerical index of the given table, or zero if the table has no positive numerical
+		indices. (To do its job this function does a linear traversal of the whole table.)
+		]],
+		notes = {RICH_NOTE, built_in_note("table.maxn")},
+		params = {
+			{
+				type = "table",
+				name = "table",
+				desc = "The table to search",
+			},
+		},
+		returns = {
+			{
+				type = "uint",
+				desc = "The found index, or zero if none was found",
+			},
+		},
+	}
+	_M.maxn = table.maxn
+	_DOC.pack = {
+		desc = [[
+		Returns a new table with all parameters stored into keys 1, 2, etc. and with a field "n" with the total number
+		of parameters. Note that the resulting table may not be a sequence.
+		]],
+		notes = {
+			"`nil`s are considered valid values here.",
+			"The returned table is not exactly an [[Array|Array]] as it has the `n` field defined.",
+			built_in_note("table.pack"),
+		},
+		params = {
+			{
+				type = "Any",
+				name = "...",
+				desc = "The values to pack into an array",
+			},
+		},
+		returns = {
+			{
+				type = "table",
+				desc = "The resulting array",
+			},
+		},
+	}
+	_M.pack = table.pack
 
 	function _M.setmetatable(tab, mt)
 		if tab.__rich then
@@ -1160,6 +1254,7 @@ return function(_M)
 			equals = _M.equals,
 			getn = _M.getn,
 			get_next_index = _M.get_next_index,
+			get_free_index = _M.get_free_index,
 			is_empty = _M.is_empty,
 			index_of = _M.index_of,
 			contains = _M.contains,
@@ -1170,6 +1265,7 @@ return function(_M)
 			ipairs_all = _M.ipairs_all,
 			n_insert = _M.n_insert,
 			n_insert_at_next_index = _M.n_insert_at_next_index,
+			n_insert_at_free_index = _M.n_insert_at_free_index,
 			n_remove = _M.n_remove,
 			any = _M.any,
 			any_tab = _M.any_tab,
@@ -1186,18 +1282,20 @@ return function(_M)
 			indices = _M.indices,
 			mk = _M.mk,
 			insert_at_next_index = _M.insert_at_next_index,
+			insert_at_free_index = _M.insert_at_free_index,
 			
 			-- Serpent functions can be used as methods
 			line = serpent.line,
 			block = serpent.block,
 			dump = serpent.dump,
 			
-			-- The built-in functions happen to be usable as methods too
+			-- The built-in functions that happen to be usable as methods too
 			insert = _M.insert,
 			remove = _M.remove,
 			concat = _M.concat,
 			sort = _M.sort,
 			unpack = _M.unpack,
+			maxn = _M.naxn,
 			
 			-- The built-in iterators
 			pairs = pairs,
