@@ -42,7 +42,7 @@ return {
 	{
 		code = 14,
 		name = "0.1.0-alpha.7.1",
-		changed = {"Entity GUI now works almost like vanilla"},
+		changes = {"Entity GUI now works almost like vanilla"},
 	},
 	{
 		code = 15,
@@ -64,6 +64,27 @@ return {
 			"Entity GUI can't be opened with full cursor",
 			"Fixed blueprint-data prototypes not getting loaded after save/load",
 			"Fixed that unimplemented abstract methods would print the wrong type",
+		},
+	},
+	{
+		code = 17,
+		name = "0.1.0-alpha.9.0",
+		added = {
+			"blueprint-data now supports entities with direction",
+			"GUI.controls.NumberSelector",
+			"table.get_free_index",
+			"table.insert_at_free_index",
+			"table.n_insert_at_free_index",
+			"table.maxn",
+			"table.pack",
+		},
+		changes = {
+			"table.get_next_index now returns `last_index + 1`, the respective insert functions changed too",
+			"log.dump now handles the `message` argument properly",
+		},
+		fixes = {
+			"Fixed that GUI.controls constructors didn't return anything",
+			"Fixed log getting stuck in infinite recursion loop sometimes",
 		},
 	},
 }
