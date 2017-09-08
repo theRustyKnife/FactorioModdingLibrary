@@ -91,6 +91,28 @@ return function(_M)
 		
 		return true
 	end
+	
+	_DOC.pack = {
+		short_desc = "Create an array from the passed arguments.",
+		desc = [[
+		Create an array from the passed arguments. It also sets the `n` field to the number of arguments, including `nil`s.
+		]],
+		notes = {"The table returned by this function is not an array as described [[here|Array]], in that it has the `n` field defined."},
+		params = {
+			{
+				type = "Any",
+				name = "...",
+				desc = "The values to pack into an array",
+			},
+		},
+		returns = {
+			{
+				type = "table",
+				desc = "The resulting array",
+			},
+		},
+	}
+	function _M.pack(...) return {n = select("#", ...); ...} end
 
 	_DOC.equals = {
 		type = "function",
