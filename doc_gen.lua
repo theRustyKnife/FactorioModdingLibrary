@@ -256,7 +256,10 @@ local function func_detail(func)
 	write(h(3, func.name)..n())
 	
 	write(parse_params(func.returns, "nil").." "..func_header(func)..br())
-	if func.deprecated then write(b("Deprecated since version "..version_util.name{code=func.deprecated})..br()); end
+	if func.deprecated then
+		write(b("Deprecated since version "..version_util.name{code=func.deprecated})..br())
+		if func.depr_note then write(i(func.depr_note)..br()); end
+	end
 	write(func.desc..n(2))
 	
 	if func.notes then
