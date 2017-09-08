@@ -99,9 +99,7 @@ return {
 		name = "Array",
 		short_desc = "A numerically indexed table.",
 		desc = [[
-		A table, indexed by ascending indices starting from 1. The `#` operator can be used to get the length of such
-		array. The length operator merely returns the value of the `n` field, which can be changed by the user, but
-		is mostly handled by the table functions.
+		A table, indexed by ascending indices starting from 1. The `#` operator can be used to get the length of such array.
 		]],
 	}},
 	Dictionary = {_DOC = {
