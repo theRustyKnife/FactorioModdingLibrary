@@ -40,7 +40,7 @@ return function(_M)
 		desc = [[ Format a time in ticks into minutes and seconds. ]],
 		params = {
 			{
-				type = "int",
+				type = "uint",
 				name = "ticks",
 				desc = "The time in ticks",
 			},

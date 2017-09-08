@@ -104,6 +104,14 @@ return {
 		is mostly handled by the table functions.
 		]],
 	}},
+	Dictionary = {_DOC = {
+		type = "concept",
+		name = "Dictionary",
+		short_desc = "A key-value store.",
+		desc = [[
+		A table that only uses one type for keys and one type for values. It doesn't have to be special in any other way.
+		]],
+	}},
 	Any = {_DOC = {
 		type = "concept",
 		name = "Any",

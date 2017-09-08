@@ -39,7 +39,7 @@ return function(_M)
 		notes = {"If the info can't be obtained (too high stack level), \"unknown\" will be printed."},
 		params = {
 			{
-				type = "int",
+				type = "uint",
 				name = "level",
 				desc = "Which level of the stack to consider",
 				default = "2",

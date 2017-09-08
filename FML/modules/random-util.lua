@@ -24,7 +24,7 @@ return function(_M)
 					desc = "The entity to deliver items into",
 				},
 				{
-					type = "Dictionary[string: int]",
+					type = "Dictionary[string: uint]",
 					name = "requests",
 					desc = "The items to request and their amounts",
 				},

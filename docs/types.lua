@@ -29,4 +29,20 @@ return {
 		name = "int",
 		desc = [[ An integer value. ]],
 	}},
+	uint = {_DOC = {
+		type = "type",
+		name = "uint",
+		desc = [[
+		An unsigned integer value. In most cases, this is still a regular number internally, it just means that the
+		function is expecting the appropriate value.
+		]],
+	}},
+	float = {_DOC = {
+		type = "type",
+		name = "float",
+		short_desc = "Fancy terminology for Lua's built-in number.",
+		desc = [[
+		Fancy terminology for Lua's built-in number. It can be any number accepted by the interpreter.
+		]],
+	}},
 }

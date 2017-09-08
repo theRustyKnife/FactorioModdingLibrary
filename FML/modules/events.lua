@@ -236,7 +236,7 @@ return function(_M)
 				desc = "The event(s) to remove the handler from, if nil, all events will be considered",
 			},
 			{
-				type = {"int", "function"},
+				type = {"uint", "function"},
 				name = "what",
 				desc = "Which handler to remove, can either be a handler id or a handler function",
 			},

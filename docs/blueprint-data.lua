@@ -53,10 +53,10 @@ return {
 		Settings are tables in the following format:  
 		``{
 		``	type = string, -- One of "int", "bool", "float", "enum" (float is not yet implemented). Determines what type of data can be stored in this setting.
-		``	index = int, -- The index is equivalent to the signal slot it is going to be stored in - has to be unique.
+		``	index = uint, -- The index is equivalent to the signal slot it is going to be stored in - has to be unique.
 		``	default = Any, -- The default value of this setting, nil if not specified.
-		``	exponent_index = int, -- Only for float, determines the slot to store the exponent in - has to be unique.
-		``	options = Dictionary[string: int], -- Only for enum, determines the values it can have.
+		``	exponent_index = uint, -- Only for float, determines the slot to store the exponent in - has to be unique.
+		``	options = Dictionary[string: uint], -- Only for enum, determines the values it can have.
 		``}
 		]],
 		notes = {

@@ -106,7 +106,7 @@ return {_DOC = {
 			desc = [[ Create a new `Semver` object. ]],
 			params = {
 				{
-					type = {"string", "int"},
+					type = {"string", "uint"},
 					name = "major",
 					desc = [[
 					The major version number. If this is a string, it is interpreted as the whole version and
@@ -114,13 +114,13 @@ return {_DOC = {
 					]],
 				},
 				{
-					type = "int",
+					type = "uint",
 					name = "minor",
 					desc = "The minor version number",
 					default = "0",
 				},
 				{
-					type = "int",
+					type = "uint",
 					name = "patch",
 					desc = "The patch version number",
 					default = ",",

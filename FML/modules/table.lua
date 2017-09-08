@@ -269,7 +269,7 @@ return function(_M)
 		},
 		returns = {
 			{
-				type = "int",
+				type = "uint",
 				desc = "The number of elements in tab",
 			},
 		},

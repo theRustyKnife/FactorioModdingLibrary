@@ -305,7 +305,7 @@ return function(_M)
 			},
 			returns = {
 				{
-					type = "Dictionary[string: int]",
+					type = "Dictionary[string: uint]",
 					desc = "The enum options",
 				},
 			},

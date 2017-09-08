@@ -39,7 +39,7 @@ return function(_M)
 			},
 			returns = {
 				{
-					type = "int",
+					type = "uint",
 					desc = "The id of the added handler - used for removal",
 				},
 			},
