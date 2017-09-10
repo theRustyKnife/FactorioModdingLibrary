@@ -38,44 +38,87 @@ return function(_M)
 	end
 
 
-	function _M.init(module, __M, ...)
-	--[[
-	Init a loaded module. If module is a function, it's going to be called with any other parameters passed. If _M wasn't
-	passed, or it is nil, an empty table is going to be passed to the module instead.
-	The resulting value is going to be returned, if the module returned a value and true, that value will be returned, plus
-	true to indicate the fact that the module wishes not to use the table it was given.
-	If module is anything else than a function, it's going to be returned as-is.
-	]]
-		if type(module) == "function" then
+	function _M.init(module, __M, stage)
+		if module.type == "constant" then return module.value; end
+		if module.type == "module" then
 			local res = __M or {}
-			local ret, override = module(res, ...)
-			return (override and ret) or res, override
-		elseif type(module) == "table" and module.__load then
-			local res = __M or {}
-			module:__load(res, _M.init, ...)
+			for _, component in ipairs(module[stage]) do
+				if component.type == "file" then module.files[component.path](res, stage)
+				elseif component.type == "submodule" then
+					res[component.name] = {_super_module = res}
+					_M.init(module.submodules[component.name], res[component.name], stage)
+				end
+			end
 			return res
 		end
-		return module
 	end
-
-	function _M.init_all(FML, modules, init_func)
+	
+	function _M.init_all(res_tab, modules, order, stage, init_func)
 	--[[
 	Init all the modules in the given FML instance. Use init_func for initialization, or the init function if none is given.
 	]]
 		init_func = init_func or _M.init
-		for _, module in ipairs(modules) do
-			if FML[module.name] then FML[module.name] = init_func(FML[module.name]); end
+		res_tab = res_tab or {}
+		for _, module in ipairs(order) do
+			if res_tab[module.name] == nil then res_tab[module.name] = init_func(modules[module.name], nil, stage); end
 		end
+		return res_tab
 	end
-
+	
 	function _M.load_from_file(path, load_func, init, log_func)
-	--[[
-	Load and return a module from the file at path, using load_func. Returns nil if the module didn't return a table.
-	log_func can be nil, boolean or function(message). Logging won't work if load_func doesn't return the error as second
-	return value. If init is true, the module will be initialized using the init function and returned in it's final form,
-	if it's a function, it will be called with the module as parameter and the return value of the function will be used as
-	the final form.
-	]]
+		load_func = load_func or require
+		if init and type(init) ~= "function" then init = _M.init; end
+		if log_func == true then log_func = log; end
+		
+		-- Store the values from global so we can restore them once we're done
+		local _G_to_bak = {"mod", "const", "file", "submod"}
+		local _G_bak = {}; for _, name in ipairs(_G_to_bak) do _G_bak[name] = _G[name]; end
+		
+		-- Submodules and component functions will be loaded to here by the bellow functions
+		local submods = {}
+		local files = {}
+		function _G.file(path)
+			files[path] = files[path] or load_func(path)
+			return {type = "file", path = path}
+		end
+		function _G.submod(name, path)
+			if path then submods[name] = submods[name] or _M.load_from_file(path, load_func, false, log_func); end
+			return {type = "submodule", name = name}
+		end
+		
+		-- These are the "top-level" function, they set res to the loaded module
+		local res
+		function _G.mod(module, type)
+			res = {type = "module", submodules = submods, files = files}
+			for _, stage in ipairs{"DATA", "SETTINGS", "RUNTIME_SHARED", "RUNTIME"} do res[stage] = module[stage]; end
+		end
+		function _G.const(const) res = {type = "constant", value = const}; end
+		
+		-- Load the module
+		local loaded, err = load_func(path)
+		if not err and (type(loaded) ~= "function" and not res) then err = "No suitable value found."; end
+		if err then
+			log_func and log_func("Loading FML module from '"..tostring(path).."' failed: "..(err or "No error message."))
+			return nil
+		end
+		res = res or loaded
+		
+		-- Restore the globals
+		for _, name in ipairs(_G_to_bak) do _G[name] = _G_to_bak[name]; end
+		
+		if init then return init(res); end
+		return res
+	end
+	
+	--[[ LEGACY
+	function _M.load_from_file(path, load_func, init, log_func)
+	---[[
+	--Load and return a module from the file at path, using load_func. Returns nil if the module didn't return a table.
+	--log_func can be nil, boolean or function(message). Logging won't work if load_func doesn't return the error as second
+	--return value. If init is true, the module will be initialized using the init function and returned in it's final form,
+	--if it's a function, it will be called with the module as parameter and the return value of the function will be used as
+	--the final form.
+	--]-]
 		load_func = load_func or require
 		if init and type(init) ~= "function" then init = _M.init; end
 		if log_func == true then log_func = log; end
@@ -108,6 +151,7 @@ return function(_M)
 		if init then return init(loaded); end
 		return loaded
 	end
+	--]]
 
 	function _M.load_from_files(modules, res_table, load_func, init, log_func)
 	--[[
@@ -117,13 +161,11 @@ return function(_M)
 	load_func, init and log_func is passed to load_from_file.
 	]]
 		res_table = res_table or {}
-		
 		for _, module in ipairs(modules) do
 			if res_table[module.name] == nil then
-				res_table[module.name] = _M.load_from_file(module.path, load_func, init, log_func) or res_table[module.name]
+				res_table[module.name] = _M.load_from_file(module.path, load_func, init, log_func)
 			end
 		end
-		
 		return res_table
 	end
 

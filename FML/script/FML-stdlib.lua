@@ -28,6 +28,7 @@ return function(_M)
 		
 		-- Handle errors
 		if not status then
+			err = err or 'safe_require failed to load "'..tostring(path)..'". No error message given.'
 			if raise_errors then error(err)
 			else return nil, err; end
 		end
