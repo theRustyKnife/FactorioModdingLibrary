@@ -1,11 +1,8 @@
-return function(_M)
+modfunc({"DATA", "SETTINGS"}, function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
-
-
-	if not (FML.STAGE == "data" or FML.STAGE == "settings") then return nil, true; end
-
-
+	
+	
 	local _DOC = FML.make_doc(_M, {
 		type = "module",
 		name = "data",
@@ -324,4 +321,4 @@ return function(_M)
 		
 		return res
 	end
-end
+end)
