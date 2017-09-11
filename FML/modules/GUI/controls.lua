@@ -1,10 +1,8 @@
 return function(_M)
 	local FML = therustyknife.FML
-	if FML.STAGE ~= "runtime" then return; end
-	local table = FML.table
-	local log = FML.log
+	local table = therustyknife.FML.table
+	local log = therustyknife.FML.log
 	
-	_M.controls = {};
 	
 	local global
 	FML.events.on_load(function()
@@ -16,8 +14,8 @@ return function(_M)
 		global:mk"number_selctor"; mk_tabs(global.number_selctor)
 	end)
 	
-	function _M.controls.prune()
-		for _, v in pairs(_M.controls) do
+	function _M.prune()
+		for _, v in pairs(_M) do
 			if type(v) == "table" and v.prune then v.prune(); end
 		end
 	end
@@ -26,7 +24,7 @@ return function(_M)
 	------- CheckboxGroup -------
 	
 	-- Contructor args: parent, name, direction, options (Array[table{name, state, caption}]), on_change, meta
-	_M.controls.CheckboxGroup = FML.Object:extend("therustyknife.FML.GUI.controls.CheckboxGroup", function(self, args)
+	_M.CheckboxGroup = FML.Object:extend("therustyknife.FML.GUI.controls.CheckboxGroup", function(self, args)
 		self.name = args.name
 		self.on_change = args.on_change
 		self.meta = args.meta
@@ -58,29 +56,29 @@ return function(_M)
 		return self
 	end)
 	
-	function _M.controls.CheckboxGroup:destroy()
+	function _M.CheckboxGroup:destroy()
 		if self.root.valid then self.root.destroy(); end
 		if self.id then
 			global.checkbox_group.elems[self.id] = nil
 			global.checkbox_group.objects[self.id] = nil
 		end
 		
-		_M.controls.CheckboxGroup.super.destroy(self)
+		_M.CheckboxGroup.super.destroy(self)
 	end
 	
-	function _M.controls.CheckboxGroup:read_values()
+	function _M.CheckboxGroup:read_values()
 		self.values = table()
 		for _, name in ipairs(self.option_names) do self.values[name] = self.root[name].state; end
 	end
 	
-	function _M.controls.CheckboxGroup:changed()
+	function _M.CheckboxGroup:changed()
 		if self.on_change then
 			self:read_values()
 			FML.handlers.call(self.on_change, self)
 		end
 	end
 	
-	function _M.controls.CheckboxGroup.prune()
+	function _M.CheckboxGroup.prune()
 		for id, elem in pairs(global.checkbox_group.elems) do
 			if not elem.valid then global.checkbox_group.objects[id]:destroy(); end
 		end
@@ -98,7 +96,7 @@ return function(_M)
 	------- RadiobuttonGroup -------
 	
 	-- Constructor args: parent, name, direction, options (Array[table{name, caption}]), selected, on_change, meta
-	_M.controls.RadiobuttonGroup = FML.Object:extend("therustyknife.FML.GUI.controls.RadiobuttonGroup", function(self, args)
+	_M.RadiobuttonGroup = FML.Object:extend("therustyknife.FML.GUI.controls.RadiobuttonGroup", function(self, args)
 		self.name = args.name
 		self.on_change = args.on_change
 		self.meta = args.meta
@@ -128,17 +126,17 @@ return function(_M)
 		return self
 	end)
 	
-	function _M.controls.RadiobuttonGroup:destroy()
+	function _M.RadiobuttonGroup:destroy()
 		if self.root.valid then self.root.destroy(); end
 		if self.id then
 			global.radiobutton_group.elems[self.id] = nil
 			global.radiobutton_group.objects[self.id] = nil
 		end
 		
-		_M.controls.RadiobuttonGroup.super.destroy(self)
+		_M.RadiobuttonGroup.super.destroy(self)
 	end
 	
-	function _M.controls.RadiobuttonGroup:select(option)
+	function _M.RadiobuttonGroup:select(option)
 		for _, name in ipairs(self.option_names) do
 			if name ~= option then self.root[name].state = false; end
 		end
@@ -147,7 +145,7 @@ return function(_M)
 		if self.on_change then FML.handlers.call(self.on_change, self); end
 	end
 	
-	function _M.controls.RadiobuttonGroup:prune()
+	function _M.RadiobuttonGroup:prune()
 		for id, elem in pairs(global.radiobutton_group.elems) do
 			if not elem.valid then global.radiobutton_group.objects[id]:destroy(); end
 		end
@@ -165,7 +163,7 @@ return function(_M)
 	------- NumberSelector -------
 	
 	-- Constructor args: parent, name, caption, value, on_change, meta, min, max
-	_M.controls.NumberSelector = FML.Object:extend("therustyknife.FML.GUI.controls.NumberSelector", function(self, args)
+	_M.NumberSelector = FML.Object:extend("therustyknife.FML.GUI.controls.NumberSelector", function(self, args)
 		self.name = args.name
 		self.on_change = args.on_change
 		self.meta = args.meta
@@ -197,14 +195,14 @@ return function(_M)
 		return self
 	end)
 	
-	function _M.controls.NumberSelector:destroy()
+	function _M.NumberSelector:destroy()
 		if self.root.valid then self.root.destroy(); end
 		if self.id then
 			global.number_selctor.elems[self.id] = nil
 			global.number_selctor.objects[self.id] = nil
 		end
 		
-		_M.controls.NumberSelector.super.destroy(self)
+		_M.NumberSelector.super.destroy(self)
 	end
 	
 	FML.events.on_gui_text_changed(function(event)
