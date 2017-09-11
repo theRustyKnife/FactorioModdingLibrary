@@ -39,6 +39,12 @@ return function(_M)
 
 
 	function _M.init(module, __M, stage)
+		if type(module) == "function" then
+			local res = __M or {}
+			module(res, stage)
+			return res
+		end
+		
 		if module.type == "constant" then return module.value; end
 		if module.type == "module" then
 			local res = __M or {}
@@ -60,7 +66,9 @@ return function(_M)
 		init_func = init_func or _M.init
 		res_tab = res_tab or {}
 		for _, module in ipairs(order) do
-			if res_tab[module.name] == nil then res_tab[module.name] = init_func(modules[module.name], nil, stage); end
+			if res_tab[module.name] == nil and modules[module.name] then
+				res_tab[module.name] = init_func(modules[module.name], nil, stage)
+			end
 		end
 		return res_tab
 	end
