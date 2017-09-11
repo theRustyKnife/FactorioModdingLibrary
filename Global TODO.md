@@ -5,3 +5,4 @@
 - Differentiate methods from functions and regular from keyword arguments
 - Allow setting locale and provide some basic formatting options
 - Simulate the inventory camera by cloning the entity to a surface with plain grey tiles
+- Rething docs completely - primararily aim for smaller footprint, this is ridiculous

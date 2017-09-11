@@ -39,73 +39,131 @@ return function(_M)
 
 
 	function _M.init(module, __M, stage)
+	--[[
+	Initialize the given module. __M will be used as the module table, but a new table will be created if __M is not given.
+	stage is a string representing the current stage.
+	The resulting module is returned, or nil if the module wasn't supposed to be initialized in this stage.
+	]]
+		-- This is to support the "old" return function module definition. It still has legitimate uses.
 		if type(module) == "function" then
 			local res = __M or {}
 			module(res, stage)
 			return res
 		end
 		
+		-- Constants are simply returned
 		if module.type == "constant" then return module.value; end
+		
+		-- Modules defined using the mod function
 		if module.type == "module" then
-			local res = __M or {}
+			local res = __M or {} -- This is the final module table
+			-- Iterate over all the components in the current stage
 			for _, component in ipairs(module[stage]) do
-				if component.type == "file" then module.files[component.path](res, stage)
+				if component.type == "file" then module.files[component.path](res, stage) -- Load files by calling them
 				elseif component.type == "submodule" then
-					res[component.name] = {_super_module = res}
-					_M.init(module.submodules[component.name], res[component.name], stage)
+					res[component.name] = {_super_module = res} -- Give access to the supermodule via _super_module
+					_M.init(module.submodules[component.name], res[component.name], stage) -- Recursively load submodules
 				end
 			end
 			return res
+		end
+		
+		-- Modules defined using the modfunc function
+		if module.type == "module-function" then
+			if not module.stages[stage] then return nil; end -- Don't load if the current stage is not in stages
+			local res = __M or {} -- The final module table
+			return module.func(res, stage) -- Call the function to init
 		end
 	end
 	
 	function _M.init_all(res_tab, modules, order, stage, init_func)
 	--[[
-	Init all the modules in the given FML instance. Use init_func for initialization, or the init function if none is given.
+	Init all modules based on order. Results are put into res_tab, which is then returned. stage indicates the current
+	stage and init_func is the function used for initialization (init by default).
 	]]
 		init_func = init_func or _M.init
 		res_tab = res_tab or {}
+		-- Iterate over the order to init only the appropriate modules
 		for _, module in ipairs(order) do
-			if res_tab[module.name] == nil and modules[module.name] then
-				res_tab[module.name] = init_func(modules[module.name], nil, stage)
+			if res_tab[module.name] == nil and modules[module.name] then -- Only init if the name is free and the module actually exists
+				res_tab[module.name] = init_func(modules[module.name], nil, stage) -- Call the init function with the module
 			end
 		end
 		return res_tab
 	end
 	
 	function _M.load_from_file(path, load_func, init, log_func)
+	--[[
+	Load module from the given path. load_func is used for loading files (require by default). If init is true, the module
+	is initialized straight away. log_func will be used for logging errors, if false no logging will be done, if true log
+	will be used.
+	]]
 		load_func = load_func or require
 		if init and type(init) ~= "function" then init = _M.init; end
 		if log_func == true then log_func = log; end
 		
 		-- Store the values from global so we can restore them once we're done
-		local _G_to_bak = {"mod", "const", "file", "submod"}
+		local _G_to_bak = {"mod", "const", "modfunc", "file", "submod"} 
 		local _G_bak = {}; for _, name in ipairs(_G_to_bak) do _G_bak[name] = _G[name]; end
 		
 		-- Submodules and component functions will be loaded to here by the bellow functions
 		local submods = {}
 		local files = {}
+		
 		function _G.file(path)
-			files[path] = files[path] or load_func(path)
-			return {type = "file", path = path}
-		end
-		function _G.submod(name, path)
-			if path then submods[name] = submods[name] or _M.load_from_file(path, load_func, false, log_func); end
-			return {type = "submodule", name = name}
+		--[[
+		Load a component from a file. Only usable from inside a mod function defined module.
+		]]
+			files[path] = files[path] or load_func(path) -- Make sure the file is in the cache, load it if not
+			return {type = "file", path = path} -- Only return a reference
 		end
 		
-		-- These are the "top-level" function, they set res to the loaded module
-		local res
-		function _G.mod(module, type)
-			res = {type = "module", submodules = submods, files = files}
-			for _, stage in ipairs{"DATA", "SETTINGS", "RUNTIME_SHARED", "RUNTIME"} do res[stage] = module[stage]; end
+		function _G.submod(name, path)
+		--[[
+		Load a submodule. Path is optional, however, it has to be passed at least once for each submodule (for obvious
+		reasons). To make the code cleaner, you can put a submod call defining the path outside of any stages and only
+		call with name in the appropriate places.
+		]]
+			-- If path was given, make sure the submodule is in the cache
+			if path then submods[name] = submods[name] or _M.load_from_file(path, load_func, false, log_func); end
+			return {type = "submodule", name = name} -- Only return a reference
 		end
+		
+		-- These are the "top-level" functions, they set res to the loaded module
+		local res
+		function _G.mod(module)
+		--[[
+		The most comprehensive module definition function. It takes the module in form of a table with definitions of
+		components/submodules to be loaded in given stages.
+		]]
+			res = {type = "module", submodules = submods, files = files} -- Save the caches - this table is what will be serialized
+			-- Add the stage definitions into the result and make sure all of them exist while at it
+			for _, stage in ipairs{"DATA", "SETTINGS", "RUNTIME_SHARED", "RUNTIME"} do res[stage] = module[stage] or {}; end
+		end
+		
+		-- Simply sets the given value as the module - it has to be serializable, preferably some constant (can be table)
 		function _G.const(const) res = {type = "constant", value = const}; end
+		
+		function _G.modfunc(stages, func)
+		--[[
+		This is more or less the same as the regular function-style definition, except it can have stages defined.
+		stages is a table of strings representing the stages. func is the module function. Leaving out stages and only
+		passing func is considered the same as defining all stages.
+		]]
+			func = func or type(stages) == "function" and stages
+			res = {type = "module-function", stages = {}, func = func}
+			if stages == nil or type(stages) == "table" then -- Add the stages, if nil add all stages
+				for _, stage in ipairs(stages or {"DATA", "SETTINGS", "RUNTIME_SHARED", "RUNTIME"}) do
+					res.stages[stage] = true -- Use a reverse table for easier lookup
+				end
+			end
+		end
 		
 		-- Load the module
 		local loaded, err = load_func(path)
+		-- If no value to be used is found, set err
 		if not err and (type(loaded) ~= "function" and not res) then err = "No suitable value found."; end
-		if err then
+		if err then -- something went wrong - log if possible and return nil
 			log_func and log_func("Loading FML module from '"..tostring(path).."' failed: "..(err or "No error message."))
 			return nil
 		end
@@ -118,49 +176,7 @@ return function(_M)
 		return res
 	end
 	
-	--[[ LEGACY
-	function _M.load_from_file(path, load_func, init, log_func)
-	---[[
-	--Load and return a module from the file at path, using load_func. Returns nil if the module didn't return a table.
-	--log_func can be nil, boolean or function(message). Logging won't work if load_func doesn't return the error as second
-	--return value. If init is true, the module will be initialized using the init function and returned in it's final form,
-	--if it's a function, it will be called with the module as parameter and the return value of the function will be used as
-	--the final form.
-	--]-]
-		load_func = load_func or require
-		if init and type(init) ~= "function" then init = _M.init; end
-		if log_func == true then log_func = log; end
-		
-		_G._M_require = load_func -- To allow nested modules to load submodules using the proper function --TODO: consider replacing require with this
-		local loaded, err = load_func(path)
-		_G._M_require = nil
-		if type(loaded) ~= "table" and type(loaded) ~= "function" then
-			if err and log_func then
-				log_func("Loading FML module from '"..tostring(path).."' failed: "..(err or "No error message."))
-			end
-			return nil
-		end
-		
-		-- For loading nested/multi-file modules
-		local function _make_mod(module)
-			if type(module) == "table" and module._M then
-				function module:__load(_M, init_func, ...)
-					_M = _M or {}
-					for _, m in ipairs(self) do
-						if type(m) == "function" then init_func(m, _M, ...)
-						else m:__load(_M, init_func, ...); end
-					end
-				end
-				for _, m in ipairs(module) do _make_mod(m); end
-			end
-		end
-		_make_mod(loaded)
-		
-		if init then return init(loaded); end
-		return loaded
-	end
-	--]]
-
+	
 	function _M.load_from_files(modules, res_table, load_func, init, log_func)
 	--[[
 	Load all the modules, calling load_from_file for each and putting them into res_table, indexed by their names.
@@ -169,8 +185,8 @@ return function(_M)
 	load_func, init and log_func is passed to load_from_file.
 	]]
 		res_table = res_table or {}
-		for _, module in ipairs(modules) do
-			if res_table[module.name] == nil then
+		for _, module in ipairs(modules) do -- modules is a value in the form of config.MODULES_TO_LOAD
+			if res_table[module.name] == nil then -- only load if the module doesn't already exist (shouldn't happen)
 				res_table[module.name] = _M.load_from_file(module.path, load_func, init, log_func)
 			end
 		end

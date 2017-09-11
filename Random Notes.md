@@ -11,7 +11,7 @@ This is only really a problem when developing as the mod is going to be distribu
 - Install the FML mod (from the mod portal)
 - Add FML as a dependency of your mod (`info.json` -> `dependencies: ["FML"]`)
 - Download the FML.lua file and place it anywhere in your mod (`__your-mod__/FML.lua`)
-- Open the file with a text editor and edit the value of MOD.NAME near the top to reflect your mod
+- Open the file with a text editor and edit the value of `MOD.NAME` near the top to reflect your mod
 - In your control.lua file add `local FML = require "FML"` (replace the path with the one you have chosen)
 
 *If you're installing FML into an existing mod, make sure to increment it's version so FML can initialize itself. If you
