@@ -27,7 +27,7 @@ return function(_M)
 		},
 	}
 	-- Require surface for printing positions and stuff
-	if FML.STAGE == "runtime" then
+	if FML.STAGE == "RUNTIME" or FML.STAGE == "RUNTIME_SHARED" then
 		function _M.position(pos)
 			local x, y = FML.surface.unpack_position(pos)
 			return string.format("[%g, %g]", x, y)

@@ -23,10 +23,10 @@ return function(_M)
 		
 		res_table.init_all = function() _M.init_all(res_table, config.MODULES_TO_LOAD); end
 		
-		if stage == "data" then
+		if stage == "DATA" or stage == "SETTINGS" then
 			res_table.put_to_global = std.put_to_global
 			res_table.register_module = pack_method(std.register_module, res_table)
-		elseif stage == "runtime" then
+		elseif stage == "RUNTIME" or stage == "RUNTIME_SHARED" then
 			res_table.get_structure = pack_method(std.get_structure, res_table)
 			res_table.get_global = std.get_global
 			res_table.get_fml_global = function(name) return std.get_global("therustyknife", "FML", name); end
@@ -48,7 +48,7 @@ return function(_M)
 		assert(type(stage) == "string", debug.traceback("stage needs to be defined to init a module"))
 		if type(module) == "function" then
 			local res = __M or {}
-			module(res, stage)
+			res = module(res, stage) or res
 			return res
 		end
 		

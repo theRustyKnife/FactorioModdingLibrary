@@ -1,6 +1,7 @@
 return function(_M)
 	local FML = therustyknife.FML
-	local config = FML.config
+	local config = therustyknife.FML.config
+	local log = therustyknife.FML.log
 	
 	
 	function _M._entity_name(data_name) return config.BLUEPRINT_DATA.PROTOTYPE_NAME..data_name; end

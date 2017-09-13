@@ -31,7 +31,7 @@ return function(_M)
 	-- create objects before load
 	local classes = table()
 	local global
-	if FML.STAGE == "runtime" then
+	if FML.STAGE == "RUNTIME" or FML.STAGE == "RUNTIME_SHARED" then
 		FML.events.on_delayed_load(function()
 			global = table(FML.get_fml_global("Object"))
 			for _, object in ipairs(global) do

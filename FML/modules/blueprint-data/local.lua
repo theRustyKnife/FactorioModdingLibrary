@@ -74,7 +74,7 @@ return function(_M)
 				"Blueprint data group "..data.__type.." doesn't contain key "..tostring(key))
 			
 			if not data.__entity then
-				data.__entity = get_entity(data.__parent, data.__type)
+				data.__entity = _M._get_entity(data.__parent, data.__type)
 				data.__control_behavior = data.__entity.get_or_create_control_behavior()
 			end
 			

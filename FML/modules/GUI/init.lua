@@ -12,6 +12,7 @@ mod{
 	},
 	RUNTIME = {
 		submod "controls",
+		file ".styles",
 		file ".basic-entity",
 		file ".entity-opening",
 	}

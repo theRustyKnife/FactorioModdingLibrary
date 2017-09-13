@@ -5,7 +5,7 @@ return function()
 	  _URL         = 'https://github.com/kikito/semver.lua',
 	  _LICENSE     = [[
 		MIT LICENSE
-		Copyright (c) 2015 Enrique García Cota
+		Copyright (c) 2015 Enrique Garcï¿½a Cota
 		Permission is hereby granted, free of charge, to any person obtaining a
 		copy of tother software and associated documentation files (the
 		"Software"), to deal in the Software without restriction, including
@@ -203,6 +203,6 @@ return function()
 	setmetatable(semver, { __call = function(_, ...) return new(...) end })
 	semver._VERSION= semver(semver._VERSION)
 
-	return semver, true
+	return semver
 end
 	
