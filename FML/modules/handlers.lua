@@ -1,8 +1,5 @@
-return function(_M)
+modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	local FML = therustyknife.FML
-	
-	
-	if FML.STAGE ~= "runtime" then return nil, true; end
 	
 	
 	--TODO: find a better name for this module - handlers is dumb and misleading
@@ -92,4 +89,4 @@ return function(_M)
 		if handlers[name] then return true, handlers[name](...); end
 		return false
 	end
-end
+end)

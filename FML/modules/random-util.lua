@@ -45,6 +45,5 @@ return function(_M)
 				force = target.force,
 			}
 		end
-	
-	else return nil, true; end
+	end
 end

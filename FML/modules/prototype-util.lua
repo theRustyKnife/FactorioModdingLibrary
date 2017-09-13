@@ -1,10 +1,7 @@
-return function(_M)
+modfunc({"DATA"}, function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
 	local table = FML.table
-
-
-	if FML.STAGE ~= "data" then return nil, true; end
 
 	
 	local _DOC = FML.make_doc(_M, {
@@ -197,4 +194,4 @@ return function(_M)
 		end
 		return {"recipe-name."..recipe.name}
 	end
-end
+end)

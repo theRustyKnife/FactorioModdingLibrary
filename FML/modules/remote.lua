@@ -1,7 +1,6 @@
-return function(_M)
+modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	local FML = therustyknife.FML
-	if FML.STAGE ~= "runtime" then return nil, true; end
-	local table = FML.table
+	local table = therustyknife.FML.table
 
 
 	local function get_function_internal(clbck)
@@ -314,4 +313,4 @@ return function(_M)
 
 	--TODO: Callback handling - simple way to generate a callback from a function, where FML is going to handle exposing the
 	-- interface.
-end
+end)
