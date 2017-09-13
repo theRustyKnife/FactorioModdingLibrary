@@ -1,4 +1,4 @@
-modfunc({"DATA"}, function(_M)
+modfunc({"DATA", "SETTINGS"}, function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
 	local table = FML.table

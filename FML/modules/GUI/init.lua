@@ -4,8 +4,8 @@
 mod{
 	submod("controls", ".controls"),
 	DATA = {
-		file ".data",
 		file ".styles",
+		file ".data",
 	},
 	RUNTIME_SHARED = {
 		file ".shared",

@@ -56,7 +56,7 @@ return function(_M)
 		end
 		
 		local settings, slots = parse_settings(prototype.settings)
-		log.dump('Make blueprint-data-entity "'..entity_name(prototype.name)..'" with collision_box ', collision_box)
+		log.dump('Make blueprint-data-entity "'.._M._entity_name(prototype.name)..'" with collision_box ', collision_box)
 		FML.data.make{
 			base = PROTOTYPE_BASE,
 			properties = {
