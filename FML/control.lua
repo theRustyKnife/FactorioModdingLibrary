@@ -29,7 +29,7 @@ local FML_import = next(remote.interfaces["therustyknife.FML.serialized"]); FML_
 
 
 local module_loader = {}; FML_import.module_loader(module_loader)
-local FML_stdlib = module_loader.init(FML_import.FML_stdlib)
+local FML_stdlib = module_loader.init(FML_import.FML_stdlib, nil, "RUNTIME_SHARED")
 local config = FML_stdlib.safe_require(".config")
 
 
