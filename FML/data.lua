@@ -1,1 +1,1 @@
-require("script.load-data-stage")("data")
+require("script.load-data-stage")("DATA")

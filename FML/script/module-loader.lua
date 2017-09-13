@@ -45,6 +45,7 @@ return function(_M)
 	The resulting module is returned, or nil if the module wasn't supposed to be initialized in this stage.
 	]]
 		-- This is to support the "old" return function module definition. It still has legitimate uses.
+		assert(type(stage) == "string", debug.traceback("stage needs to be defined to init a module"))
 		if type(module) == "function" then
 			local res = __M or {}
 			module(res, stage)
@@ -56,6 +57,7 @@ return function(_M)
 		
 		-- Modules defined using the mod function
 		if module.type == "module" then
+			assert(module[stage], tostring(stage).." is not a valid stage")
 			local res = __M or {} -- This is the final module table
 			-- Iterate over all the components in the current stage
 			for _, component in ipairs(module[stage]) do
@@ -92,7 +94,7 @@ return function(_M)
 		return res_tab
 	end
 	
-	function _M.load_from_file(path, load_func, init, log_func)
+	function _M.load_from_file(path, load_func, init, log_func, stage, keep_globals)
 	--[[
 	Load module from the given path. load_func is used for loading files (require by default). If init is true, the module
 	is initialized straight away. log_func will be used for logging errors, if false no logging will be done, if true log
@@ -104,7 +106,7 @@ return function(_M)
 		
 		-- Store the values from global so we can restore them once we're done
 		local _G_to_bak = {"mod", "const", "modfunc", "file", "submod"} 
-		local _G_bak = {}; for _, name in ipairs(_G_to_bak) do _G_bak[name] = _G[name]; end
+		local _G_bak = {}; if not keep_globals then for _, name in ipairs(_G_to_bak) do _G_bak[name] = _G[name]; end end
 		
 		-- Submodules and component functions will be loaded to here by the bellow functions
 		local submods = {}
@@ -125,7 +127,7 @@ return function(_M)
 		call with name in the appropriate places.
 		]]
 			-- If path was given, make sure the submodule is in the cache
-			if path then submods[name] = submods[name] or _M.load_from_file(path, load_func, false, log_func); end
+			if path then submods[name] = submods[name] or _M.load_from_file(path, load_func, false, log_func, stage, true); end
 			return {type = "submodule", name = name} -- Only return a reference
 		end
 		
@@ -164,33 +166,37 @@ return function(_M)
 		-- If no value to be used is found, set err
 		if not err and (type(loaded) ~= "function" and not res) then err = "No suitable value found."; end
 		if err then -- something went wrong - log if possible and return nil
-			log_func and log_func("Loading FML module from '"..tostring(path).."' failed: "..(err or "No error message."))
+			_=log_func and log_func("Loading FML module from '"..tostring(path).."' failed: "..(err or "No error message."))
 			return nil
 		end
 		res = res or loaded
 		
 		-- Restore the globals
-		for _, name in ipairs(_G_to_bak) do _G[name] = _G_to_bak[name]; end
+		if not keep_globals then for _, name in ipairs(_G_to_bak) do _G[name] = _G_to_bak[name]; end end
 		
-		if init then return init(res); end
+		if init then return init(res, nil, stage); end
 		return res
 	end
 	
 	
-	function _M.load_from_files(modules, res_table, load_func, init, log_func)
+	function _M.load_from_files(modules, res_table, load_func, init, log_func, stage)
 	--[[
 	Load all the modules, calling load_from_file for each and putting them into res_table, indexed by their names.
 	Since this only internal, we can just ignore any modules whose names are already in the table, assuming they're supposed
 	to be there.
 	load_func, init and log_func is passed to load_from_file.
 	]]
-		res_table = res_table or {}
+		init = init == true and _M.init_all or init
+		
+		local res = not init and res_table or {}
 		for _, module in ipairs(modules) do -- modules is a value in the form of config.MODULES_TO_LOAD
-			if res_table[module.name] == nil then -- only load if the module doesn't already exist (shouldn't happen)
-				res_table[module.name] = _M.load_from_file(module.path, load_func, init, log_func)
+			if res[module.name] == nil then -- only load if the module doesn't already exist (shouldn't happen)
+				res[module.name] = _M.load_from_file(module.path, load_func, false, log_func)
 			end
 		end
-		return res_table
+		
+		if init then return init(res_table, res, modules, stage); end
+		return res
 	end
 
 

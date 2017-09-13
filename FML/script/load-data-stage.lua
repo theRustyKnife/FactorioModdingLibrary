@@ -7,7 +7,7 @@ return function(stage)
 
 	local load_func = FML_stdlib.safe_require
 	if config.FORCE_LOAD_MODULES then
-		load_func = function(path) return FML_stdlib.safe_require(path, config,FORCE_LOAD_MODULES); end
+		load_func = function(path) return FML_stdlib.safe_require(path, config.FORCE_LOAD_MODULES); end
 	end
 
 	local module_lookup = FML_stdlib.get_module_lookup(config.MODULES_TO_LOAD)
@@ -19,12 +19,12 @@ return function(stage)
 	-- Load log fully, so we can log whatever happens here
 	local log_func = log
 	if module_lookup.log then
-		_M.log = module_loader.load_from_file(module_lookup.log, load_func, true, log_func)
+		_M.log = module_loader.load_from_file(module_lookup.log, load_func, true, log_func, stage)
 		log_func = _M.log and _M.log.w or log_func
 	end
 
-	module_loader.load_from_files(config.MODULES_TO_LOAD, _M, load_func, true, log_func)
-
+	module_loader.load_from_files(config.MODULES_TO_LOAD, _M, load_func, true, log_func, stage)
+	
 
 	return _M
 end
