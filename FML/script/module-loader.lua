@@ -60,13 +60,7 @@ return function(_M)
 			assert(module[stage], tostring(stage).." is not a valid stage")
 			local res = __M or {} -- This is the final module table
 			-- Iterate over all the components in the current stage
-			log(module.__path)
 			for _, component in ipairs(module[stage]) do
-				if component.type == "file" then
-					log("Init component: "..serpent.line(component))
-					log("file: "..serpent.line(module.files[component.path] ~= nil))
-					if not module.files[component.path] then log(serpent.line(module.files)); end
-				end
 				if component.type == "file" then module.files[component.path](res, stage) -- Load files by calling them
 				elseif component.type == "submodule" then
 					res[component.name] = {_super_module = res} -- Give access to the supermodule via _super_module
@@ -78,8 +72,7 @@ return function(_M)
 		
 		-- Modules defined using the modfunc function
 		if module.type == "module-function" then
-			log("Loading module-function "..module.__path)
-			if not module.stages[stage] then log("\tskipping..."); return nil; end -- Don't load if the current stage is not in stages
+			if not module.stages[stage] then return nil; end -- Don't load if the current stage is not in stages
 			local res = __M or {} -- The final module table
 			module.func(res, stage) -- Call the function to init
 			return res
@@ -125,7 +118,6 @@ return function(_M)
 		Load a component from a file. Only usable from inside a mod function defined module.
 		]]
 			files[path] = files[path] or load_func(path) -- Make sure the file is in the cache, load it if not
-			log_func('file "'..path..'": '..table_size(files))
 			return {type = "file", path = path} -- Only return a reference
 		end
 		
@@ -136,9 +128,7 @@ return function(_M)
 		call with name in the appropriate places.
 		]]
 			-- If path was given, make sure the submodule is in the cache
-			log_func("_G before: "..table_size(_G).."; _G_bak before: "..table_size(_G_bak))
 			if path then submods[name] = submods[name] or _M.load_from_file(path, load_func, false, log_func, stage); end
-			log_func("_G after: "..table_size(_G).."; _G_bak after: "..table_size(_G_bak))
 			return {type = "submodule", name = name} -- Only return a reference
 		end
 		
@@ -149,7 +139,6 @@ return function(_M)
 		The most comprehensive module definition function. It takes the module in form of a table with definitions of
 		components/submodules to be loaded in given stages.
 		]]
-			log_func(serpent.line(files))
 			res = {type = "module", submodules = submods, files = files} -- Save the caches - this table is what will be serialized
 			-- Add the stage definitions into the result and make sure all of them exist while at it
 			for _, stage in ipairs{"DATA", "SETTINGS", "RUNTIME_SHARED", "RUNTIME"} do res[stage] = module[stage] or {}; end
@@ -181,7 +170,6 @@ return function(_M)
 			if log_func then log_func("Loading FML module from '"..tostring(path).."' failed: "..(err or "No error message.")); end
 			return nil
 		end
-		if res then res.__path = path; end
 		res = res or loaded
 		
 		-- Restore the globals
