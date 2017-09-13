@@ -1,8 +1,7 @@
-return function(_M)
+modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
-
-	local table = FML.table
+	local table = therustyknife.FML.table
 
 
 	--TODO: make a part of this module in the remote instance, that would handle all the processing heavy checks and just
@@ -34,9 +33,6 @@ return function(_M)
 	This would also make using this module without installing it into the local instance easier, as Callbacks would be 
 	basically natively supported.
 	]]
-	
-	
-	if FML.STAGE ~= "runtime" then return nil, true; end
 	
 	
 	local global
@@ -281,4 +277,4 @@ return function(_M)
 		name = "on_"..name:lower()
 		if not _M[name] then _M[name] = function(...) _M.on(events, ...); end; end
 	end
-end
+end)
