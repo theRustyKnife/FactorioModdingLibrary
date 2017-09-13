@@ -87,4 +87,9 @@ return {
 			"Fixed log getting stuck in infinite recursion loop sometimes",
 		},
 	},
+	{
+		code = 18,
+		name = "0.1.0-alpha.10.0",
+		changes = {"Totally reworked module loading and format."},
+	},
 }
