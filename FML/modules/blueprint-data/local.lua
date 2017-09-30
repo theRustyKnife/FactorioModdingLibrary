@@ -11,7 +11,6 @@ return function(_M)
 	local SIGNAL = {type = "item", name = config.BLUEPRINT_DATA.ITEM_NAME}
 	
 	local global
-	local prototypes = {}
 	local lut = {}
 	
 	
@@ -22,12 +21,12 @@ return function(_M)
 	end
 	
 	local function load_prototype(name)
-		if not prototypes[name] then
+		if not global or not global.prototypes[name] then
 			FML.log.d("Loading prototype for "..name.."...")
 			assert(game.entity_prototypes[_M._entity_name(name)], "Blueprint data named "..name.." doesn't exist")
-			prototypes[name] = loadstring(trimed_description(_M._entity_name(name)))()
+			global.prototypes[name] = loadstring(trimed_description(_M._entity_name(name)))()
 		end
-		return prototypes[name]
+		return global.prototypes[name]
 	end
 	
 	local funcs = {
@@ -99,7 +98,20 @@ return function(_M)
 		log.d("Loading BlueprintData instances...")
 		global = FML.get_fml_global("blueprint_data")
 		global.data = table(global.data)
+		global.prototypes = table(global.prototypes)
 		for _, data in ipairs(global.data) do setmetatable(data, MT); end
+	end)
+	
+	function _M.flush_cache()
+	--- Clears the cache to refresh prototype definitions.
+	--- This is called automatically on_config_change. This only works after global is loaded.
+		if global then global.prototypes = table(); end
+	end
+	
+	FML.events.on_config_change(function()
+		-- Flush the cache to update the definitions
+		global = FML.get_fml_global("blueprint_data")
+		_M.flush_cache()
 	end)
 	
 	
