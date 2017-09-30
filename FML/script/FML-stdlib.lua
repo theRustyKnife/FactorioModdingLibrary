@@ -3,14 +3,6 @@ return function(_M)
 	--[[ Some functions that are not fit to be in a module, but are needed for FML to be useful. ]]
 
 
-	function _M.make_doc(module, doc)
-		doc.funcs = doc.funcs or {}
-		doc.metamethods = doc.metamethods or {}
-		module._DOC = doc
-		return doc.funcs, doc.metamethods
-	end
-
-
 	function _M.safe_require(path, raise_errors)
 	--[[
 	Call require for the given path, even if the path was already required and leave the original value in package.loaded.
