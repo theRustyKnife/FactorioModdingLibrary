@@ -39,13 +39,6 @@ FML_stdlib.put_to_global("therustyknife", "FML", FML) -- Give global access to t
 
 module_loader.init_all(FML, FML_import.modules, config.MODULES_TO_LOAD, "RUNTIME_SHARED")
 
---[[ LEGACY
-for _, module in ipairs(config.MODULES_TO_LOAD) do
-	if FML_import.modules[module.name] then
-		FML[module.name] = module_loader.init(FML_import.modules[module.name])
-	end
-end
---]]
 
 --[[
 A function to allow for simple loading of FML. Intended for use in the console.
