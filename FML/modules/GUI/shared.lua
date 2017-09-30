@@ -54,6 +54,7 @@ return function(_M)
 		global.to_close:insert(player)
 		
 		--TODO: maybe come up with a way to handle these better - similarly to open
+		init_interfaces()
 		interfaces:foreach(function(interface)
 			interface.on_close{player = player, element = global.open_guis[player_index]}
 		end)
