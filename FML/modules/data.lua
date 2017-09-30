@@ -1,48 +1,18 @@
+--/ data
+--- Provides functions for simplified prototype definition.
+
+
 modfunc({"DATA", "SETTINGS"}, function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
-	
-	
-	local _DOC = FML.make_doc(_M, {
-		type = "module",
-		name = "data",
-		desc = [[ Provides functions for simplified prototype definition. ]],
-	})
 
 
-	_DOC.inherit = {
-		type = "function",
-		desc = [[ Copy an existing prototype to be used as base for another one. ]],
-		params = {
-			{
-				type = {"string", "table"},
-				name = "base_type",
-				desc = [[
-				The type of the prototype to be coppied. If this is a table, it will be used as the base, regardless of
-				what base_name is
-				]],
-			},
-			{
-				type = "string",
-				name = "base_name",
-				desc = "The name of the prototype to be coppied",
-				default = "The value of base_type",
-			},
-			{
-				type = "bool",
-				name = "force",
-				desc = "If true, raise an error if inheritance failed, otherwise return a function for later attempt",
-				default = "false",
-			},
-		},
-		returns = {
-			{
-				type = {"table", "function"},
-				desc = "The prototype base or function to obtain it",
-			},
-		},
-	}
 	function _M.inherit(base_type, base_name, force)
+	--- Copy an existing prototype to be used as base for another one.
+	--@ {string, table} base_type: The type of the prototype to be coppied, if this is a table, it will be used as the base, regardless of what base_name is
+	--@ string base_name=base_type: The name of the prototype to be coppied
+	--@ bool force=false: If `true`, raise an error if inheritance failed, otherwise return a function for later attempt
+	--: {table, function}: The prototype base or function to obtain it
 		local res
 		if type(base_type) == "table" then res = base_type
 		else
@@ -57,29 +27,6 @@ modfunc({"DATA", "SETTINGS"}, function(_M)
 	end
 
 
-	_DOC.make = {
-		type = "function",
-		desc = [[ Parse and add the given prototype to data. ]],
-		params = {
-			{
-				type = {"Prototype", "VanillaPrototype", "Array[{Prototype, VanillaPrototype}]"},
-				name = "prototype",
-				desc = "The prototype to be added",
-			},
-			{
-				type = "bool",
-				name = "deep",
-				desc = "If true, the prototype base will be deep coppied before modification",
-				default = "true",
-			},
-		},
-		returns = {
-			{
-				type = "VanillaPrototype",
-				desc = "The prototype table, as it was added to data",
-			},
-		},
-	}
 	--[[
 	Random Notes on This Topic
 
@@ -113,6 +60,10 @@ modfunc({"DATA", "SETTINGS"}, function(_M)
 		overwritten by them.
 	]]
 	function _M.make(prototype, deep)
+	--- Parse and add the given prototype to data.
+	--@ {Prototype, VanillaPrototype, Array[{Prototype, VanillaPrototype}]} prototype: The prototype to be added
+	--@ bool deep=true: If `true`, the prototype base will be deep coppied before modification
+	--: VanillaPrototype: The prototype table, as it was added to data
 		-- If an array of prototypes is passed, loop and add them
 		if not prototype.type and not prototype.base and not prototype.properties then
 			local res = FML.table.new()
@@ -212,33 +163,11 @@ modfunc({"DATA", "SETTINGS"}, function(_M)
 	end
 
 
-	_DOC.make_item_for = {
-		type = "function",
-		desc = [[ Make an item prototype for the given entity prototype and add it to data. ]],
-		params = {
-			{
-				type = "VanillaPrototype",
-				name = "entity_prototype",
-				descc = "The entity prototype to generate item for",
-			},
-			{
-				type = "SimpleItemPrototype",
-				name = "properties",
-				desc = [[
-				A table that may contain any combination of: base and properties, as in Prototype, and set_minable_result -
-				bool, default true
-				]],
-				default = "{}",
-			},
-		},
-		returns = {
-			{
-				type = "VanillaPrototype",
-				desc = "The prototype table, as it was added to data",
-			},
-		},
-	}
 	function _M.make_item_for(entity_prototype, properties)
+	--- Make an item prototype for the given entity prototype and add it to data.
+	--@ VanillaPrototype entity_prototype: The entity prototype to generate item for
+	--@ SimpleItemPrototype properties={}: Properties to override the defaults
+	--: VanillaPrototype: The prototype table, as it was added to data
 		properties = properties or {}
 		
 		local base = properties.base or {
@@ -268,33 +197,11 @@ modfunc({"DATA", "SETTINGS"}, function(_M)
 	end
 
 
-	_DOC.make_recipe_for = {
-		type = "function",
-		desc = [[ Make a recipe prototype for the given item prototype and add it to data. ]],
-		params = {
-			{
-				type = "VanillaPrototype",
-				name = "item_prototype",
-				desc = "The item prototype to generate recipe for",
-			},
-			{
-				type = "SimpleRecipePrototype",
-				name = "properties",
-				desc = [[
-				A table that may contain any combination of: base and properties, as in Prototype, and unlock_with - string,
-				default nil
-				]],
-				default = "{}",
-			},
-		},
-		returns = {
-			{
-				type = "VanillaPrototype",
-				desc = "The prototype table, as it was added to data",
-			},
-		},
-	}
 	function _M.make_recipe_for(item_prototype, properties)
+	--- Make a recipe prototype for the given item prototype and add it to data.
+	--@ VanillaPrototype item_prototype: The item prototype to generate recipe for
+	--@ SimpleRecipePrototype properties={}: Properties to override the defaults
+	--: VanillaPrototype: The prototype table, as it was added to data
 		properties = properties or {}
 		
 		local base = properties.base or FML.config.DATA.RECIPE_BASE

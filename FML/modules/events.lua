@@ -1,3 +1,6 @@
+--/ events
+--- Provides an extended interface for handling events.
+
 modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
@@ -60,54 +63,49 @@ modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	end
 
 
-	local _DOC = FML.make_doc(_M, {
-		type = "module",
-		name = "events",
-		desc = [[ Provides an extended interface for handling events. ]],
-	})
-
-
 	-- Script events
-	_DOC.on_init = {
-		type = "function",
-		desc = [[ Register a handler for the init event. ]],
-		params = {
-			{
-				type = "function",
-				name = "func",
-				desc = "The handler function",
-			},
-		},
-	}
-	function _M.on_init(func) handlers.init:insert(func); end
-	_DOC.on_load = FML.table.deep_copy(_DOC.on_init); _DOC.on_load.desc = [[ Register a handler for the load event. ]]
-	function _M.on_load(func) handlers.load:insert(func); end
-	function _M.on_delayed_load(func) handlers.delayed_load:insert(func); end
-	_DOC.on_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_config_change.desc = [[ Register a handler for the config_change event. ]]; _DOC.on_config_change.params[1].type = "function"
-	function _M.on_config_change(func) handlers.config_change:insert(func); end
-	_DOC.on_game_config_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_game_config_change.desc = [[ Register a handler for the game_config_change event. ]]; _DOC.on_game_config_change.params[1].type = "function"
-	function _M.on_game_config_change(func) handlers.game_config_change:insert(func); end
-	_DOC.on_startup_settings_change = FML.table.deep_copy(_DOC.on_init); _DOC.on_startup_settings_change.desc = [[ Register a handler for the startup_settings_change event. ]]
-	function _M.on_startup_settings_change(func) handlers.startup_settings_change:insert(func); end
+	function _M.on_init(func)
+	--- Register a function for the init event.
+	--@ function func: The handler function
+		handlers.init:insert(func)
+	end
+	
+	function _M.on_load(func)
+	--- Register a handler for the load event.
+	--@ function func: The handler function
+		handlers.load:insert(func)
+	end
+	
+	function _M.on_delayed_load(func)
+	--% private
+	--- Register a handler for the delayed_load event, just after load.
+	--@ function func: The handler function
+		handlers.delayed_load:insert(func)
+	end
+	
+	function _M.on_config_change(func)
+	--- Register a handler for the config_change event.
+	--@ function func: The handler function
+		handlers.config_change:insert(func)
+	end
+	
+	function _M.on_game_config_change(func)
+	--- Register a handler for the game_config_change event.
+	--@ function func: The handler function
+		handlers.game_config_change:insert(func)
+	end
+	
+	function _M.on_startup_settings_change(func)
+	--- Register a handler for the startup_settings_change event.
+	--@ function func: The handler function
+		handlers.startup_settings_change:insert(func)
+	end
 
-	_DOC.on_mod_config_change = {
-		type = "function",
-		desc = [[ Register a handler for config_change event of the given mod. ]],
-		params = {
-			{
-				type = "function",
-				name = "func",
-				desc = "The handler function",
-			},
-			{
-				type = "string",
-				name = "mod",
-				desc = "The name of the mod to listen for",
-				default = "The mod this instance of FML is in",
-			},
-		},
-	}
+
 	function _M.on_mod_config_change(func, mod)
+	--- Register a handler for config_change event of the given mod.
+	--@ function func: The handler function
+	--@ string mod=config.MOD_NAME: The name of the mod to listen for, default is the name from config
 		mod = mod or (config.MOD and config.MOD.NAME) or "FML"
 		
 		handlers[mod] = handlers[mod] or table()
@@ -115,8 +113,19 @@ modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	end
 
 	
-	function _M.sim_init() run(handlers.init); run(handlers.load); run(handlers.delayed_load); end
-	function _M.sim_load() run(handlers.load); run(handlers.delayed_load); end
+	function _M.sim_init()
+	--% private
+	--- Simulate the init event for this instance.
+		run(handlers.init)
+		run(handlers.load)
+		run(handlers.delayed_load)
+	end
+	function _M.sim_load()
+	--% private
+	--- Simulate the load event for this instance.
+		run(handlers.load)
+		run(handlers.delayed_load)
+	end
 
 	script.on_init(function()
 		init() -- Init the globals
@@ -170,29 +179,13 @@ modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	--TODO: finish
 	local runtime_handlers = table()
 
-	_DOC.on = {
-		type = "function",
-		desc = [[ Add a handler for the given event. ]],
-		params = {
-			{
-				type = {"EventID", "Array[{EventID, string}]", "string"},
-				name = "event_id",
-				desc = "The event(s) to register the handler for",
-			},
-			{
-				type = "function",
-				name = "handler",
-				desc = "The handler function",
-			},
-			{
-				type = "bool",
-				name = "permanent",
-				desc = "If true, the handler will be re-setup on load (Not implemented yet)",
-				default = "false",
-			},
-		},
-	}
 	function _M.on(event_id, handler, permanent)
+	--- Add a handler for the given event.
+	--* The shortened `on_<event-name>` can be used for events from defines.
+	--@ {EventID, Array[{EventID, string}], string} event_id: The event(s) to register the handler for
+	--@ function handler: The handler function
+	--@ bool permanent=false: If true, the handler will be re-setup on load (Not implemented yet)
+	--: uint: The handler id if there is one, nil otherwise
 		if type(event_id) == "table" then
 			if permanent then --TODO: make this work
 				FML.log.w("Permanent handlers not supported when registering for multiple events - using regular handlers.")
@@ -218,27 +211,11 @@ modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 		--end
 	end
 
-	_DOC.remove_handler = {
-		type = "function",
-		desc = [[ Remove the given handler from the given events. ]],
-		notes = {[[
-		Be careful when removing by id from multiple events as the id is only unique across one event. This may be changed
-		in the future.
-		]]},
-		params = {
-			{
-				type = {"EventID", "Array[{EventID, string}]", "string"},
-				name = "event_id",
-				desc = "The event(s) to remove the handler from, if nil, all events will be considered",
-			},
-			{
-				type = {"uint", "function"},
-				name = "what",
-				desc = "Which handler to remove, can either be a handler id or a handler function",
-			},
-		},
-	}
 	function _M.remove_handler(event_id, what)
+	--- Remove the given handler from the given events.
+	--* Be careful when removing by id from multiple events as the id is only unique across one event.
+	--@ {EventID, Array[{EventID, string}], string} event_id: The event(s) to remove the handler from, if nil, all events will be considered
+	--@ {uint, function} what: Which handler to remove, can either be a handler id or a handler function
 		if type(event_id) == "table" then
 			local last_func
 			for _, event_id in ipairs(event_id) do last_func = _M.remove_handler(event_id, what) or last_func; end

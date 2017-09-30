@@ -1,3 +1,7 @@
+--/ GUI.controls
+--- A collection of user control elements.
+
+
 return function(_M)
 	local FML = therustyknife.FML
 	local table = therustyknife.FML.table
@@ -15,16 +19,38 @@ return function(_M)
 	end)
 	
 	function _M.prune()
+	--- Force clearing dead entries in the global table.
+	--- This *should* be done automatically when needed.
 		for _, v in pairs(_M) do
 			if type(v) == "table" and v.prune then v.prune(); end
 		end
 	end
 	
 	
-	------- CheckboxGroup -------
+	--/ GUI.controls.CheckboxGroup
+	--% type: class
+	--% super: Object
+	--- A group of linked checkboxes, acting as a single element.
+	--+ r string name: The name of this element
+	--+ r Dictionary[string, bool] values: The current state of the checkboxes
+	--+ string on_change: The handler function to be called when the state changes
+	--+ Any meta: The data passed into the constructor, can be used for identification in the user's code
 	
-	-- Contructor args: parent, name, direction, options (Array[table{name, state, caption}]), on_change, meta
 	_M.CheckboxGroup = FML.Object:extend("therustyknife.FML.GUI.controls.CheckboxGroup", function(self, args)
+	--f __call
+	--% type: metamethod
+	--- Create a new |:CheckboxGroup:|.
+	--- The options tables can have the following keys:  
+	---  - |:string:| name: The name of this checkbox  
+	---  - |:bool:| state=`false`: The initial state of this checkbox  
+	---  - |:LocalisedString:| caption=`{name}`: The caption used for this checkbox  
+	--@ kw LuaGuiElement parent: The element to root this group into
+	--@ kw Array[table] options: The checkboxes that will be displayed in this group
+	--@ kw string name=nil: The name that will be used for this element
+	--@ kw string direction="vertical": One of `"vertical"` or `"horizontal"`
+	--@ kw string on_change=nil: The on_change value
+	--@ kw Any meta=nil: The meta value
+	--: CheckboxGroup: The new object
 		self.name = args.name
 		self.on_change = args.on_change
 		self.meta = args.meta
@@ -57,6 +83,7 @@ return function(_M)
 	end)
 	
 	function _M.CheckboxGroup:destroy()
+	--- Destroy this object and the gui elements it's attached to.
 		if self.root.valid then self.root.destroy(); end
 		if self.id then
 			global.checkbox_group.elems[self.id] = nil
@@ -67,11 +94,15 @@ return function(_M)
 	end
 	
 	function _M.CheckboxGroup:read_values()
+	--- Update the `values` field to reflect the current state.
 		self.values = table()
 		for _, name in ipairs(self.option_names) do self.values[name] = self.root[name].state; end
 	end
 	
 	function _M.CheckboxGroup:changed()
+	--% private
+	--- This is what is called by the event handler on change.
+	--- Calls the handler function if possible.
 		if self.on_change then
 			self:read_values()
 			FML.handlers.call(self.on_change, self)
@@ -79,6 +110,8 @@ return function(_M)
 	end
 	
 	function _M.CheckboxGroup.prune()
+	--% private static
+	--- Prune all the invalid elements from the global table.
 		for id, elem in pairs(global.checkbox_group.elems) do
 			if not elem.valid then global.checkbox_group.objects[id]:destroy(); end
 		end
@@ -91,15 +124,39 @@ return function(_M)
 			if id then global.checkbox_group.objects[id]:changed(); end
 		end
 	end)
+	--\
 	
 	
-	------- RadiobuttonGroup -------
+	--/ GUI.controls.RadiobuttonGroup
+	--% type: class
+	--% super: Object
+	--- A group of linked radiobuttons, where only one can be selected at a time.
+	--+ r string name: The name of this element
+	--+ r string value: Name of the currently selected radiobutton
+	--+ string on_change: The handler function to be called when the state changes
+	--+ Any meta: The data passed into the constructor, can be used for identification in the user's code
+	
 	
 	-- Constructor args: parent, name, direction, options (Array[table{name, caption}]), selected, on_change, meta
 	_M.RadiobuttonGroup = FML.Object:extend("therustyknife.FML.GUI.controls.RadiobuttonGroup", function(self, args)
+	--f __call
+	--% type: metamethod
+	--- Create a new |:RadiobuttonGroup:|.
+	--- The options tables can have the following keys:  
+	---  - |:string:| name: The name of this radiobutton  
+	---  - |:LocalisedString:| caption=`{name}`: The caption used for this radiobutton
+	--@ kw LuaGuiElement parent: The element to root this group into
+	--@ kw Array[table] options: The radiobuttons that will be displayed in this group
+	--@ kw string name=nil: The name that will be used for this element
+	--@ kw string direction="vertical": One of `"vertical"` or `"horizontal"`
+	--@ kw string selected=nil: A name of the initially selected radiobutton, none will be selected if nil is passed
+	--@ kw string on_change=nil: The on_change value
+	--@ kw Any meta=nil: The meta value
+	--: RadiobuttonGroup: The new object
 		self.name = args.name
 		self.on_change = args.on_change
 		self.meta = args.meta
+		self.value = args.value
 		
 		self.root = args.parent.add{
 			type = "flow",
@@ -127,6 +184,7 @@ return function(_M)
 	end)
 	
 	function _M.RadiobuttonGroup:destroy()
+	--- Destroy this object and the gui elements it's attached to.
 		if self.root.valid then self.root.destroy(); end
 		if self.id then
 			global.radiobutton_group.elems[self.id] = nil
@@ -137,6 +195,10 @@ return function(_M)
 	end
 	
 	function _M.RadiobuttonGroup:select(option)
+	--% private
+	--- Make sure only the given radiobutton is selected.
+	--- Also calls the handler if possible.
+	--@ string option: The name of the radiobutton that is selected
 		for _, name in ipairs(self.option_names) do
 			if name ~= option then self.root[name].state = false; end
 		end
@@ -145,7 +207,9 @@ return function(_M)
 		if self.on_change then FML.handlers.call(self.on_change, self); end
 	end
 	
-	function _M.RadiobuttonGroup:prune()
+	function _M.RadiobuttonGroup.prune()
+	--% private static
+	--- Prune all the invalid elements from the global table.
 		for id, elem in pairs(global.radiobutton_group.elems) do
 			if not elem.valid then global.radiobutton_group.objects[id]:destroy(); end
 		end
@@ -158,12 +222,36 @@ return function(_M)
 			if id then global.radiobutton_group.objects[id]:select(event.element.name); end
 		end
 	end)
+	--\
 	
 	
-	------- NumberSelector -------
+	--/ GUI.controls.NumberSelector
+	--% type: class
+	--% super: Object
+	--- A textfield that only accepts numbers.
+	--- Optionally a range can be specified.
+	--* Both limits are exclusive
+	--+ r string name: The name of this element
+	--+ r float value: The current value in the selector
+	--+ float min: If not nil, the value will be kept greater than this
+	--+ float max: If not nil, the value will be kept less than this
+	--+ string on_change: The handler function to be called when the state changes
+	--+ Any meta: The data passed into the constructor, can be used for identification in the user's code
 	
-	-- Constructor args: parent, name, caption, value, on_change, meta, min, max
 	_M.NumberSelector = FML.Object:extend("therustyknife.FML.GUI.controls.NumberSelector", function(self, args)
+	--f __call
+	--% type: metamethod
+	--- Create a new |:NumberSelector:|.
+	--* The initial value is not subject to value limits.
+	--@ kw LuaGuiElement parent: The element to root this group into
+	--@ kw string name=nil: The name that will be used for this element
+	--@ kw LocalisedString caption=nil: If not nil, a label will be added to the NumberSelector containing this caption
+	--@ kw float value=0: The initial value for the selector
+	--@ kw string on_change=nil: The on_change value
+	--@ kw Any meta=nil: The meta value
+	--@ kw float min=nil: The min value
+	--@ kw float max=nil: The max value
+	--: NumberSelector: The new object
 		self.name = args.name
 		self.on_change = args.on_change
 		self.meta = args.meta
@@ -196,6 +284,7 @@ return function(_M)
 	end)
 	
 	function _M.NumberSelector:destroy()
+	--- Destroy this object and the gui elements it's attached to.
 		if self.root.valid then self.root.destroy(); end
 		if self.id then
 			global.number_selctor.elems[self.id] = nil
@@ -220,4 +309,5 @@ return function(_M)
 			if self.on_change then FML.handlers.call(self.on_change, self); end
 		end
 	end)
+	--\
 end

@@ -1,3 +1,6 @@
+--/ blueprint-data
+
+
 return function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
@@ -101,6 +104,11 @@ return function(_M)
 	
 	
 	function _M.get(parent, data_name)
+	--% stage: RUNTIME, RUNTIME_SHARED
+	--- Get a BlueprintData object for an entity.
+	--@ LuaEntity parent: The entity to get the data for
+	--@ string data_name: The blueprint data group to get
+	--: BlueprintData: THe BlueprintData object
 		if parent.unit_number and lut[parent.unit_number] and lut[parent.unit_number][data_name] then
 			return lut[parent.unit_number][data_name]
 		end
@@ -129,5 +137,12 @@ return function(_M)
 		return res
 	end
 	
-	function _M.get_enum(group, name) return load_prototype(group).settings[name].options; end
+	function _M.get_enum(group, name)
+	--% stage: RUNTIME, RUNTIME_SHARED
+	--- Return the options for a given enum.
+	--@ string group: The name of the setting group
+	--@ string name: The name of the enum setting
+	--: Dictionary[string, uint]: The enum options
+		return load_prototype(group).settings[name].options
+	end
 end

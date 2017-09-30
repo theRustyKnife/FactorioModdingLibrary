@@ -1,3 +1,5 @@
+--%doc ignore
+
 return function()
 	local semver = {
 	  _VERSION     = '1.2.1',

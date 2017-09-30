@@ -1,3 +1,6 @@
+--/ GUI
+
+
 return function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
@@ -11,6 +14,7 @@ return function(_M)
 	
 	-- The frame that contains the entity name and preview
 	function _M.entity_title(args) -- parent, name, entity, cam, cam_zoom, cam_size
+	--TODO: docs
 		local frame = args.parent.add{
 			type = "frame",
 			name = args.name,
@@ -35,6 +39,7 @@ return function(_M)
 	
 	-- The two-column base of the entity gui, with title
 	function _M.entity_base(args) -- parent, name, entity, cam, cam_zoom
+	--TODO: docs
 		local frame = args.parent.add{
 			type = "flow",
 			name = args.name,
@@ -59,6 +64,7 @@ return function(_M)
 	
 	-- A single segment of an entity's gui
 	function _M.entity_segment(args) -- parent, name, title, direction
+	--TODO: docs
 		local res = args.parent.add{
 			type = "frame",
 			name = args.name,

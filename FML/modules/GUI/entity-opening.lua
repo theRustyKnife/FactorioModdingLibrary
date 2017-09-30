@@ -1,4 +1,4 @@
---TODO: re-add docs
+--/ GUI
 
 
 return function(_M)
@@ -18,71 +18,35 @@ return function(_M)
 	-- Add the remote functions to the local module
 	local GUI_remote = FML.remote.get_interface("therustyknife.FML.GUI")
 	
-	-- _DOC.watch_opening = {
-	-- 	desc = [[ Watch an entity for gui opening. ]],
-	-- 	notes = {
-	-- 		"Open handlers are not save/load persistent - they have to be reregistered every load.",
-	-- 		"If you want to handle the close event as well, return a handler name from the on_open function (see [[handlers|handlers]]).",
-	-- 	},
-	-- 	params = {
-	-- 		{
-	-- 			type = "string",
-	-- 			name = "what",
-	-- 			desc = "The name of the entity to watch",
-	-- 		},
-	-- 		{
-	-- 			type = "function",
-	-- 			name = "on_open",
-	-- 			desc = "The function to be called when this entity is opened",
-	-- 		},
-	-- 	},
-	-- 	returns = {
-	-- 		{
-	-- 			type = "uint",
-	-- 			desc = "The id of the added handler - used for removal",
-	-- 		},
-	-- 	},
-	-- }
+	
 	function _M.watch_opening(what, on_open)
+	--- Watch an entity for gui opening.
+	--* Open handlers are not save/load persistent - they have to be reregistered every load.
+	--* If you want to handle the close event as well, return a handler name from the on_open function.
+	--@ string what: The name of the entity to watch
+	--@ function on_open: The function to be called when this entity is opened
+	--: uint: The id of the added handler - used for removal
+	--? handlers
 		log.d("Watch: "..what)
 		FML.remote.call_when_loaded(GUI_remote.watch_opening, what)
 		local_handlers.open:mk(what)
 		return local_handlers.open[what]:insert_at_next_index(on_open)
 	end
 	
-	-- _DOC.unwatch_opening = {
-	-- 	desc = [[ Stop watching an entity for gui opening. ]],
-	-- 	notes = {"It's not recommended to use this as it's easy to cause desyncs with it."},
-	-- 	params = {
-	-- 		{
-	-- 			type = "string",
-	-- 			name = "what",
-	-- 			desc = "The name of the entity to stop watching",
-	-- 		},
-	-- 		{
-	-- 			type = "uint",
-	-- 			name = "id",
-	-- 			desc = "The id of the handler to remove (obtained when calling watch_opening)",
-	-- 		},
-	-- 	},
-	-- }
 	function _M.unwatch_opening(what, id)
+	--- Stop watching an entity for gui opening.
+	--* It's not recommended to use this as it's easy to cause desyncs with it.
+	--@ string what: The name of the entity to stop watching
+	--@ uint id: The id of the handler to remove (obtained when calling watch_opening)
 		if not local_handlers.open[what] then return; end
 		local_handlers.open[what][id] = nil
 		
 		--TODO: unwatch if no other handlers exist - Also wait until the remote implementation works as intended
 	end
 	
-	-- _DOC.close_gui = {
-	-- 	desc = [[ Close any GUI of the given player. ]],
-	-- 	params = {
-	-- 		{
-	-- 			type = "uint",
-	-- 			name = "player_index",
-	-- 			desc = "Index of the player to close gui for",
-	-- 		},
-	-- 	},
-	-- }
+	--f close_gui
+	--- Close any GUI of the given player.
+	--@ uint player_index: Index of the player to close gui for
 	_M.close_gui = GUI_remote.close_gui
 	
 	

@@ -1,3 +1,6 @@
+--/ blueprint-data
+
+
 return function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
@@ -15,7 +18,11 @@ return function(_M)
 	}
 	
 	local function parse_settings(settings)
-	--[[ Fill in all the required info and figure out the slot count along the way. ]]
+	--% private
+	--- Fill in all the required info and figure out the slot count along the way.
+	--@ table settings: The table of settings, indexed by names
+	--: table: The processed settings
+	--: uint: The required number of slots for these settings
 		local res = {}
 		local slots = 0
 		for name, setting in pairs(settings) do
@@ -49,6 +56,13 @@ return function(_M)
 	
 	
 	function _M.add_prototype(prototype, collision_box, localised_name)
+	--% stage: DATA, SETTINGS
+	--- Add a new blueprint data prototype.
+	--- collision_box is the size of the proxy entity that will be used and is recommended to be set to the same size as
+	--- the entity it's used for. This is mainly to prevent players from creating blueprints without the proxy included.
+	--@ BlueprintDataPrototype prototype: The prototype to add
+	--@ BoundingBox collision_box={{0, 0}, {0, 0}}: The bounding box to use for this blueprint data group
+	--@ LocalisedString localised_name={"entity-name.blueprint-data-entity"}: The localized name of the proxy entity/item, nil if false is passed
 		collision_box = collision_box or config.BLUEPRINT_DATA.DEFAULT_COLLISION_BOX
 		if type(prototype) == "table" and not prototype.name then
 			for _, p in pairs(prototype) do _M.add_prototype(p, collision_box, localised_name); end
@@ -82,5 +96,6 @@ return function(_M)
 			generate = {item = {properties = {flags = {"hidden"}}}},
 		}
 	end
+	
 	--TODO: a way to alter already added prototypes?
 end

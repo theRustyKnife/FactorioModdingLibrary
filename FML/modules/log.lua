@@ -1,3 +1,7 @@
+--/ log
+--- Utility for logging.
+--- Can print log messages to the console as well, according to the configuration from config.
+
 return function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
@@ -22,38 +26,15 @@ return function(_M)
 	else print = log; end
 
 
-	local _DOC, _MT = FML.make_doc(_M, {
-		type = "module",
-		name = "log",
-		short_desc = "Utility for logging.",
-		desc = [[
-		Utility for logging. Can print log messages to the console as well, according to the configuration from config.
-		]],
-	})
 	--TODO: buffer messages
 	--TODO: print the messages during loading to console once game is available
 
 
-	_DOC.get_location = {
-		type = "function",
-		desc = [[ Get a string designating the current execution location of the script. ]],
-		notes = {"If the info can't be obtained (too high stack level), \"unknown\" will be printed."},
-		params = {
-			{
-				type = "uint",
-				name = "level",
-				desc = "Which level of the stack to consider",
-				default = "2",
-			},
-		},
-		returns = {
-			{
-				type = "string",
-				desc = "The location with line number",
-			},
-		},
-	}
 	function _M.get_location(level)
+	--- Get a string designating the current execution location of the script.
+	--* If the info can't be obtained (too high stack level), "unknown" will be printed.
+	--@ uint level=2: Which level of the stack to consider
+	--: string: The location with line number
 		local info = debug.getinfo(level or 2)
 		if not info then return "unknown"; end
 		local res = info.name
@@ -62,98 +43,46 @@ return function(_M)
 	end
 
 
-	_DOC.d = {
-		type = "function",
-		desc = [[ Print a debug level message to the log. ]],
-		params = {
-			{
-				type = "Any",
-				name = "message",
-				desc = "The message to be printed. Non-string messages are converted with tostring.",
-			},
-		},
-	}
 	if config.LOG.D then
 		function _M.d(message, level)
+		--- Print a debug level message to the log.
+		--@ Any message: The message to be printed. Non-string messages are converted with tostring.
 			print(_M.get_location(level or 3)..":Debug: "..tostring(message))
 		end
 	else _M.d = empty; end
 
-	_DOC.w = {
-		type = "function",
-		desc = [[ Print a warning level message to the log. ]],
-		params = {
-			{
-				type = "Any",
-				name = "message",
-				desc = "The message to be printed. Non-string messages are converted with tostring.",
-			},
-		},
-	}
 	if config.LOG.W then
 		function _M.w(message, level)
+		--- Print a warning level message to the log.
+		--@ Any message: The message to be printed. Non-string messages are converted with tostring.
 			print(_M.get_location(level or 3)..":Warning: "..tostring(message))
 		end
 	else _M.w = empty; end
 
-	_DOC.e = {
-		type = "function",
-		desc = [[ Print an error level message to the log. ]],
-		params = {
-			{
-				type = "Any",
-				name = "message",
-				desc = "The message to be printed. Non-string messages are converted with tostring.",
-			},
-		},
-	}
 	if config.LOG.E then
 		function _M.e(message, level)
+		--- Print an error level message to the log.
+		--@ Any message: The message to be printed. Non-string messages are converted with tostring.
 			print(_M.get_location(level or 3)..":Error: "..tostring(message))
 		end
 	else _M.e = empty; end
 	
-	_DOC.dump = {
-		type = "function",
-		short_desc = "Dump some values into the log.",
-		desc = [[
-		Dump some values into the log using the ser_func function. It is assumed to be a debug level message.
-		]],
-		params = {
-			{
-				type = {"string", "Any"},
-				name = "message",
-				desc = [[
-				If this is string, it gets printed straight away, otherwise it is considered to be one of the values
-				]],
-			},
-			{
-				type = "Any",
-				name = "...",
-				desc = "The values to be dumped",
-			},
-		},
-	}
-	_DOC.set_ser_func = {
-		type = "function",
-		short_desc = "Set the function that dump will use for conversion to string.",
-		desc = [[
-		Set the function that dump will use for conversion to string. This function has to take the value as argument
-		and return a string representing the value. This is set to serpent.line by default.
-		]],
-		params = {
-			{
-				type = "function",
-				name = "func",
-				desc = "The function to use",
-			},
-		},
-	}
 	if config.LOG.D then
 		local ser_func = serpent.line
-		function _M.set_ser_func(func) ser_func = func; end
+		function _M.set_ser_func(func)
+		--- Set the function that dump will use for conversion to string.
+		--- This function has to take the value as argument and return a string representing the value. This is set to
+		--- serpent.line by default.
+		--@ function func: The function to use
+			ser_func = func
+		end
 		
 		function _M.dump(message, ...)
+		--- Dump some values into the log.
+		--- The function set by set_ser_func will be used for converting to string. It is considered to be a debug level
+		--- message.
+		--@ {string, Any} message: If string, it gets printed straight away, otherwise it's considered one of the values
+		--@ Any ...: The values to be dumped
 			local args = FML.table.pack(...)
 			local res = (args.n > 0 and type(message) == "string" and message)
 					or (ser_func(message)..(args.n > 0 and ", " or ""))
@@ -167,11 +96,11 @@ return function(_M)
 	else _M.dump = empty; _M.set_ser_func = empty; end
 	
 	
-	_MT.__call = {
-		desc = [[ Same as `log.d`. ]],
-		notes = {"Mainly exists for compatibility with the built-in log function. It's recommended to use `log.d` instead."},
-		params = _DOC.d.params,
-	}
+	--f __call
+	--% type: metamethod
+	--- Same as `log.d`.
+	--* Mainly exists for compatibility with the built-in log function. It's recommended to use `log.d` instead.
+	--@ Any message: The message to be printed. Non-string messages are converted with tostring.
 	if config.LOG.D then setmetatable(_M, {__call = function(_, message) _M.d(message); end})
 	else setmetatable(_M, {__call = empty}); end
 end

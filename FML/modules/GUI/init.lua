@@ -1,3 +1,6 @@
+--/ GUI
+--TODO: soome meaningful description
+
 --TODO: a way to keep frames the same width
 
 
