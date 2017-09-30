@@ -79,6 +79,7 @@ return function(_M)
 			global.checkbox_group.objects[self.id] = self
 		end
 		
+		self:read_values()
 		return self
 	end)
 	
