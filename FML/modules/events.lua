@@ -1,5 +1,6 @@
 --/ events
 --- Provides an extended interface for handling events.
+--+ r Dictionary[string: Array[EventID]] GROUPS: Groups of events that often go together
 
 modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	local FML = therustyknife.FML

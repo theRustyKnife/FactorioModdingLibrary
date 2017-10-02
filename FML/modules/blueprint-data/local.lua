@@ -120,7 +120,7 @@ return function(_M)
 	--- Get a BlueprintData object for an entity.
 	--@ LuaEntity parent: The entity to get the data for
 	--@ string data_name: The blueprint data group to get
-	--: BlueprintData: THe BlueprintData object
+	--: BlueprintData: The BlueprintData object
 		if parent.unit_number and lut[parent.unit_number] and lut[parent.unit_number][data_name] then
 			return lut[parent.unit_number][data_name]
 		end

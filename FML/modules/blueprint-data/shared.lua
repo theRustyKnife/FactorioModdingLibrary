@@ -5,6 +5,7 @@ return function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
 	local table = therustyknife.FML.table
+	local log = therustyknife.FML.log
 	
 	
 	local global
@@ -50,11 +51,12 @@ return function(_M)
 	
 	--TODO: check how this works when an entity with data is killed and a ghost is left behind. It's probably going
 	-- to have it's settings lost right now
+	--! RONG: It just crashes whenever _M._get_entity is called
 	
 	-- Remove entities when their parents are destroyed
 	FML.events.on_destroyed(function(event)
 		local entity = event.entity
-		local entity_name = entity.type == "entity_ghost" and entity.ghost_name or entity.name
+		local entity_name = entity.type == "entity-ghost" and entity.ghost_name or entity.name
 		-- If this entity type has any known data attached to it, make sure there are no entities left
 		if global.entity_data_types[entity_name] then
 			for data_type, _ in pairs(global.entity_data_types[entity_name]) do
