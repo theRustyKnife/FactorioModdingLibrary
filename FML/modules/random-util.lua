@@ -22,4 +22,23 @@ return function(_M)
 			}
 		end
 	end
+	
+	function _M.calculate_overflow(value, args)
+	--- Calculate overflow in the given bounds.
+	--- The numbers don't necessarily have to be integers.
+	--@ float value: The value to calculate for
+	--@ kw float min: The lowest possible value (inclusive)
+	--@ kw float max: The highest possible value (inclusive)
+	--: float: The calculated value
+		local min = args.min or -2147483648
+		local max = args.max or 2147483647
+		local d = max - min
+		
+		while true do
+			if value > min and value < max then return value
+			elseif value > max then value = value-d
+			elseif value < min then value = value+d
+			end
+		end
+	end
 end
