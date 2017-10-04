@@ -11,7 +11,7 @@ return function()
 	FML = module_loader.load_std(FML_stdlib, nil, "RUNTIME", config, config.VERSION)
 	FML_stdlib.put_to_global("therustyknife", "FML", FML)
 	
-	module_loader.init_all(FML, config.MODULES_TO_LOAD, "RUNTIME")
+	module_loader.init_all(FML, FML_import.modules, config.MODULES_TO_LOAD, "RUNTIME")
 	
 	-- Simulate the initialization events
 	--TODO: perhaps implement the config_change event?
