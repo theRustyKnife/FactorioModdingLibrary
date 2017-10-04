@@ -1,6 +1,8 @@
 --/ GUI.controls
 --- A collection of user control elements.
 
+--TODO: refactor the classes here to share as much code as possible so there aren't the exact same methods three times
+
 
 return function(_M)
 	local FML = therustyknife.FML
@@ -10,7 +12,7 @@ return function(_M)
 	
 	local global
 	FML.events.on_load(function()
-		local function mk_tabs(parent) parent:mk"elems"; parent:mk"objects"; end
+		local function mk_tabs(parent) parent:mk"elems"; parent:mk"objects"; parent:mk"linked"; end
 		
 		global = table.mk(FML.get_fml_global("GUI"), "controls")
 		global:mk"checkbox_group"; mk_tabs(global.checkbox_group)
@@ -50,10 +52,14 @@ return function(_M)
 	--@ kw string direction="vertical": One of `"vertical"` or `"horizontal"`
 	--@ kw string on_change=nil: The on_change value
 	--@ kw Any meta=nil: The meta value
+	--@ kw string link_name=nil: All CheckboxGroups with the same link_name will be kept synchronized
+	--@ kw bool on_change_on_sync=false: If true, the on_change handler will be called even when syncing from a linked instance
 	--: CheckboxGroup: The new object
 		self.name = args.name
 		self.on_change = args.on_change
 		self.meta = args.meta
+		self.link_name = args.link_name
+		self.on_change_on_sync = args.on_change_on_sync
 		
 		self.root = args.parent.add{
 			type = "flow",
@@ -79,12 +85,16 @@ return function(_M)
 			global.checkbox_group.objects[self.id] = self
 		end
 		
+		-- Save for syncing
+		if self.link_name then global.checkbox_group.linked:mk(self.link_name):insert(self); end
+		
 		self:read_values()
 		return self
 	end)
 	
 	function _M.CheckboxGroup:destroy()
 	--- Destroy this object and the gui elements it's attached to.
+		self.invalid = true
 		if self.root.valid then self.root.destroy(); end
 		if self.id then
 			global.checkbox_group.elems[self.id] = nil
@@ -96,17 +106,34 @@ return function(_M)
 	
 	function _M.CheckboxGroup:read_values()
 	--- Update the `values` field to reflect the current state.
+	--: Dictionary[string, bool]: Reference to the values field just read
 		self.values = table()
 		for _, name in ipairs(self.option_names) do self.values[name] = self.root[name].state; end
+		return self.values
 	end
 	
-	function _M.CheckboxGroup:changed()
+	function _M.CheckboxGroup:changed(sync)
 	--% private
 	--- This is what is called by the event handler on change.
 	--- Calls the handler function if possible.
-		if self.on_change then
+	--@ bool sync=true: If false, linked CheckboxGroups will not be synced
+		if self.on_change and (not sync or self.on_change_on_sync) then
 			self:read_values()
 			FML.handlers.call(self.on_change, self)
+		end
+		
+		if self.link_name and sync ~= false then
+			for i, checkbox_group in pairs(global.checkbox_group.linked[self.link_name]) do
+				if not checkbox_group.root.valid or self.invalid then
+					global.checkbox_group.linked[self.link_name][i] = nil
+				else
+					for name, state in pairs(self.values) do
+						assert(checkbox_group.root[name], "CheckboxGroups with different structure can't be synced.")
+						checkbox_group.root[name].state = state
+					end
+					checkbox_group:changed(false)
+				end
+			end
 		end
 	end
 	
@@ -153,11 +180,15 @@ return function(_M)
 	--@ kw string selected=nil: A name of the initially selected radiobutton, none will be selected if nil is passed
 	--@ kw string on_change=nil: The on_change value
 	--@ kw Any meta=nil: The meta value
+	--@ kw string link_name=nil: All RadiobuttonGroups with the same link_name will be kept synchronized
+	--@ kw bool on_change_on_sync=false: If true, the on_change handler will be called even when syncing from a linked instance
 	--: RadiobuttonGroup: The new object
 		self.name = args.name
 		self.on_change = args.on_change
 		self.meta = args.meta
 		self.value = args.value
+		self.link_name = args.link_name
+		self.on_change_on_sync = args.on_change_on_sync
 		
 		self.root = args.parent.add{
 			type = "flow",
@@ -181,11 +212,15 @@ return function(_M)
 		self.id = global.radiobutton_group.elems:insert_at_next_index(self.root)
 		global.radiobutton_group.objects[self.id] = self
 		
+		-- Save for syncing
+		if self.link_name then global.radiobutton_group.linked:mk(self.link_name):insert(self); end
+		
 		return self
 	end)
 	
 	function _M.RadiobuttonGroup:destroy()
 	--- Destroy this object and the gui elements it's attached to.
+		self.invalid = true
 		if self.root.valid then self.root.destroy(); end
 		if self.id then
 			global.radiobutton_group.elems[self.id] = nil
@@ -195,17 +230,29 @@ return function(_M)
 		_M.RadiobuttonGroup.super.destroy(self)
 	end
 	
-	function _M.RadiobuttonGroup:select(option)
+	function _M.RadiobuttonGroup:select(option, sync)
 	--% private
 	--- Make sure only the given radiobutton is selected.
 	--- Also calls the handler if possible.
 	--@ string option: The name of the radiobutton that is selected
+	--@ bool sync=true: If false, the linked RadiobuttonGroups will not be synced
+		sync = sync ~= false
 		for _, name in ipairs(self.option_names) do
-			if name ~= option then self.root[name].state = false; end
+			self.root[name].state = name == option
 		end
 		self.value = option
 		
-		if self.on_change then FML.handlers.call(self.on_change, self); end
+		if self.on_change and (not sync or self.on_change_on_sync) then FML.handlers.call(self.on_change, self); end
+		
+		if self.link_name and sync then
+			for i, radiobutton_group in pairs(global.radiobutton_group.linked[self.link_name]) do
+				if not radiobutton_group.root.valid or self.invalid then
+					global.radiobutton_group.linked[self.link_name][i] = nil
+				else
+					radiobutton_group:select(option, false)
+				end
+			end
+		end
 	end
 	
 	function _M.RadiobuttonGroup.prune()
@@ -252,6 +299,9 @@ return function(_M)
 	--@ kw Any meta=nil: The meta value
 	--@ kw float min=nil: The min value
 	--@ kw float max=nil: The max value
+	--@ kw bool overflow=true: If true, overflow will be calculated for values outside the range, only works if both min and max are specified
+	--@ kw string link_name=nil: All NumberSelectors with the same link_name will be kept synchronized
+	--@ kw bool on_change_on_sync=false: If true, the on_change handler will be called even when syncing from a linked instance
 	--: NumberSelector: The new object
 		self.name = args.name
 		self.on_change = args.on_change
@@ -259,6 +309,10 @@ return function(_M)
 		self.value = tonumber(args.value or 0)
 		self.min = args.min
 		self.max = args.max
+		self.overflow = args.overflow
+		self.link_name = args.link_name
+		self.on_change_on_sync = args.on_change_on_sync
+		self.format_func = args.format_func or tonumber
 		
 		self.root = args.parent.add{
 			type = "flow",
@@ -273,7 +327,7 @@ return function(_M)
 			}
 		end
 		
-		self.root.add{
+		self.textfield = self.root.add{
 			type = "textfield",
 			text = self.value,
 		}
@@ -281,11 +335,15 @@ return function(_M)
 		self.id = global.number_selctor.elems:insert_at_next_index(self.root)
 		global.number_selctor.objects[self.id] = self
 		
+		-- Save for syncing
+		if self.link_name then global.number_selctor.linked:mk(self.link_name):insert(self); end
+		
 		return self
 	end)
 	
 	function _M.NumberSelector:destroy()
 	--- Destroy this object and the gui elements it's attached to.
+		self.invalid = true
 		if self.root.valid then self.root.destroy(); end
 		if self.id then
 			global.number_selctor.elems[self.id] = nil
@@ -295,20 +353,48 @@ return function(_M)
 		_M.NumberSelector.super.destroy(self)
 	end
 	
+	function _M.NumberSelector:is_in_range(value)
+	--% private
+	--- Check if the given value is a valid input.
+	--@ float value: The value to check
+	--: bool: true if valid
+		return (not self.min or value >= self.min) and (not self.max or value <= self.max)
+	end
+	
+	function _M.NumberSelector:changed(text, sync)
+	--% private
+	--- Handle text changes.
+	--@ string text: The new text value
+	--@ bool sync=true: If false, the linked NumberSelectors will not be synced
+		sync = sync ~= false
+		
+		local from_text = tonumber(text)
+		local in_range = from_text and self:is_in_range(from_text)
+		if from_text and not in_range and self.min and self.max then
+			from_text = FML.random_util.calculate_overflow(from_text, {min=self.min, max=self.max})
+			in_range = true
+		end
+		log.dump(from_text, in_range, self.value)
+		self.value = (in_range and from_text) or self.value
+		log.dump(self.value)
+		
+		if self.on_change and (not sync or self.on_change_on_sync) then FML.handlers.call(self.on_change, self); end
+		
+		if self.link_name and sync then
+			for i, number_selctor in pairs(global.number_selctor.linked[self.link_name]) do
+				if not number_selctor.root.valid or self.invalid then
+					global.number_selctor.linked[self.link_name][i] = nil
+				elseif number_selctor ~= self then
+					number_selctor.textfield.text = self.format_func(self.value)
+					number_selctor:changed(text, false)
+				end
+			end
+		end
+	end
+	
 	FML.events.on_gui_text_changed(function(event)
 		local id = global.number_selctor.elems:index_of(event.element.parent)
-		if id then
-			local self = global.number_selctor.objects[id]
-			
-			local new_value = tonumber(event.element.text) or self.value
-			if self.min and new_value < self.min then new_value = self.min; end
-			if self.max and new_value > self.max then new_value = self.max; end
-			
-			event.element.text = new_value
-			self.value = new_value
-			
-			if self.on_change then FML.handlers.call(self.on_change, self); end
-		end
+		if id then global.number_selctor.objects[id]:changed(event.element.text); end
 	end)
 	--\
 end

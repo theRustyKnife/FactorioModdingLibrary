@@ -82,7 +82,11 @@ return function(_M)
 			
 			local setting = prototype.settings[key]
 			if setting.type == "int" or setting.type == "enum" then
-				data.__control_behavior.set_signal(setting.index, {signal = SIGNAL, count = value})
+				assert(type(value) == "number", "Setting "..data.__type.."."..setting.name.." expects number, got "..type(value))
+				data.__control_behavior.set_signal(setting.index, {
+					signal = SIGNAL,
+					count = FML.random_util.calculate_overflow(value),
+				})
 			elseif setting.type == "bool" then
 				value = value and 1 or 0
 				data.__control_behavior.set_signal(setting.index, {signal = SIGNAL, count = value})
@@ -122,7 +126,12 @@ return function(_M)
 	--@ string data_name: The blueprint data group to get
 	--: BlueprintData: The BlueprintData object
 		if parent.unit_number and lut[parent.unit_number] and lut[parent.unit_number][data_name] then
-			return lut[parent.unit_number][data_name]
+			data = lut[parent.unit_number][data_name]
+			-- Only return the cached value if the entity is still valid. It can become invalid if the entity was killed
+			-- and revived from a ghost from when the cache was made.
+			if data.__parent.valid then return data; end
+			
+			--TODO: load from... somewhere?
 		end
 		
 		associate_entity(parent.name, data_name)
