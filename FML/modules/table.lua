@@ -212,7 +212,7 @@ return function(_M)
 	end
 	
 	function _M.insert_at_next_index(tab, element)
-	--- Insert the given element at the first free numeric index.
+	--- Insert the given element at a numeric index at the end of the table.
 	--* Uses `table.get_next_index` to find the index.
 	--* Can be used as a method of RichTable.
 	--@ table tab: The table to insert into
@@ -254,7 +254,7 @@ return function(_M)
 	end
 	
 	function _M.n_insert_at_free_index(tab, value)
-	--- Insert the given value at the next integer index and update `_ids`.
+	--- Insert the given value at the first free integer index and update `_ids`.
 	--* Can only be used on tables that already have the `_ids` field present (numerically indexed tables).
 	--* Can be used as a method of RichTable.
 	--@ table tab: The table to insert into
@@ -266,7 +266,7 @@ return function(_M)
 	end
 	
 	function _M.n_insert_at_next_index(tab, value)
-	--- Insert the given value at the next integer index and update `_ids`.
+	--- Insert the given element at a numeric index at the end of the table and update `_ids`.
 	--* Can only be used on tables that already have the `_ids` field present (numerically indexed tables).
 	--* Can be used as a method of RichTable.
 	--@ table tab: The table to insert into
