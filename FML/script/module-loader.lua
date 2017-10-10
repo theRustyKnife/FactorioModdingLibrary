@@ -62,6 +62,10 @@ return function(_M)
 			for _, component in ipairs(module[stage]) do
 				if component.type == "file" then module.files[component.path](res, stage) -- Load files by calling them
 				elseif component.type == "submodule" then
+					assert(module.name, serpent.line(module))
+					assert(module.submodules[component.name],
+						"No submodule defined for name \""..component.name.."\""..
+						(module.name and " in module "..module.name or ""))
 					res[component.name] = {_super_module = res} -- Give access to the supermodule via _super_module
 					_M.init(module.submodules[component.name], res[component.name], stage) -- Recursively load submodules
 				end
@@ -94,7 +98,7 @@ return function(_M)
 		return res_tab
 	end
 	
-	function _M.load_from_file(path, load_func, init, log_func, stage)
+	function _M.load_from_file(path, load_func, init, log_func, stage, module_name)
 	--[[
 	Load module from the given path. load_func is used for loading files (require by default). If init is true, the module
 	is initialized straight away. log_func will be used for logging errors, if false no logging will be done, if true log
@@ -138,7 +142,7 @@ return function(_M)
 		The most comprehensive module definition function. It takes the module in form of a table with definitions of
 		components/submodules to be loaded in given stages.
 		]]
-			res = {type = "module", submodules = submods, files = files} -- Save the caches - this table is what will be serialized
+			res = {type = "module", name = module_name, submodules = submods, files = files} -- Save the caches - this table is what will be serialized
 			-- Add the stage definitions into the result and make sure all of them exist while at it
 			for _, stage in ipairs{"DATA", "SETTINGS", "RUNTIME_SHARED", "RUNTIME"} do res[stage] = module[stage] or {}; end
 		end
@@ -191,7 +195,7 @@ return function(_M)
 		local res = not init and res_table or {}
 		for _, module in ipairs(modules) do -- modules is a value in the form of config.MODULES_TO_LOAD
 			if res[module.name] == nil then -- only load if the module doesn't already exist (shouldn't happen)
-				res[module.name] = _M.load_from_file(module.path, load_func, false, log_func)
+				res[module.name] = _M.load_from_file(module.path, load_func, false, log_func, nil, module.name)
 			end
 		end
 		
