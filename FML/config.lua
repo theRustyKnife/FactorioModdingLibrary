@@ -2,8 +2,8 @@ return {
 	-- FML version info obtained from the version history file
 	VERSION = require("script.version-util").config(),
 	
-	-- Mod info - console by default, as that should be the only way to get to this value
-	MOD = {NAME = "console"},
+	-- Mod info
+	MOD = {NAME = "FML"},
 	
 	-- If true, errors from module loading will not be ignored
 	FORCE_LOAD_MODULES = true,
