@@ -1,6 +1,8 @@
 return {
-	-- FML version info obtained from the version history file
-	VERSION = require("script.version-util").config(),
+	VERSION = {
+		CODE = 18,
+		NAME = '0.1.0-alpha.10.0',
+	},
 	
 	-- Mod info
 	MOD = {NAME = "FML"},
@@ -10,31 +12,16 @@ return {
 	-- If true, errors in module loading will be logged
 	LOG_MODULE_ERRORS = true,
 	
-	-- Modules with their paths that FML will attempt to load
-	MODULES_TO_LOAD = {
-		{name = "log", path = "modules.log"},
-		{name = "cast", path = "modules.cast"},
-		{name = "table", path = "modules.table"},
-		{name = "events", path = "modules.events"},
-		{name = "remote", path = "modules.remote"},
-		{name = "Object", path = "modules.Object"},
-		{name = "format", path = "modules.format"},
-		{name = "data", path = "modules.data"},
-		{name = "GUI", path = "modules.GUI.init"},
-		{name = "Semver", path = "modules.Semver"},
-		{name = "prototype_util", path = "modules.prototype-util"},
-		{name = "blueprint_data", path = "modules.blueprint-data.init"},
-		{name = "surface", path = "modules.surface"},
-		{name = "random_util", path = "modules.random-util"},
-		{name = "handlers", path = "modules.handlers"},
-	},
-	
-	-- The name of the item that's used for saving modules
-	FML_SETTING_NAME = "FML_FML-hack-setting",
 	
 	LIB_DATA_DUMP_PATH = {
 		ROOT = "lib_data",
 		DEFINES = "defines",
+	},
+	
+	-- This determines where FML will store it's stuff
+	GLOBAL =  {
+		NAMESPACE = 'therustyknife',
+		PACKAGE = 'FML',
 	},
 	
 	
@@ -86,9 +73,5 @@ return {
 		ICON = "__base__/graphics/icons/blueprint-book.png",
 		DEFAUL_COLLISION_BOX = {{0, 0}, {0, 0}},
 		ITEM_NAME = "FML_blueprint-data_item",
-	},
-	
-	DATA_CONTAINER = {
-		PROTOTYPE_NAME = "FML_data-container-item",
 	},
 }

@@ -2,7 +2,7 @@
 --- Provides functions for simplified prototype definition.
 
 
-modfunc({"DATA", "SETTINGS"}, function(_M)
+module({name='data', 'DATA', 'SETTINGS'}, function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
 

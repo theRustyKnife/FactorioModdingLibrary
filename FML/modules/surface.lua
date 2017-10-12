@@ -32,6 +32,16 @@ return function(_M)
 		return _M.pack_position(x, y)
 	end
 	
+	function _M.positions_equal(pos1, pos2)
+	--- Check if two positions are the same
+	--@ Position pos1
+	--@ Position pos2
+	--: bool: `true` if the positions are equal
+		local x1, y1 = _M.unpack_position(pos1)
+		local x2, y2 = _M.unpack_position(pos2)
+		return x1 == x2 and y1 == y2
+	end
+	
 	function _M.shift(position, dx, dy)
 	--- Shift a position by specific x and y values.
 	--- The dx and dy may also be specified as a |:Position:|.

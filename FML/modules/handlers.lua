@@ -10,7 +10,7 @@
 --TODO: link to the naming convention doc (that doesn't exist now)
 --TODO: find a better name for this module - handlers is dumb and misleading
 
-modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
+module({'RUNTIME', 'RUNTIME_SHARED'}, function(_M)
 	local FML = therustyknife.FML
 	
 	

@@ -49,10 +49,6 @@ return function(_M)
 		end
 	end)
 	
-	--TODO: check how this works when an entity with data is killed and a ghost is left behind. It's probably going
-	-- to have it's settings lost right now
-	--! RONG: It just crashes whenever _M._get_entity is called
-	
 	-- Remove entities when their parents are destroyed
 	FML.events.on_destroyed(function(event)
 		local entity = event.entity
@@ -61,7 +57,16 @@ return function(_M)
 		if global.entity_data_types[entity_name] then
 			for data_type, _ in pairs(global.entity_data_types[entity_name]) do
 				local data_entity = _M._get_entity(entity, data_type, false)
-				if data_entity and data_entity.valid then data_entity.destroy(); end
+				if data_entity and data_entity.valid then
+					-- If this entity died, let the local isntances konw, so they can handle ghost data objects
+					log.d(data_entity.name.." died...")
+					if event.name == defines.events.on_entity_died then
+						log("\tRaising event")
+						FML.events.raise(FML.events.id'therustyknife.FML.blueprint-data.entity-died',
+							FML.events.info{data_entity=data_entity, parent_entity=entity})
+					end
+					data_entity.destroy()
+				end
 			end
 		end
 	end)

@@ -1,7 +1,7 @@
 --/ prototype-util
 --- Conatains various utility functions for prototype creation.
 
-modfunc({"DATA", "SETTINGS"}, function(_M)
+module({'DATA', 'SETTINGS'}, function(_M)
 	local FML = therustyknife.FML
 	local config = therustyknife.FML.config
 	local table = FML.table

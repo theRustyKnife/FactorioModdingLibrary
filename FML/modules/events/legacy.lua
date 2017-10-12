@@ -1,6 +1,12 @@
 --/ events
---- Provides an extended interface for handling events.
---+ r Dictionary[string: Array[EventID]] GROUPS: Groups of events that often go together
+
+
+return function(_M)
+	local FML = therustyknife.FML
+	local config = therustyknife.FML.config
+	local table = therustyknife.FML.table
+end
+
 
 modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	local FML = therustyknife.FML
@@ -185,7 +191,7 @@ modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 	--* The shortened `on_<event-name>` can be used for events from defines.
 	--@ {EventID, Array[{EventID, string}], string} event_id: The event(s) to register the handler for
 	--@ function handler: The handler function
-	--@ bool permanent=false: If true, the handler will be re-setup on load (Not implemented yet)
+	--@ bool permanent=false: If true, the handler will be re-setup on load (not implemented yet)
 	--: uint: The handler id if there is one, nil otherwise
 		if type(event_id) == "table" then
 			if permanent then --TODO: make this work
@@ -198,7 +204,7 @@ modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
 		
 		if permanent then
 			--TODO: implement
-			FML.log.w("Permanent handlers not implemented yes - using regular handlers.")
+			FML.log.w("Permanent handlers not implemented - using regular handlers.")
 		end--else
 			if not runtime_handlers[event_id] then
 				runtime_handlers[event_id] = table()

@@ -37,4 +37,12 @@ return function(_M)
 		local res = ((value-min) % (max-min)) + min
 		if res >= min and res < max then return res else return min; end
 	end
+	
+	function _M.string_starts_with(s, start)
+	--- Check if a string starts with another string.
+	--@ string s: The string to check
+	--@ string start: The start we're looking for
+	--: bool: `true` if `s` starts with `start`, false otherwise
+		return s:sub(1, start:len()) == start
+	end
 end

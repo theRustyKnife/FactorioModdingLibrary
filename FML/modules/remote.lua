@@ -3,7 +3,7 @@
 --- The functions returned from here are mostly closures, so they're not safe for serialization. To serialize an
 --- interface function, use the Callback concept. To serialize an interface, simply store it's name as a string.
 
-modfunc({"RUNTIME", "RUNTIME_SHARED"}, function(_M)
+module({name='remote', 'RUNTIME', 'RUNTIME_SHARED'}, function(_M)
 	local FML = therustyknife.FML
 	local table = therustyknife.FML.table
 

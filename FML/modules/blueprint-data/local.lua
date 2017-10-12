@@ -58,9 +58,23 @@ return function(_M)
 			assert(prototype.settings[key],
 				"Blueprint data group "..data.__type.." doesn't contain key "..tostring(key))
 			
+			local get_signal
+			if data.__ghost_data then
+				set_signal = function(index, signal) data.__ghost_data[index] = signal; end
+			else
+				set_signal = function(...) return data.__control_behavior.set_signal(...); end
+			end
+			
 			local setting = prototype.settings[key]
-			if not data.__entity then return setting.default; end
-			local signal = data.__control_behavior.get_signal(setting.index)
+			local signal
+			if data.__ghost_data then
+				signal = data.__ghost_data[setting.index]
+			elseif not data.__entity then
+				return setting.default
+			else
+				signal = data.__control_behavior.get_signal(setting.index)
+			end
+			
 			if not signal or not signal.signal then return setting.default; end
 			
 			if setting.type == "int" or setting.type == "enum" then return signal.count; end
@@ -75,7 +89,14 @@ return function(_M)
 			assert(prototype.settings[key],
 				"Blueprint data group "..data.__type.." doesn't contain key "..tostring(key))
 			
-			if not data.__entity then
+			local set_signal
+			if data.__ghost_data then
+				set_signal = function(index, signal) data.__ghost_data[index] = signal; end
+			else
+				set_signal = function(...) return data.__control_behavior.set_signal(...); end
+			end
+			
+			if not data.__ghost_data and not data.__entity then
 				data.__entity = _M._get_entity(data.__parent, data.__type)
 				data.__control_behavior = data.__entity.get_or_create_control_behavior()
 			end
@@ -83,13 +104,13 @@ return function(_M)
 			local setting = prototype.settings[key]
 			if setting.type == "int" or setting.type == "enum" then
 				assert(type(value) == "number", "Setting "..data.__type.."."..setting.name.." expects number, got "..type(value))
-				data.__control_behavior.set_signal(setting.index, {
+				set_signal(setting.index, {
 					signal = SIGNAL,
 					count = FML.random_util.calculate_overflow(value),
 				})
 			elseif setting.type == "bool" then
 				value = value and 1 or 0
-				data.__control_behavior.set_signal(setting.index, {signal = SIGNAL, count = value})
+				set_signal(setting.index, {signal = SIGNAL, count = value})
 			elseif setting.type == "float" then
 				--TODO: implement
 				error("Blueprint data float is not yet implemented.")
@@ -98,8 +119,8 @@ return function(_M)
 	}
 	
 	
-	FML.events.on_delayed_load(function()
-		log.d("Loading BlueprintData instances...")
+	FML.events.on_post_load(function()
+		log.d("Loading BlueprintData instances in "..config.MOD.NAME.."...")
 		global = FML.get_fml_global("blueprint_data")
 		global.data = table(global.data)
 		global.prototypes = table(global.prototypes)
@@ -125,13 +146,10 @@ return function(_M)
 	--@ LuaEntity parent: The entity to get the data for
 	--@ string data_name: The blueprint data group to get
 	--: BlueprintData: The BlueprintData object
+		log.d("Get blueprint data of type \""..data_name.."\" for parent "..parent.name..", unit number "..parent.unit_number)
 		if parent.unit_number and lut[parent.unit_number] and lut[parent.unit_number][data_name] then
-			data = lut[parent.unit_number][data_name]
-			-- Only return the cached value if the entity is still valid. It can become invalid if the entity was killed
-			-- and revived from a ghost from when the cache was made.
-			if data.__parent.valid then return data; end
-			
-			--TODO: load from... somewhere?
+			log.dump("unit_number in lut: ", lut[parent.unit_number][data_name])
+			return lut[parent.unit_number][data_name]
 		end
 		
 		associate_entity(parent.name, data_name)
@@ -142,6 +160,7 @@ return function(_M)
 		local res = setmetatable({
 			__type = data_name,
 			__parent = parent,
+			__unit_number = parent.unit_number,
 			__entity = entity,
 			__control_behavior = entity and entity.get_or_create_control_behavior(),
 		}, MT)
@@ -166,4 +185,43 @@ return function(_M)
 	--: Dictionary[string, uint]: The enum options
 		return load_prototype(group).settings[name].options
 	end
+	
+	
+	FML.events.on(FML.events.id'therustyknife.FML.blueprint-data.entity-died', function(event)
+		log.d("Blueprint data entity died in "..config.MOD.NAME)
+		if not event.parent_entity.unit_number then return; end
+		for _, data in pairs(global.data) do
+			if data.__unit_number == event.parent_entity.unit_number then
+				-- Save the parameters
+				if data.__entity then
+					data.__ghost_data = data.__entity.get_or_create_control_behavior().parameters.parameters
+				end
+				data.__parent = nil
+				data.__entity = nil
+				data.__control_behavior = nil
+				log.dump("\tunit_number "..data.__unit_number.."'s __ghost_data: ", data.__ghost_data)
+			end
+		end
+	end)
+	
+	FML.events.on_revived(function(event)
+		log.d("Blueprint data entity revived in "..config.MOD.NAME)
+		log.dump("unit_number: ", event.entity.unit_number)
+		if not event.entity.unit_number then return; end
+		for _, data in pairs(global.data) do
+			log.dump("\tunit_number: ", data.__unit_number)
+			if data.__unit_number == event.entity.unit_number then
+				log.dump("\t\t__ghost_data: ", data.__ghost_data)
+				data.__parent = event.entity
+				if data.__ghost_data then
+					log.d("\t\tRestoring ghost data...")
+					data.__entity = _M._get_entity(data.__parent, data.__type)
+					data.__control_behavior = data.__entity.get_or_create_control_behavior()
+					data.__control_behavior.parameters = {enabled = true, parameters = data.__ghost_data}
+					log.dump("\t\tNew cb data: ", data.__control_behavior.parameters.parameters)
+				end
+				data.__ghost_data = nil
+			end
+		end
+	end)
 end
