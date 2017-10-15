@@ -286,6 +286,7 @@ return function(_M)
 	--+ string on_change: The handler function to be called when the state changes
 	--+ Any meta: The data passed into the constructor, can be used for identification in the user's code
 	
+	--TODO: consider a better default for format_func
 	_M.NumberSelector = FML.Object:extend("therustyknife.FML.GUI.controls.NumberSelector", function(self, args)
 	--f __call
 	--% type: metamethod

@@ -16,6 +16,7 @@ module({'RUNTIME', 'RUNTIME_SHARED'}, function(_M)
 	
 	local handlers = {}
 	
+	--TODO: better adding syntax: FML.handler 'name-of-handler'(function(...) print(...); end) or something like that
 	function _M.add(name, func)
 	--- Add a new handler function.
 	--@ string name: The name of the handler function
