@@ -3,11 +3,11 @@
 --- Functions from here may be moved in the future. In such case, they'll be deprecated in this module first before
 --- removal.
 
-return function(_M)
+return function(_M, STAGE)
 	local FML = therustyknife.FML
 	
 	
-	if FML.STAGE == "runtime" then
+	if STAGE == 'RUNTIME' or STAGE == 'RUNTIME_SHARED' then
 		function _M.make_request(target, requests)
 		--- Request items for an entity.
 		--@ LuaEntity target: The entity to deliver items into

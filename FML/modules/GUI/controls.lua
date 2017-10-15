@@ -374,11 +374,9 @@ return function(_M)
 			from_text = FML.random_util.calculate_overflow(from_text, {min=self.min, max=self.max})
 			in_range = true
 		end
-		log.dump(from_text, in_range, self.value)
 		self.value = (in_range and from_text) or self.value
-		log.dump(self.value)
 		
-		if self.on_change and (not sync or self.on_change_on_sync) then FML.handlers.call(self.on_change, self); end
+		if self.on_change and (sync or self.on_change_on_sync) then FML.handlers.call(self.on_change, self); end
 		
 		if self.link_name and sync then
 			for i, number_selctor in pairs(global.number_selctor.linked[self.link_name]) do
