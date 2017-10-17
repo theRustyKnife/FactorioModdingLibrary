@@ -15,7 +15,7 @@ return function(_M)
 			defines.events.on_built_entity,
 			defines.events.on_robot_built_entity,
 		},
-		revived = {_M.id'therustyknife.FML.events.entity-revived'}
+		revived = {_M.id'therustyknife.FML.events.entity-revived'},
 	}
 	
 	

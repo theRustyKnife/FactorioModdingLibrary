@@ -67,6 +67,9 @@ return function(_M)
 	
 	--TODO: handle closing when entity is destroyed
 	
+	local function is_wire(name)
+		return ({['green-wire']=true, ['red-wire']=true})[name]
+	end
 	
 	FML.events.on(config.GUI.NAMES.OPEN_KEY, function(event)
 		local player = game.players[event.player_index]
@@ -75,7 +78,11 @@ return function(_M)
 				and player.selected and player.selected.valid and watched_names[player.selected.name] then -- Check if our gui isn't open
 			if not (global.open_guis[player.index] and global.open_guis[player.index].valid) then
 				log.d("Player #"..player.index..' opened "'..player.selected.name..'" at '..FML.format.position(player.selected.position))
-				if player.selected.operable and not player.cursor_stack.valid_for_read then --TODO: check how this works with forces --TODO: Fix non-placable items open the normal gui --TODO: maybe hack this by checking whether the entity is in player.opened?
+				local cursor_stack = player.cursor_stack
+				if player.selected.operable
+						and (not cursor_stack.valid_for_read
+							or not (cursor_stack.prototype.place_result or cursor_stack.prototype.place_as_tile_result
+								or is_wire(cursor_stack.prototype.name))) then --TODO: check how this works with forces
 					init_interfaces()
 					-- Call all the local instances
 					local status = false
