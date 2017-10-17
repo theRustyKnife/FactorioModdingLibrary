@@ -1,7 +1,7 @@
 return {
 	VERSION = {
-		CODE = 18,
-		NAME = '0.1.0-alpha.10.0',
+		CODE = 19,
+		NAME = '0.1.0-alpha.11.0',
 	},
 	
 	-- Mod info

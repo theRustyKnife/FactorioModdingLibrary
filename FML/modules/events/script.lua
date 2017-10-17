@@ -84,7 +84,7 @@ return function(_M)
 		if data.mod_changes then
 			for mod_name, mod_data in pairs(data.mod_changes) do
 				run(handlers.mod_config_change[mod_name],
-						{new_version=mod_data.new_version, old_version=mod_data.old_version}, mod_data)
+						{new_version=mod_data.new_version, old_version=mod_data.old_version}, data=data)
 			end
 		end
 		
