@@ -119,13 +119,16 @@ return function(_M)
 	}
 	
 	
-	FML.events.on_post_load(function()
+	local function init()
 		log.d("Loading BlueprintData instances in "..config.MOD.NAME.."...")
 		global = FML.get_fml_global("blueprint_data")
 		global.data = table(global.data)
 		global.prototypes = table(global.prototypes)
 		for _, data in ipairs(global.data) do setmetatable(data, MT); end
-	end)
+	end
+	
+	FML.events.on_post_load(init)
+	FML.events.on_pre_config_change(init)
 	
 	function _M.flush_cache()
 	--- Clears the cache to refresh prototype definitions.

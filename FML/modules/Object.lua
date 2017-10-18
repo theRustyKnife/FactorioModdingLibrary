@@ -19,13 +19,15 @@ return function(_M)
 	local classes = table()
 	local global
 	if FML.STAGE == "RUNTIME" or FML.STAGE == "RUNTIME_SHARED" then
-		FML.events.on_post_load(function()
+		local function init()
 			global = table(FML.get_fml_global("Object"))
 			for _, object in ipairs(global) do
 				if classes[object.__class_name] then classes[object.__class_name]:load(object)
 				else log.w("Couldn't find class '"..object.__class_name.."' to load an object."); end
 			end
-		end)
+		end
+		FML.events.on_post_load(init)
+		FML.events.on_pre_config_change(init)
 	end
 	
 	
