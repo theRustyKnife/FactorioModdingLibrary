@@ -50,10 +50,28 @@ return function(_M)
 	end
 	
 	
+	local function check_mod_config()
+		-- Let's assume anyone using this is smart enough to use their own mod name only
+		assert(game.active_mods[config.MOD.NAME],
+			"Mod name has to be set to the proper mod name in FML config (current value: "..config.MOD.NAME..").")
+		
+		local v = game.active_mods[config.MOD.NAME]
+		local conf_v = config.MOD.VERSION
+		assert(v == conf_v,
+			"The version in FML config must match the actual version of the mod"..
+			"(expected \""..v.."\", got \""..conf_v.."\" - in "..config.MOD.NAME..").")
+		
+		local global = FML.get_fml_global'meta'
+		global.SAVED_MOD_VERSION = config.MOD.VERSION
+		global.SAVED_FML_VERSION = config.VERSION
+	end
+	
 	function _M.run_init(simulated)
 	--% private
 	--- Run the on_init procedure.
 	--@ bool simultated=false
+		check_mod_config()
+		
 		run(handlers.init)
 		run(handlers.load)
 	end
@@ -62,7 +80,8 @@ return function(_M)
 	--% private
 	--- Run the on_load procedure
 	--@ bool simulated=false
-		run(handlers.load)
+		-- If the versions don't match, let config_change run the load handlers
+		if FML.get_fml_global('meta', false, {}).SAVED_MOD_VERSION == config.MOD.VERSION then run(handlers.load); end
 	end
 	
 	function _M.run_configuration_changed(data, simulated)
@@ -70,6 +89,8 @@ return function(_M)
 	--- Run the on_configuration_changed procedure.
 	--@ ConfigurationChangedData data
 	--@ bool simulated=false
+		check_mod_config()
+		
 		-- Convert versions to Semver objects
 		data.new_version = data.new_version and Semver(data.new_version)
 		data.old_version = data.old_version and Semver(data.old_version)
@@ -83,8 +104,9 @@ return function(_M)
 		
 		if data.mod_changes then
 			for mod_name, mod_data in pairs(data.mod_changes) do
+				log.d("Mod change: "..mod_name)
 				run(handlers.mod_config_change[mod_name],
-						{new_version=mod_data.new_version, old_version=mod_data.old_version}, data=data)
+						{new_version=mod_data.new_version, old_version=mod_data.old_version}, data)
 			end
 		end
 		
