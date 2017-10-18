@@ -1,7 +1,8 @@
 local config = {
 	-- Settings that need to be configured to reflect the mod FML is installed in
 	MOD = {
-		NAME = "FML-client-test",
+		NAME = 'mod-name',
+		VERSION = '0.1.0',
 	},
 	
 	
